@@ -3,19 +3,14 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_external_egress" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enabled         = "true"
-  logging_enabled = "false"
-  action          = "accept"
-
+  action = "accept"
   source {
     ip_addresses = [var.net_k8s_cidr]
   }
-
   destination {
     ip_addresses       = ["any"]
     gateway_interfaces = ["external"]
   }
-
   service {
     protocol = "any"
   }
@@ -26,18 +21,13 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_internal" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enabled         = "true"
-  logging_enabled = "false"
-  action          = "accept"
-
+  action = "accept"
   source {
     ip_addresses = [var.net_k8s_cidr]
   }
-
   destination {
     ip_addresses = [var.net_k8s_cidr]
   }
-
   service {
     protocol = "any"
   }
@@ -48,19 +38,14 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_apiserver" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enabled         = "true"
-  logging_enabled = "false"
-  action          = "accept"
-
+  action = "accept"
   source {
     ip_addresses       = ["any"]
     gateway_interfaces = ["external"]
   }
-
   destination {
     ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
   }
-
   service {
     protocol = "tcp"
     port     = "6443"
@@ -72,19 +57,14 @@ resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enabled         = "true"
-  logging_enabled = "false"
-  action          = "accept"
-
+  action = "accept"
   source {
     ip_addresses       = ["any"]
     gateway_interfaces = ["external"]
   }
-
   destination {
     ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
   }
-
   service {
     protocol = "tcp"
     port     = "80"
@@ -100,19 +80,14 @@ resource "vcd_nsxv_firewall_rule" "k8s_deny_ssh" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enabled         = "true"
-  logging_enabled = "false"
-  action          = "deny"
-
+  action = "deny"
   source {
     ip_addresses       = ["any"]
     gateway_interfaces = ["external"]
   }
-
   destination {
     ip_addresses = ["any"]
   }
-
   service {
     protocol = "tcp"
     port     = "22"

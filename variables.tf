@@ -67,3 +67,27 @@ variable "net_k8s_cidr" {
   description = "IP range for Kubernetes network in CIDR notation"
   default     = "10.0.80.0/24"
 }
+
+variable "k8s_cluster_name" {
+  description = "K8s cluster name (vCD vApp)"
+  default     = "kubernetes"
+}
+
+variable "k8s_node_admin_password" {
+  description = "Admin password of K8s node"
+}
+
+variable "k8s_node_instances" {
+  description = "Number of K8s nodes (VMs)"
+  default     = 3
+}
+
+variable "k8s_node_memory" {
+  description = "Memory of K8s node (in MB)"
+  default     = 8192
+}
+
+variable "k8s_node_cpus" {
+  description = "CPUs of K8s node (in MB)"
+  default     = 4
+}
