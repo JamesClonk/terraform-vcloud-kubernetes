@@ -33,20 +33,6 @@ variable "vcd_vdc" {
   # https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#dynamic-data-center
 }
 
-variable "vcd_edge_gateway" {
-  description = "vCD VDC Edge Gateway"
-  # The edge gateway / virtual router of your VDC networks, necessary for internet access.
-  # For Swisscom DCS+ see this documentation:
-  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
-}
-
-variable "vcd_load_balancer_public_ip" {
-  description = "Public IP Address of your load balancer"
-  # The public IP of your load balancer
-  # For Swisscom DCS+ see this documentation:
-  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edge-load-balancing
-}
-
 variable "vcd_catalog" {
   description = "Catalog name"
   default     = "Public Catalog"
@@ -61,4 +47,23 @@ variable "vcd_template" {
   # The vApp template to use for your virtual machines.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
+}
+
+variable "vcd_edgegateway" {
+  description = "vCD VDC Edge Gateway"
+  # The edge gateway / virtual router of your VDC networks, necessary for internet access.
+  # For Swisscom DCS+ see this documentation:
+  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
+}
+
+variable "net_load_balancer_ip" {
+  description = "Public IP Address of your load balancer"
+  # The public IP of your load balancer
+  # For Swisscom DCS+ see this documentation:
+  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edge-load-balancing
+}
+
+variable "net_k8s_cidr" {
+  description = "IP range for Kubernetes network in CIDR notation"
+  default     = "10.0.80.0/24"
 }
