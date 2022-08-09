@@ -3,7 +3,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_external_egress" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enable          = "true"
+  enabled         = "true"
   logging_enabled = "false"
   action          = "accept"
 
@@ -26,7 +26,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_internal" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enable          = "true"
+  enabled         = "true"
   logging_enabled = "false"
   action          = "accept"
 
@@ -48,7 +48,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_apiserver" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enable          = "true"
+  enabled         = "true"
   logging_enabled = "false"
   action          = "accept"
 
@@ -72,7 +72,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enable          = "true"
+  enabled         = "true"
   logging_enabled = "false"
   action          = "accept"
 
@@ -100,7 +100,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_deny_ssh" {
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
 
-  enable          = "true"
+  enabled         = "true"
   logging_enabled = "false"
   action          = "deny"
 
