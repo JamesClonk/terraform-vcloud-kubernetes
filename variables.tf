@@ -1,8 +1,3 @@
-variable "logging_enabled" {
-  description = "Enable logging of vCD API interaction"
-  default     = false
-}
-
 variable "vcd_api_url" {
   description = "vCD API URL"
   # This is the URL of the vCloud Director API.
@@ -23,6 +18,17 @@ variable "vcd_api_password" {
   # The API password for vCloud Director access.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#cloud-director-api-user
+}
+
+
+variable "vcd_token" {
+}
+variable "vcd_auth_type" {
+  default = "integrated"
+}
+variable "vcd_logging_enabled" {
+  description = "Enable logging of vCD API interaction"
+  default     = false
 }
 
 variable "vcd_org" {
