@@ -1,3 +1,8 @@
+variable "logging_enabled" {
+  description = "Enable logging of vCD API interaction"
+  default     = false
+}
+
 variable "vcd_api_url" {
   description = "vCD API URL"
   # This is the URL of the vCloud Director API.
@@ -35,15 +40,15 @@ variable "vcd_vdc" {
 
 variable "vcd_catalog" {
   description = "Catalog name"
-  default     = "Public Catalog"
+  default     = "DCS Catalog"
   # The vCD catalog to use for your vApp templates.
-  # For Swisscom DCS+ use "Public Catalog", see this documentation:
+  # For Swisscom DCS+ use "DCS Catalog", see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#catalogs
 }
 
 variable "vcd_template" {
   description = "vCD vApp template name"
-  default     = "ubuntu-something"
+  default     = "ubuntu1804-vmware-dcs-20220325"
   # The vApp template to use for your virtual machines.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates

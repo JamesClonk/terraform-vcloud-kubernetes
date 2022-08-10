@@ -1,8 +1,6 @@
 # pre-provisioned vCD edge gateway
 data "vcd_edgegateway" "k8s" {
   name = var.vcd_edgegateway
-  org  = var.vcd_org
-  vdc  = var.vcd_vdc
 }
 
 # vCD NSX-V network for Kubernetes nodes
@@ -18,7 +16,7 @@ resource "vcd_network_routed_v2" "k8s_nodes" {
 
   static_ip_pool {
     start_address = cidrhost(var.net_k8s_cidr, 100)
-    end_address   = cidrhost(var.net_k8s_cidr, 150)
+    end_address   = cidrhost(var.net_k8s_cidr, 200)
   }
 }
 
@@ -30,5 +28,5 @@ resource "vcd_nsxv_snat" "outbound" {
   original_address   = var.net_k8s_cidr
   translated_address = data.vcd_edgegateway.k8s.default_external_network_ip
 
-  depends_on = ["vcd_network_routed_v2.k8s_nodes"]
+  depends_on = [vcd_network_routed_v2.k8s_nodes]
 }

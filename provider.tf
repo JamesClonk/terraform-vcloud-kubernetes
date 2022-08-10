@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vcd = {
       source  = "vmware/vcd"
-      version = "~> 3.7.0"
+      version = "~> 3.5.1"
     }
   }
   required_version = ">= 1.2.0"
@@ -18,4 +18,6 @@ provider "vcd" {
   auth_type            = "integrated"
   max_retry_timeout    = 120
   allow_unverified_ssl = true
+
+  logging = var.logging_enabled
 }
