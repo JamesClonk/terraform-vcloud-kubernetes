@@ -15,7 +15,7 @@ resource "vcd_network_routed_v2" "k8s_nodes" {
   dns2            = "8.8.8.8"
 
   static_ip_pool {
-    start_address = cidrhost(var.net_k8s_cidr, 100)
+    start_address = cidrhost(var.net_k8s_cidr, 20)
     end_address   = cidrhost(var.net_k8s_cidr, 200)
   }
 }

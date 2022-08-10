@@ -22,6 +22,28 @@ resource "vcd_lb_service_monitor" "k8s_monitor" {
   url         = "/health"
 }
 
+resource "vcd_lb_server_pool" "k8s_api_pool" {
+  edge_gateway = var.vcd_edgegateway
+  name         = "k8s-api-pool"
+
+  algorithm           = "round-robin"
+  enable_transparency = "true"
+  monitor_id          = vcd_lb_service_monitor.k8s_monitor.id
+
+  dynamic "member" {
+    for_each = range(0, var.k8s_control_plane_instances)
+
+    content {
+      condition    = "enabled"
+      name         = "${var.k8s_cluster_name}-${member.value}"
+      ip_address   = cidrhost(var.net_k8s_cidr, 50 + member.value)
+      port         = 6443
+      monitor_port = 6443
+      weight       = 1
+    }
+  }
+}
+
 resource "vcd_lb_server_pool" "k8s_http_pool" {
   edge_gateway = var.vcd_edgegateway
   name         = "k8s-http-pool"
@@ -31,7 +53,7 @@ resource "vcd_lb_server_pool" "k8s_http_pool" {
   monitor_id          = vcd_lb_service_monitor.k8s_monitor.id
 
   dynamic "member" {
-    for_each = range(0, var.k8s_node_instances)
+    for_each = range(0, var.k8s_worker_instances)
 
     content {
       condition    = "enabled"
@@ -53,7 +75,7 @@ resource "vcd_lb_server_pool" "k8s_https_pool" {
   monitor_id          = vcd_lb_service_monitor.k8s_monitor.id
 
   dynamic "member" {
-    for_each = range(0, var.k8s_node_instances)
+    for_each = range(0, var.k8s_worker_instances)
 
     content {
       condition    = "enabled"

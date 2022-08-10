@@ -20,8 +20,8 @@ variable "vcd_api_password" {
   # https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#cloud-director-api-user
 }
 
-
 variable "vcd_token" {
+  default = ""
 }
 variable "vcd_auth_type" {
   default = "integrated"
@@ -84,21 +84,52 @@ variable "k8s_cluster_name" {
   default     = "kubernetes"
 }
 
-variable "k8s_node_admin_password" {
-  description = "Admin password of K8s node"
+variable "k8s_bastion_root_password" {
+  description = "root password of K8s bastion host"
+}
+variable "k8s_bastion_memory" {
+  description = "Memory of K8s bastion host (in MB)"
+  default     = 1024
+}
+variable "k8s_bastion_cpus" {
+  description = "CPUs of K8s bastion host (in MB)"
+  default     = 1
 }
 
-variable "k8s_node_instances" {
-  description = "Number of K8s nodes (VMs)"
+variable "k8s_control_plane_root_password" {
+  description = "root password of K8s control plane nodes"
+}
+variable "k8s_control_plane_instances" {
+  description = "Number of K8s control plane nodes (VMs)"
   default     = 3
 }
-
-variable "k8s_node_memory" {
-  description = "Memory of K8s node (in MB)"
-  default     = 8192
+variable "k8s_control_plane_memory" {
+  description = "Memory of K8s control plane node (in MB)"
+  default     = 2048
+}
+variable "k8s_control_plane_cpus" {
+  description = "CPUs of K8s control plane node (in MB)"
+  default     = 2
 }
 
-variable "k8s_node_cpus" {
-  description = "CPUs of K8s node (in MB)"
+variable "k8s_worker_root_password" {
+  description = "root password of K8s worker nodes"
+}
+variable "k8s_worker_instances" {
+  description = "Number of K8s worker nodes (VMs)"
+  default     = 3
+}
+variable "k8s_worker_memory" {
+  description = "Memory of K8s worker node (in MB)"
+  default     = 8192
+}
+variable "k8s_worker_cpus" {
+  description = "CPUs of K8s worker node (in MB)"
   default     = 4
+}
+
+variable "k8s_k3s_version" {
+  description = "Kubernetes version of K3s to use"
+  default     = "v1.24.3+k3s1"
+  # See https://github.com/k3s-io/k3s/releases
 }
