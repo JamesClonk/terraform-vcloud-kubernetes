@@ -43,6 +43,12 @@ module "k3s" {
       annotations = { "worker_index" : i }
     }
   }
+
+  depends_on = [
+    vcd_vapp_vm.k8s_bastion,
+    vcd_vapp_vm.k8s_control_plane,
+    vcd_vapp_vm.k8s_worker
+  ]
 }
 
 # provider "kubernetes" {

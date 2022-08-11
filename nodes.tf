@@ -30,9 +30,13 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     admin_password             = var.k8s_bastion_root_password
   }
 
-  depends_on = [vcd_network_routed_v2.k8s_nodes, vcd_vapp.k8s_nodes]
+  depends_on = [
+    vcd_network_routed_v2.k8s_nodes,
+    vcd_vapp.k8s_nodes,
+    vcd_nsxv_snat.outbound,
+    vcd_nsxv_dnat.bastion_ssh
+  ]
 }
-
 
 resource "vcd_vapp_vm" "k8s_control_plane" {
   count = var.k8s_control_plane_instances
@@ -63,19 +67,14 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     admin_password             = var.k8s_control_plane_root_password
   }
 
-  # provisioner "local-exec" {
-  #   command = <<EOT
-  #           k3sup install \
-  #           --ip ${self.network_interface[0].access_config[0].nat_ip} \
-  #           --context k3s \
-  #           --ssh-key ~/.ssh/k8s_node \
-  #           --user $(whoami)
-  #       EOT
-  # }
-
-  depends_on = [vcd_network_routed_v2.k8s_nodes, vcd_vapp.k8s_nodes]
+  depends_on = [
+    vcd_network_routed_v2.k8s_nodes,
+    vcd_vapp.k8s_nodes,
+    vcd_nsxv_snat.outbound,
+    vcd_nsxv_dnat.bastion_ssh,
+    vcd_lb_server_pool.k8s_api_pool
+  ]
 }
-
 
 resource "vcd_vapp_vm" "k8s_worker" {
   count = var.k8s_worker_instances
@@ -106,15 +105,12 @@ resource "vcd_vapp_vm" "k8s_worker" {
     admin_password             = var.k8s_worker_root_password
   }
 
-  # provisioner "local-exec" {
-  #   command = <<EOT
-  #           k3sup install \
-  #           --ip ${self.network_interface[0].access_config[0].nat_ip} \
-  #           --context k3s \
-  #           --ssh-key ~/.ssh/k8s_node \
-  #           --user $(whoami)
-  #       EOT
-  # }
-
-  depends_on = [vcd_network_routed_v2.k8s_nodes, vcd_vapp.k8s_nodes]
+  depends_on = [
+    vcd_network_routed_v2.k8s_nodes,
+    vcd_vapp.k8s_nodes,
+    vcd_nsxv_snat.outbound,
+    vcd_nsxv_dnat.bastion_ssh,
+    vcd_lb_server_pool.k8s_http_pool,
+    vcd_lb_server_pool.k8s_https_pool
+  ]
 }

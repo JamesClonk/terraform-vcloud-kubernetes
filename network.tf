@@ -23,10 +23,27 @@ resource "vcd_network_routed_v2" "k8s_nodes" {
 resource "vcd_nsxv_snat" "outbound" {
   edge_gateway = var.vcd_edgegateway
 
-  network_type       = "org"
-  network_name       = vcd_network_routed_v2.k8s_nodes.name
+  network_type = "org"
+  network_name = vcd_network_routed_v2.k8s_nodes.name
+
   original_address   = var.net_k8s_cidr
   translated_address = data.vcd_edgegateway.k8s.default_external_network_ip
+
+  depends_on = [vcd_network_routed_v2.k8s_nodes]
+}
+
+resource "vcd_nsxv_dnat" "bastion_ssh" {
+  edge_gateway = var.vcd_edgegateway
+
+  network_type = "ext"
+  network_name = vcd_network_routed_v2.k8s_nodes.name
+
+  original_address = data.vcd_edgegateway.k8s.default_external_network_ip
+  original_port    = 2222
+
+  translated_address = cidrhost(var.net_k8s_cidr, 20)
+  translated_port    = 22
+  protocol           = "tcp"
 
   depends_on = [vcd_network_routed_v2.k8s_nodes]
 }
