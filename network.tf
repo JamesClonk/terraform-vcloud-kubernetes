@@ -28,8 +28,6 @@ resource "vcd_nsxv_snat" "outbound" {
 
   original_address   = var.net_k8s_cidr
   translated_address = data.vcd_edgegateway.k8s.default_external_network_ip
-
-  depends_on = [vcd_network_routed_v2.k8s_nodes]
 }
 
 resource "vcd_nsxv_dnat" "bastion_ssh" {
@@ -44,6 +42,4 @@ resource "vcd_nsxv_dnat" "bastion_ssh" {
   translated_address = cidrhost(var.net_k8s_cidr, 20)
   translated_port    = 22
   protocol           = "tcp"
-
-  depends_on = [vcd_network_routed_v2.k8s_nodes]
 }

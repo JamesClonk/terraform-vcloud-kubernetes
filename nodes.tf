@@ -1,5 +1,6 @@
 resource "vcd_vapp" "k8s_nodes" {
-  name       = "${var.k8s_cluster_name}_nodes"
+  name = "${var.k8s_cluster_name}_nodes"
+
   depends_on = [vcd_network_routed_v2.k8s_nodes]
 }
 
@@ -31,8 +32,6 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   }
 
   depends_on = [
-    vcd_network_routed_v2.k8s_nodes,
-    vcd_vapp.k8s_nodes,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh
   ]
@@ -68,8 +67,6 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   }
 
   depends_on = [
-    vcd_network_routed_v2.k8s_nodes,
-    vcd_vapp.k8s_nodes,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh,
     vcd_lb_server_pool.k8s_api_pool
@@ -106,8 +103,6 @@ resource "vcd_vapp_vm" "k8s_worker" {
   }
 
   depends_on = [
-    vcd_network_routed_v2.k8s_nodes,
-    vcd_vapp.k8s_nodes,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh,
     vcd_lb_server_pool.k8s_http_pool,

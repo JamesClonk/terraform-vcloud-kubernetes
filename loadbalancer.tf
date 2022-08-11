@@ -65,8 +65,6 @@ resource "vcd_lb_server_pool" "k8s_api_pool" {
       weight       = 1
     }
   }
-
-  depends_on = [vcd_lb_service_monitor.k8s_tcp_monitor]
 }
 
 resource "vcd_lb_server_pool" "k8s_http_pool" {
@@ -89,8 +87,6 @@ resource "vcd_lb_server_pool" "k8s_http_pool" {
       weight       = 1
     }
   }
-
-  depends_on = [vcd_lb_service_monitor.k8s_http_monitor]
 }
 
 resource "vcd_lb_server_pool" "k8s_https_pool" {
@@ -113,8 +109,6 @@ resource "vcd_lb_server_pool" "k8s_https_pool" {
       weight       = 1
     }
   }
-
-  depends_on = [vcd_lb_service_monitor.k8s_https_monitor]
 }
 
 resource "vcd_lb_virtual_server" "k8s_api_vs" {
@@ -126,11 +120,6 @@ resource "vcd_lb_virtual_server" "k8s_api_vs" {
   port           = 6443
   app_profile_id = vcd_lb_app_profile.tcp.id
   server_pool_id = vcd_lb_server_pool.k8s_api_pool.id
-
-  depends_on = [
-    vcd_lb_app_profile.tcp,
-    vcd_lb_server_pool.k8s_api_pool,
-  ]
 }
 
 resource "vcd_lb_virtual_server" "k8s_http_vs" {
@@ -142,11 +131,6 @@ resource "vcd_lb_virtual_server" "k8s_http_vs" {
   port           = 80
   app_profile_id = vcd_lb_app_profile.tcp.id
   server_pool_id = vcd_lb_server_pool.k8s_http_pool.id
-
-  depends_on = [
-    vcd_lb_app_profile.tcp,
-    vcd_lb_server_pool.k8s_http_pool,
-  ]
 }
 
 resource "vcd_lb_virtual_server" "k8s_https_vs" {
@@ -158,9 +142,4 @@ resource "vcd_lb_virtual_server" "k8s_https_vs" {
   port           = 443
   app_profile_id = vcd_lb_app_profile.tcp.id
   server_pool_id = vcd_lb_server_pool.k8s_https_pool.id
-
-  depends_on = [
-    vcd_lb_app_profile.tcp,
-    vcd_lb_server_pool.k8s_https_pool,
-  ]
 }
