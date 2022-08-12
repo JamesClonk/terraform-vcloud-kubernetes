@@ -75,6 +75,29 @@ resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
   }
 }
 
+resource "vcd_nsxv_firewall_rule" "k8s_nodeports" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+
+  action = "accept"
+  source {
+    ip_addresses       = ["any"]
+    gateway_interfaces = ["external"]
+  }
+  destination {
+    ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
+  }
+  service {
+    protocol = "tcp"
+    port     = "30000-32767"
+  }
+  service {
+    protocol = "udp"
+    port     = "30000-32767"
+  }
+}
+
 resource "vcd_nsxv_firewall_rule" "k8s_deny_ssh" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc

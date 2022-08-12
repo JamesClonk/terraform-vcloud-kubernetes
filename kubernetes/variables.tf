@@ -5,6 +5,9 @@ variable "k8s_cluster_name" {
   default = "kubernetes"
 }
 variable "k8s_bastion_ip" {}
+variable "k8s_bastion_port" {
+  default = 2222
+}
 variable "k8s_bastion_root_password" {}
 variable "k8s_control_plane_root_password" {}
 variable "k8s_worker_root_password" {}

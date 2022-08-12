@@ -29,6 +29,7 @@ module "k3s" {
         user             = "root"
         password         = var.k8s_control_plane_root_password
         bastion_host     = var.k8s_bastion_ip
+        bastion_port     = var.k8s_bastion_port
         bastion_user     = "root"
         bastion_password = var.k8s_bastion_root_password
       }
@@ -46,6 +47,7 @@ module "k3s" {
         user             = "root"
         password         = var.k8s_worker_root_password
         bastion_host     = var.k8s_bastion_ip
+        bastion_port     = var.k8s_bastion_port
         bastion_user     = "root"
         bastion_password = var.k8s_bastion_root_password
       }
