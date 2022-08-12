@@ -22,8 +22,8 @@ module "k3s" {
   ]
 
   servers = {
-    for i in range(length(var.k8s_control_plane)) :
-    var.k8s_control_plane[i].name => {
+    for i in range(var.k8s_control_plane_instances) :
+    "k8s_server_${i}" => {
       ip = cidrhost(var.k8s_cidr, 50 + i)
       connection = {
         user             = "root"
@@ -39,10 +39,9 @@ module "k3s" {
   }
 
   agents = {
-    for i in range(length(var.k8s_worker)) :
-    "${var.k8s_worker[i].name}_node" => {
-      name = var.k8s_worker[i].name
-      ip   = cidrhost(var.k8s_cidr, 100 + i)
+    for i in range(var.k8s_worker_instances) :
+    "k8s_worker_${i}" => {
+      ip = cidrhost(var.k8s_cidr, 100 + i)
       connection = {
         user             = "root"
         password         = var.k8s_worker_root_password

@@ -11,6 +11,5 @@ variable "k8s_worker_root_password" {}
 variable "k8s_k3s_version" {
   default = "v1.24.3+k3s1"
 }
-
-variable "k8s_control_plane" {}
-variable "k8s_worker" {}
+variable "k8s_control_plane_instances" {}
+variable "k8s_worker_instances" {}

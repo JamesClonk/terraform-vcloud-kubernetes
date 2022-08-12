@@ -55,9 +55,14 @@ module "kubernetes" {
   k8s_control_plane_root_password = var.k8s_control_plane_root_password
   k8s_worker_root_password        = var.k8s_worker_root_password
 
-  k8s_bastion_ip    = module.infrastructure.edge_gateway_external_ip
-  k8s_control_plane = module.infrastructure.k8s_control_plane
-  k8s_worker        = module.infrastructure.k8s_worker
+  k8s_bastion_ip              = module.infrastructure.edge_gateway_external_ip
+  k8s_control_plane_instances = var.k8s_control_plane_instances
+  k8s_worker_instances        = var.k8s_worker_instances
+
+  depends_on = [
+    module.infrastructure.k8s_control_plane,
+    module.infrastructure.k8s_worker
+  ]
 }
 
 module "deployments" {
