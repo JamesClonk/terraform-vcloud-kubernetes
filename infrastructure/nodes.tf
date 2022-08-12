@@ -64,6 +64,8 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_control_plane_root_password
+    # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
+    # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
   }
 
   depends_on = [
@@ -100,6 +102,8 @@ resource "vcd_vapp_vm" "k8s_worker" {
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_worker_root_password
+    # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
+    # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
   }
 
   depends_on = [

@@ -17,6 +17,7 @@ module "k3s" {
   managed_fields = ["label", "taint"]
 
   global_flags = [
+    "--disable traefik",
     "--kubelet-arg cloud-provider=external"
   ]
 

@@ -63,9 +63,8 @@ module "kubernetes" {
 module "deployments" {
   source = "./deployments"
 
-  api_endpoint           = module.kubernetes.api_endpoint
+  cluster_api_endpoint   = module.kubernetes.cluster_api_endpoint
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate
   client_key             = module.kubernetes.client_key
-  kube_config            = module.kubernetes.kube_config
 }
