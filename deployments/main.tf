@@ -1,11 +1,36 @@
+terraform {
+  required_providers {
+    helm = {
+      source  = "hashicorp/helm"
+      version = "~> 2.6.0"
+    }
+  }
+  required_version = ">= 1.2.0"
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = var.api_endpoint
+    cluster_ca_certificate = var.cluster_ca_certificate
+    client_certificate     = var.client_certificate
+    client_key             = var.client_key
+  }
+}
+# provider "kubernetes" {
+#   host                   = var.api_endpoint
+#   cluster_ca_certificate = var.cluster_ca_certificate
+#   client_certificate     = var.client_certificate
+#   client_key             = var.client_key
+# }
+
 resource "local_sensitive_file" "kubeconfig_file" {
   filename        = "k3s_kubeconfig"
-  content         = module.k3s.kube_config
+  content         = var.kube_config
   file_permission = "0600"
 }
 
 output "cluster_endpoint" {
-  value = module.k3s.kubernetes.api_endpoint
+  value = var.api_endpoint
 }
 
 output "kubeconfig" {
@@ -17,22 +42,6 @@ output "cluster_info" {
     "export KUBECONFIG=%s; kubectl cluster-info; kubectl get pods -A",
     local_sensitive_file.kubeconfig_file.filename,
   )
-}
-
-# provider "kubernetes" {
-#   host                   = module.k3s.kubernetes.api_endpoint
-#   cluster_ca_certificate = module.k3s.kubernetes.cluster_ca_certificate
-#   client_certificate     = module.k3s.kubernetes.client_certificate
-#   client_key             = module.k3s.kubernetes.client_key
-# }
-
-provider "helm" {
-  kubernetes {
-    host                   = module.k3s.kubernetes.api_endpoint
-    cluster_ca_certificate = module.k3s.kubernetes.cluster_ca_certificate
-    client_certificate     = module.k3s.kubernetes.client_certificate
-    client_key             = module.k3s.kubernetes.client_key
-  }
 }
 
 resource "helm_release" "ingress_nginx" {

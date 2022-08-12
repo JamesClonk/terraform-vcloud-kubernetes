@@ -67,14 +67,7 @@ variable "vcd_edgegateway" {
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
 }
 
-variable "net_load_balancer_ip" {
-  description = "Public IP Address of your load balancer"
-  # The public IP of your load balancer
-  # For Swisscom DCS+ see this documentation:
-  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edge-load-balancing
-}
-
-variable "net_k8s_cidr" {
+variable "k8s_cidr" {
   description = "IP range for Kubernetes network in CIDR notation"
   default     = "10.0.80.0/24"
 }

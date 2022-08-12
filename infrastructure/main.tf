@@ -4,14 +4,6 @@ terraform {
       source  = "vmware/vcd"
       version = "~> 3.5.1"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.6.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 3.1.0"
-    }
   }
   required_version = ">= 1.2.0"
 }

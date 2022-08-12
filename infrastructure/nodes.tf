@@ -21,7 +21,7 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_nodes.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.net_k8s_cidr, 20)
+    ip                 = cidrhost(var.k8s_cidr, 20)
     is_primary         = true
   }
 
@@ -56,7 +56,7 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_nodes.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.net_k8s_cidr, 50 + count.index)
+    ip                 = cidrhost(var.k8s_cidr, 50 + count.index)
     is_primary         = true
   }
 
@@ -92,7 +92,7 @@ resource "vcd_vapp_vm" "k8s_worker" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_nodes.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.net_k8s_cidr, 100 + count.index)
+    ip                 = cidrhost(var.k8s_cidr, 100 + count.index)
     is_primary         = true
   }
 

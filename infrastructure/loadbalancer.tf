@@ -59,7 +59,7 @@ resource "vcd_lb_server_pool" "k8s_api_pool" {
     content {
       condition    = "enabled"
       name         = "${var.k8s_cluster_name}-${member.value}"
-      ip_address   = cidrhost(var.net_k8s_cidr, 50 + member.value)
+      ip_address   = cidrhost(var.k8s_cidr, 50 + member.value)
       port         = 6443
       monitor_port = 6443
       weight       = 1
@@ -81,7 +81,7 @@ resource "vcd_lb_server_pool" "k8s_http_pool" {
     content {
       condition    = "enabled"
       name         = "${var.k8s_cluster_name}-${member.value}"
-      ip_address   = cidrhost(var.net_k8s_cidr, 100 + member.value)
+      ip_address   = cidrhost(var.k8s_cidr, 100 + member.value)
       port         = 80
       monitor_port = 80
       weight       = 1
@@ -103,7 +103,7 @@ resource "vcd_lb_server_pool" "k8s_https_pool" {
     content {
       condition    = "enabled"
       name         = "${var.k8s_cluster_name}-${member.value}"
-      ip_address   = cidrhost(var.net_k8s_cidr, 100 + member.value)
+      ip_address   = cidrhost(var.k8s_cidr, 100 + member.value)
       port         = 443
       monitor_port = 443
       weight       = 1

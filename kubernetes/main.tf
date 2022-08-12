@@ -1,3 +1,13 @@
+terraform {
+  required_providers {
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 3.1.0"
+    }
+  }
+  required_version = ">= 1.2.0"
+}
+
 module "k3s" {
   source  = "xunleii/k3s/module"
   version = "v3.1.0"
@@ -11,13 +21,13 @@ module "k3s" {
   ]
 
   servers = {
-    for i in range(length(vcd_vapp_vm.k8s_control_plane)) :
-    vcd_vapp_vm.k8s_control_plane[i].name => {
-      ip = cidrhost(var.net_k8s_cidr, 50 + i)
+    for i in range(length(var.k8s_control_plane)) :
+    var.k8s_control_plane[i].name => {
+      ip = cidrhost(var.k8s_cidr, 50 + i)
       connection = {
         user             = "root"
         password         = var.k8s_control_plane_root_password
-        bastion_host     = var.net_load_balancer_ip
+        bastion_host     = var.k8s_bastion_ip
         bastion_user     = "root"
         bastion_password = var.k8s_bastion_root_password
       }
@@ -28,14 +38,14 @@ module "k3s" {
   }
 
   agents = {
-    for i in range(length(vcd_vapp_vm.k8s_worker)) :
-    "${vcd_vapp_vm.k8s_worker[i].name}_node" => {
-      name = vcd_vapp_vm.k8s_worker[i].name
-      ip   = cidrhost(var.net_k8s_cidr, 100 + i)
+    for i in range(length(var.k8s_worker)) :
+    "${var.k8s_worker[i].name}_node" => {
+      name = var.k8s_worker[i].name
+      ip   = cidrhost(var.k8s_cidr, 100 + i)
       connection = {
         user             = "root"
         password         = var.k8s_worker_root_password
-        bastion_host     = var.net_load_balancer_ip
+        bastion_host     = var.k8s_bastion_ip
         bastion_user     = "root"
         bastion_password = var.k8s_bastion_root_password
       }
@@ -43,10 +53,4 @@ module "k3s" {
       annotations = { "worker_index" : i }
     }
   }
-
-  depends_on = [
-    vcd_vapp_vm.k8s_bastion,
-    vcd_vapp_vm.k8s_control_plane,
-    vcd_vapp_vm.k8s_worker
-  ]
 }

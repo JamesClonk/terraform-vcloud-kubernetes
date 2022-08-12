@@ -5,7 +5,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_external_egress" {
 
   action = "accept"
   source {
-    ip_addresses = [var.net_k8s_cidr]
+    ip_addresses = [var.k8s_cidr]
   }
   destination {
     ip_addresses       = ["any"]
@@ -23,10 +23,10 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_internal" {
 
   action = "accept"
   source {
-    ip_addresses = [var.net_k8s_cidr]
+    ip_addresses = [var.k8s_cidr]
   }
   destination {
-    ip_addresses = [var.net_k8s_cidr]
+    ip_addresses = [var.k8s_cidr]
   }
   service {
     protocol = "any"
