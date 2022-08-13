@@ -16,10 +16,6 @@ module "k3s" {
   drain_timeout  = "600s"
   managed_fields = ["label", "taint"]
 
-  global_flags = [
-    "--kubelet-arg cloud-provider=external"
-  ]
-
   servers = {
     for i in range(var.k8s_control_plane_instances) :
     "k8s-server-${i}" => {
@@ -33,8 +29,7 @@ module "k3s" {
         bastion_password = var.k8s_bastion_root_password
       }
       flags = [
-        "--disable traefik",
-        "--disable-cloud-controller"
+        "--disable traefik"
       ]
       labels      = { "node.kubernetes.io/type" = "master" }
       annotations = { "server.index" : i }

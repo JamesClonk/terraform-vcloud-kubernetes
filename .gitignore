@@ -37,3 +37,6 @@ override.tf.json
 
 # Ignore lock file for this example repository
 .terraform.lock.hcl
+
+# Generated kube_config
+k3s_kubeconfig
