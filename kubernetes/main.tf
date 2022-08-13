@@ -13,17 +13,16 @@ module "k3s" {
   version = "v3.1.0"
 
   k3s_version    = var.k8s_k3s_version
-  drain_timeout  = "300s"
+  drain_timeout  = "600s"
   managed_fields = ["label", "taint"]
 
   global_flags = [
-    "--disable traefik",
     "--kubelet-arg cloud-provider=external"
   ]
 
   servers = {
     for i in range(var.k8s_control_plane_instances) :
-    "k8s_server_${i}" => {
+    "k8s-server-${i}" => {
       ip = cidrhost(var.k8s_cidr, 50 + i)
       connection = {
         user             = "root"
@@ -33,15 +32,18 @@ module "k3s" {
         bastion_user     = "root"
         bastion_password = var.k8s_bastion_root_password
       }
-      flags       = ["--disable-cloud-controller"]
+      flags = [
+        "--disable traefik",
+        "--disable-cloud-controller"
+      ]
       labels      = { "node.kubernetes.io/type" = "master" }
-      annotations = { "server_index" : i }
+      annotations = { "server.index" : i }
     }
   }
 
   agents = {
     for i in range(var.k8s_worker_instances) :
-    "k8s_worker_${i}" => {
+    "k8s-worker-${i}" => {
       ip = cidrhost(var.k8s_cidr, 100 + i)
       connection = {
         user             = "root"
@@ -52,7 +54,7 @@ module "k3s" {
         bastion_password = var.k8s_bastion_root_password
       }
       labels      = { "node.kubernetes.io/pool" = "worker" }
-      annotations = { "worker_index" : i }
+      annotations = { "worker.index" : i }
     }
   }
 }

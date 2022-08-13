@@ -13,7 +13,7 @@ output "client_key" {
 
 resource "local_sensitive_file" "kubeconfig_file" {
   filename        = "k3s_kubeconfig"
-  content         = module.k3s.kubernetes.kube_config
+  content         = module.k3s.kube_config
   file_permission = "0600"
 }
 output "kubeconfig" {
