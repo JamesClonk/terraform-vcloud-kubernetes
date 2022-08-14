@@ -82,8 +82,8 @@ resource "vcd_lb_server_pool" "k8s_http_pool" {
       condition    = "enabled"
       name         = "${var.k8s_cluster_name}-${member.value}"
       ip_address   = cidrhost(var.k8s_cidr, 100 + member.value)
-      port         = 80
-      monitor_port = 80
+      port         = 30080
+      monitor_port = 30080
       weight       = 1
     }
   }
@@ -104,8 +104,8 @@ resource "vcd_lb_server_pool" "k8s_https_pool" {
       condition    = "enabled"
       name         = "${var.k8s_cluster_name}-${member.value}"
       ip_address   = cidrhost(var.k8s_cidr, 100 + member.value)
-      port         = 443
-      monitor_port = 443
+      port         = 30443
+      monitor_port = 30443
       weight       = 1
     }
   }

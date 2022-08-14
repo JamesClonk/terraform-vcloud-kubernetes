@@ -11,6 +11,7 @@ vcd_edgegateway = "PRO-0123456789-my-gateway"
 // vcd_catalog     = "DCS catalog"
 // vcd_template    = "ubuntu1804-vmware-dcs-20220325"
 
+k8s_domain_name                 = "kubernetes.my-domain.com"
 k8s_bastion_root_password       = "super-secret-root-password"
 k8s_control_plane_root_password = "super-secret-root-password"
 k8s_worker_root_password        = "super-secret-root-password"

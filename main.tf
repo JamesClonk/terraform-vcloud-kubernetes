@@ -68,23 +68,11 @@ module "kubernetes" {
 module "deployments" {
   source = "./deployments"
 
-  cluster_api_endpoint   = replace(module.kubernetes.cluster_api_endpoint, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
+  loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
+  domain_name     = var.k8s_domain_name
+  # cluster_api_endpoint   = replace(module.kubernetes.cluster_api_endpoint, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
+  cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate
   client_key             = module.kubernetes.client_key
-}
-
-resource "local_sensitive_file" "kubeconfig_file" {
-  filename        = "k3s_kubeconfig"
-  content         = replace(module.kubernetes.kubeconfig, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
-  file_permission = "0600"
-}
-output "kubeconfig" {
-  value = local_sensitive_file.kubeconfig_file.filename
-}
-output "cluster_info" {
-  value = format(
-    "export KUBECONFIG=%s; kubectl cluster-info; kubectl get pods -A",
-    local_sensitive_file.kubeconfig_file.filename,
-  )
 }

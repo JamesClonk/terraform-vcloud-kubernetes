@@ -67,6 +67,14 @@ variable "vcd_edgegateway" {
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
 }
 
+variable "k8s_domain_name" {
+  description = "DNS domain name of your Kubernetes cluster (Fallback to <edgegateway-IP>.nip.io if missing)"
+  default     = ""
+  # The DNS A/ANAME entry of your Kubernetes cluster's external edgegateway/loadbalancer IP.
+  # Please make sure to set an appropriate DNS entry after creating the edgegateway.
+  # If you do not set a value here, this terraform module will fallback to using <edgegateway-IP>.nip for domain name.
+}
+
 variable "k8s_cidr" {
   description = "IP range for Kubernetes network in CIDR notation"
   default     = "10.0.80.0/24"
