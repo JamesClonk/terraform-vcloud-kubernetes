@@ -46,4 +46,4 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] Deploy Rancher control plane after Bastion host
   - [ ] Deploy "workload" cluster (with its own cp) through Rancher tf module
 
-To consider: A standalone Rancher control plane just for one single workload cluster might overkill? 🤔
+To consider: A standalone Rancher control plane just for one single workload cluster might be overkill? 🤔
