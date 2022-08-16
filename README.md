@@ -16,6 +16,7 @@ Deploy Kubernetes on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.co
 
 This still needs to be done to finish this repo. The text here and below will be removed before its done and ready for `v1.0.0`.
 
+- [x] add this TODO list 😂
 - [ ] change SSH procedure from root/pw to ssh-keys
   - [ ] add ssh-keys to variables / tfvars, remove root passwords
   - [ ] change VM/node setup in `infrastructure` module on vcloud
