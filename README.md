@@ -21,6 +21,8 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] change VM/node setup in `infrastructure` module on vcloud
   - [ ] change VM/node access for K3s setup in `kubernetes` module
 - [ ] write proper, extensive documentation
+  - [ ] overhaul README.md
+  - [ ] add all documentation it into a /docs subdir, as per tf convention
   - [ ] Explain architecture picture, document decisions and setup
   - [ ] Requirements for DCS tenant: VDC, Edge Gateway with Internet
   - [ ] Installation instructions, full in-depth guide with screenshots
