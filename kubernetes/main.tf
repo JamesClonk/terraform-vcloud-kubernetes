@@ -12,7 +12,7 @@ module "k3s" {
   source  = "xunleii/k3s/module"
   version = "v3.1.0"
 
-  k3s_version    = var.k8s_k3s_version
+  k3s_version    = var.k3s_version
   drain_timeout  = "600s"
   managed_fields = ["label", "taint"]
 
