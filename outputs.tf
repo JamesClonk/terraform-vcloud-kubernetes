@@ -1,5 +1,5 @@
 resource "local_sensitive_file" "kubeconfig_file" {
-  filename        = "k3s_kubeconfig"
+  filename        = "kubeconfig"
   content         = replace(module.kubernetes.kubeconfig, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
   file_permission = "0600"
 }
