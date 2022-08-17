@@ -4,6 +4,14 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.6.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.12.1"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14.0"
+    }
   }
   required_version = ">= 1.2.0"
 }
@@ -22,6 +30,14 @@ provider "kubernetes" {
   cluster_ca_certificate = var.cluster_ca_certificate
   client_certificate     = var.client_certificate
   client_key             = var.client_key
+}
+
+provider "kubectl" {
+  host                   = var.cluster_api_endpoint
+  cluster_ca_certificate = var.cluster_ca_certificate
+  client_certificate     = var.client_certificate
+  client_key             = var.client_key
+  apply_retry_count      = 5
 }
 
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.
@@ -61,6 +77,17 @@ resource "helm_release" "ingress_nginx" {
   }
 }
 
+data "kubectl_path_documents" "hairpin_proxy" {
+  pattern = "${path.module}/external/hairpin-proxy-0.2.1.yaml"
+}
+
+resource "kubectl_manifest" "hairpin_proxy" {
+  for_each   = toset(data.kubectl_path_documents.hairpin_proxy.documents)
+  yaml_body  = each.value
+  apply_only = true
+  depends_on = [helm_release.ingress_nginx]
+}
+
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -73,31 +100,40 @@ resource "helm_release" "cert_manager" {
     name  = "installCRDs"
     value = "true"
   }
+
+  # values = [
+  #   <<-EOT
+  #   podDnsPolicy: "None"
+  #   podDnsConfig:
+  #     nameservers:
+  #     - 1.1.1.1
+  #     - 8.8.8.8
+  #   EOT
+  # ]
+
+  depends_on = [
+    helm_release.ingress_nginx,
+    kubectl_manifest.hairpin_proxy
+  ]
 }
 
-resource "kubernetes_manifest" "cluster_issuer" {
-  manifest = {
-    apiVersion = "cert-manager.io/v1"
-    kind       = "ClusterIssuer"
-    metadata = {
-      name = "lets-encrypt"
-    }
-    spec = {
-      acme = {
-        server = "https://acme-v02.api.letsencrypt.org/directory"
-        privateKeySecretRef = {
-          name = "lets-encrypt"
-        }
-        solvers = [{
-          http01 = {
-            ingress = {
-              class = "nginx"
-            }
-          }
-        }]
-      }
-    }
-  }
+resource "kubectl_manifest" "cluster_issuer" {
+  yaml_body  = <<-YAML
+    apiVersion: cert-manager.io/v1
+    kind: ClusterIssuer
+    metadata:
+      name: lets-encrypt
+    spec:
+      acme:
+        server: https://acme-v02.api.letsencrypt.org/directory
+        privateKeySecretRef:
+          name: lets-encrypt
+        solvers:
+        - http01:
+            ingress:
+              class: nginx
+    YAML
+  apply_only = true
   depends_on = [helm_release.cert_manager]
 }
 
@@ -137,6 +173,13 @@ resource "helm_release" "kubernetes_dashboard" {
         nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         cert-manager.io/cluster-issuer: "lets-encrypt"
     EOT
+  ]
+
+  depends_on = [
+    kubectl_manifest.cluster_issuer,
+    kubectl_manifest.hairpin_proxy,
+    helm_release.ingress_nginx,
+    helm_release.cert_manager,
   ]
 }
 

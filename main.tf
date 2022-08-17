@@ -8,6 +8,14 @@ terraform {
       source  = "hashicorp/helm"
       version = "~> 2.6.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.12.1"
+    }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "~> 1.14.0"
+    }
     tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
@@ -55,6 +63,9 @@ module "kubernetes" {
   k8s_bastion_root_password       = var.k8s_bastion_root_password
   k8s_control_plane_root_password = var.k8s_control_plane_root_password
   k8s_worker_root_password        = var.k8s_worker_root_password
+
+  loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
+  domain_name     = var.k8s_domain_name
 
   k8s_bastion_ip              = module.infrastructure.edge_gateway_external_ip
   k8s_control_plane_instances = var.k8s_control_plane_instances

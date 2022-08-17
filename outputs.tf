@@ -4,10 +4,6 @@ resource "local_sensitive_file" "kubeconfig_file" {
   file_permission = "0600"
 }
 
-output "kubeconfig" {
-  value = local_sensitive_file.kubeconfig_file.filename
-}
-
 output "cluster_info" {
   value = format(
     "export KUBECONFIG=%s; kubectl cluster-info; kubectl get pods -A",
@@ -17,7 +13,11 @@ output "cluster_info" {
 
 output "kubernetes_dashboard_token" {
   value = format(
-    "export KUBECONFIG=%s; kubectl -n kubernetes-dashboard create token kubernetes-dashboard",
+    "export KUBECONFIG=%s; %s",
     local_sensitive_file.kubeconfig_file.filename,
+    module.deployments.kubernetes_dashboard_token,
   )
+}
+output "kubernetes_dashboard_url" {
+  value = module.deployments.kubernetes_dashboard_url
 }

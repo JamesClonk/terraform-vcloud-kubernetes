@@ -5,6 +5,9 @@ variable "k8s_cluster_name" {
   default = "kubernetes"
 }
 
+variable "loadbalancer_ip" {}
+variable "domain_name" {}
+
 variable "k8s_bastion_ip" {}
 variable "k8s_bastion_port" {
   default = 2222
