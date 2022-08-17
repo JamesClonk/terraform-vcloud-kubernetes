@@ -134,7 +134,27 @@ variable "k8s_worker_disk_size" {
 }
 
 variable "k8s_k3s_version" {
-  description = "Kubernetes version of K3s to use"
+  description = "Kubernetes version of K3s to install"
   default     = "v1.24.3+k3s1"
   # See https://github.com/k3s-io/k3s/releases
+}
+variable "k8s_helm_longhorn_version" {
+  description = "Helm chart version of Longhorn to install"
+  default     = "1.3.1"
+  # See https://artifacthub.io/packages/helm/longhorn/longhorn
+}
+variable "k8s_helm_ingress_nginx_version" {
+  description = "Helm chart version of Ingress-NGINX to install"
+  default     = "4.2.1"
+  # See https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
+}
+variable "k8s_helm_cert_manager_version" {
+  description = "Helm chart version of Cert-Manager to install"
+  default     = "1.9.1"
+  # See https://artifacthub.io/packages/helm/cert-manager/cert-manager
+}
+variable "k8s_helm_kubernetes_dashboard_version" {
+  description = "Helm chart version of Kubernetes-Dashboard to install"
+  default     = "5.8.0"
+  # See https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
 }

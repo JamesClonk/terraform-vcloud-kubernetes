@@ -7,3 +7,8 @@ variable "domain_name" {
   default = ""
 }
 variable "loadbalancer_ip" {}
+
+variable "helm_longhorn_version" {}
+variable "helm_ingress_nginx_version" {}
+variable "helm_cert_manager_version" {}
+variable "helm_kubernetes_dashboard_version" {}

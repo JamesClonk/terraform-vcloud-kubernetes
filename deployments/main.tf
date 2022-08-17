@@ -29,7 +29,7 @@ resource "helm_release" "longhorn" {
   name             = "longhorn"
   repository       = "https://charts.longhorn.io"
   chart            = "longhorn"
-  version          = "1.3.1"
+  version          = var.helm_longhorn_version
   namespace        = "longhorn-system"
   create_namespace = "true"
 }
@@ -39,7 +39,7 @@ resource "helm_release" "ingress_nginx" {
   name             = "ingress-controller"
   repository       = "https://kubernetes.github.io/ingress-nginx"
   chart            = "ingress-nginx"
-  version          = "4.2.1"
+  version          = var.helm_ingress_nginx_version
   namespace        = "ingress-nginx"
   create_namespace = "true"
 
@@ -65,7 +65,7 @@ resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
   chart            = "cert-manager"
-  version          = "1.9.1"
+  version          = var.helm_cert_manager_version
   namespace        = "cert-manager"
   create_namespace = "true"
 
@@ -105,7 +105,7 @@ resource "helm_release" "kubernetes_dashboard" {
   name             = "kubernetes-dashboard"
   repository       = "https://kubernetes.github.io/dashboard/"
   chart            = "kubernetes-dashboard"
-  version          = "5.8.0"
+  version          = var.helm_kubernetes_dashboard_version
   namespace        = "kubernetes-dashboard"
   create_namespace = "true"
 

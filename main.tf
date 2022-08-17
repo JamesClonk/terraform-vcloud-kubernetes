@@ -60,6 +60,8 @@ module "kubernetes" {
   k8s_control_plane_instances = var.k8s_control_plane_instances
   k8s_worker_instances        = var.k8s_worker_instances
 
+  k3s_version = var.k8s_k3s_version
+
   depends_on = [
     module.infrastructure.k8s_control_plane,
     module.infrastructure.k8s_worker
@@ -76,4 +78,9 @@ module "deployments" {
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate
   client_key             = module.kubernetes.client_key
+
+  helm_longhorn_version             = var.k8s_helm_longhorn_version
+  helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
+  helm_cert_manager_version         = var.k8s_helm_cert_manager_version
+  helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
 }
