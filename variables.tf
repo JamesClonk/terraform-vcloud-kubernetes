@@ -128,6 +128,10 @@ variable "k8s_worker_cpus" {
   description = "CPUs of K8s worker node (in MB)"
   default     = 4
 }
+variable "k8s_worker_disk_size" {
+  description = "Disk size of K8s worker node (in MB)"
+  default     = 245760
+}
 
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to use"

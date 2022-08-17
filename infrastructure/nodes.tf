@@ -120,7 +120,7 @@ resource "vcd_vapp_vm" "k8s_worker" {
 
   override_template_disk {
     bus_type    = "paravirtual"
-    size_in_mb  = "245760"
+    size_in_mb  = var.k8s_worker_disk_size
     bus_number  = 0
     unit_number = 0
   }

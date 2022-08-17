@@ -44,6 +44,7 @@ module "infrastructure" {
   k8s_worker_instances            = var.k8s_worker_instances
   k8s_worker_memory               = var.k8s_worker_memory
   k8s_worker_cpus                 = var.k8s_worker_cpus
+  k8s_worker_disk_size            = var.k8s_worker_disk_size
 }
 
 module "kubernetes" {

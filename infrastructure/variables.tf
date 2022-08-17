@@ -49,3 +49,6 @@ variable "k8s_worker_memory" {
 variable "k8s_worker_cpus" {
   default = 4
 }
+variable "k8s_worker_disk_size" {
+  default = 245760
+}
