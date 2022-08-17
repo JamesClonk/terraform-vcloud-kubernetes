@@ -183,23 +183,21 @@ resource "helm_release" "kubernetes_dashboard" {
   ]
 }
 
-resource "kubernetes_manifest" "kubernetes_dashboard_cluster_role_binding" {
-  manifest = {
-    apiVersion = "rbac.authorization.k8s.io/v1"
-    kind       = "ClusterRoleBinding"
-    metadata = {
-      name = "kubernetes-dashboard"
-    }
-    roleRef = {
-      apiGroup = "rbac.authorization.k8s.io"
-      kind     = "ClusterRole"
-      name     = "cluster-admin"
-    }
-    subjects = [{
-      kind      = "ServiceAccount"
-      name      = "kubernetes-dashboard"
-      namespace = "kubernetes-dashboard"
-    }]
-  }
+resource "kubectl_manifest" "kubernetes_dashboard_cluster_role_binding" {
+  yaml_body  = <<-YAML
+    apiVersion: rbac.authorization.k8s.io/v1
+    kind: ClusterRoleBinding
+    metadata:
+      name: kubernetes-dashboard
+    roleRef:
+      apiGroup: rbac.authorization.k8s.io
+      kind: ClusterRole
+      name: cluster-admin
+    subjects:
+    - kind: ServiceAccount
+      name: kubernetes-dashboard
+      namespace: kubernetes-dashboard
+    YAML
+  apply_only = true
   depends_on = [helm_release.kubernetes_dashboard]
 }
