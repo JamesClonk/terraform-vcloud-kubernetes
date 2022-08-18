@@ -1,4 +1,4 @@
-resource "vcd_nsxv_firewall_rule" "k8s_nodes_external_egress" {
+resource "vcd_nsxv_firewall_rule" "k8s_network_egress" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
@@ -16,7 +16,24 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_external_egress" {
   }
 }
 
-resource "vcd_nsxv_firewall_rule" "k8s_nodes_internal" {
+resource "vcd_nsxv_firewall_rule" "k8s_internal_egress" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+
+  action = "accept"
+  source {
+    gateway_interfaces = ["internal"]
+  }
+  destination {
+    gateway_interfaces = ["external"]
+  }
+  service {
+    protocol = "any"
+  }
+}
+
+resource "vcd_nsxv_firewall_rule" "k8s_network_internal" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
@@ -33,7 +50,30 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_internal" {
   }
 }
 
-resource "vcd_nsxv_firewall_rule" "k8s_nodes_apiserver" {
+resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+
+  action = "deny"
+  source {
+    ip_addresses       = ["any"]
+    gateway_interfaces = ["external"]
+  }
+  destination {
+    ip_addresses = [cidrhost(var.k8s_cidr, 20)]
+  }
+  service {
+    protocol = "tcp"
+    port     = "22"
+  }
+  service {
+    protocol = "tcp"
+    port     = "2222"
+  }
+}
+
+resource "vcd_nsxv_firewall_rule" "k8s_apiserver" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
@@ -44,7 +84,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodes_apiserver" {
     gateway_interfaces = ["external"]
   }
   destination {
-    ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
   }
   service {
     protocol = "tcp"
@@ -63,7 +103,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
     gateway_interfaces = ["external"]
   }
   destination {
-    ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
   }
   service {
     protocol = "tcp"
@@ -86,7 +126,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodeports" {
     gateway_interfaces = ["external"]
   }
   destination {
-    ip_addresses = ["${data.vcd_edgegateway.k8s.default_external_network_ip}"]
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
   }
   service {
     protocol = "tcp"

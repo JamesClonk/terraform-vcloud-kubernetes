@@ -115,7 +115,7 @@ resource "vcd_lb_virtual_server" "k8s_api_vs" {
   edge_gateway = var.vcd_edgegateway
   name         = "k8s-api-vs"
 
-  ip_address     = data.vcd_edgegateway.k8s.default_external_network_ip
+  ip_address     = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
   protocol       = "tcp"
   port           = 6443
   app_profile_id = vcd_lb_app_profile.tcp.id
@@ -126,7 +126,7 @@ resource "vcd_lb_virtual_server" "k8s_http_vs" {
   edge_gateway = var.vcd_edgegateway
   name         = "k8s-http-vs"
 
-  ip_address     = data.vcd_edgegateway.k8s.default_external_network_ip
+  ip_address     = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
   protocol       = "tcp"
   port           = 80
   app_profile_id = vcd_lb_app_profile.tcp.id
@@ -137,7 +137,7 @@ resource "vcd_lb_virtual_server" "k8s_https_vs" {
   edge_gateway = var.vcd_edgegateway
   name         = "k8s-https-vs"
 
-  ip_address     = data.vcd_edgegateway.k8s.default_external_network_ip
+  ip_address     = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
   protocol       = "tcp"
   port           = 443
   app_profile_id = vcd_lb_app_profile.tcp.id

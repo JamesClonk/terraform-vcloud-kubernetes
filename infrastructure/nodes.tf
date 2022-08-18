@@ -1,11 +1,15 @@
-resource "vcd_vapp" "k8s_nodes" {
-  name = "${var.k8s_cluster_name}_nodes"
+resource "vcd_vapp" "k8s_vapp" {
+  name       = var.k8s_cluster_name
+  depends_on = [vcd_network_routed_v2.k8s_network]
+}
 
-  depends_on = [vcd_network_routed_v2.k8s_nodes]
+resource "vcd_vapp_org_network" "k8s_org_network" {
+  vapp_name        = vcd_vapp.k8s_vapp.name
+  org_network_name = vcd_network_routed_v2.k8s_network.name
 }
 
 resource "vcd_vapp_vm" "k8s_bastion" {
-  vapp_name = vcd_vapp.k8s_nodes.name
+  vapp_name = vcd_vapp.k8s_vapp.name
   name      = "${var.k8s_cluster_name}-bastion"
 
   catalog_name  = var.vcd_catalog
@@ -14,12 +18,14 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   cpus          = var.k8s_bastion_cpus
   cpu_cores     = 1
 
-  accept_all_eulas = true
-  power_on         = true
+  accept_all_eulas       = true
+  power_on               = true
+  cpu_hot_add_enabled    = true
+  memory_hot_add_enabled = true
 
   network {
     type               = "org"
-    name               = vcd_network_routed_v2.k8s_nodes.name
+    name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
     ip                 = cidrhost(var.k8s_cidr, 20)
     is_primary         = true
@@ -36,6 +42,7 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   }
 
   depends_on = [
+    vcd_vapp_org_network.k8s_org_network,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh
   ]
@@ -44,8 +51,8 @@ resource "vcd_vapp_vm" "k8s_bastion" {
 resource "vcd_vapp_vm" "k8s_control_plane" {
   count = var.k8s_control_plane_instances
 
-  vapp_name = vcd_vapp.k8s_nodes.name
-  name      = "${var.k8s_cluster_name}-${count.index}"
+  vapp_name = vcd_vapp.k8s_vapp.name
+  name      = "${var.k8s_cluster_name}-master-${count.index}"
 
   catalog_name  = var.vcd_catalog
   template_name = var.vcd_template
@@ -53,8 +60,10 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   cpus          = var.k8s_control_plane_cpus
   cpu_cores     = 1
 
-  accept_all_eulas = true
-  power_on         = true
+  accept_all_eulas       = true
+  power_on               = true
+  cpu_hot_add_enabled    = true
+  memory_hot_add_enabled = true
 
   override_template_disk {
     bus_type    = "paravirtual"
@@ -65,7 +74,7 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
 
   network {
     type               = "org"
-    name               = vcd_network_routed_v2.k8s_nodes.name
+    name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
     ip                 = cidrhost(var.k8s_cidr, 50 + count.index)
     is_primary         = true
@@ -97,6 +106,7 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   }
 
   depends_on = [
+    vcd_vapp_org_network.k8s_org_network,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh,
     vcd_lb_server_pool.k8s_api_pool
@@ -106,8 +116,8 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
 resource "vcd_vapp_vm" "k8s_worker" {
   count = var.k8s_worker_instances
 
-  vapp_name = vcd_vapp.k8s_nodes.name
-  name      = "${var.k8s_cluster_name}-${count.index}"
+  vapp_name = vcd_vapp.k8s_vapp.name
+  name      = "${var.k8s_cluster_name}-worker-${count.index}"
 
   catalog_name  = var.vcd_catalog
   template_name = var.vcd_template
@@ -115,8 +125,10 @@ resource "vcd_vapp_vm" "k8s_worker" {
   cpus          = var.k8s_worker_cpus
   cpu_cores     = 1
 
-  accept_all_eulas = true
-  power_on         = true
+  accept_all_eulas       = true
+  power_on               = true
+  cpu_hot_add_enabled    = true
+  memory_hot_add_enabled = true
 
   override_template_disk {
     bus_type    = "paravirtual"
@@ -127,7 +139,7 @@ resource "vcd_vapp_vm" "k8s_worker" {
 
   network {
     type               = "org"
-    name               = vcd_network_routed_v2.k8s_nodes.name
+    name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
     ip                 = cidrhost(var.k8s_cidr, 100 + count.index)
     is_primary         = true
@@ -151,6 +163,7 @@ resource "vcd_vapp_vm" "k8s_worker" {
   }
 
   depends_on = [
+    vcd_vapp_org_network.k8s_org_network,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_dnat.bastion_ssh,
     vcd_lb_server_pool.k8s_http_pool,

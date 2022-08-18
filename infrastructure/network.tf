@@ -1,14 +1,14 @@
 # pre-provisioned vCD edge gateway
-data "vcd_edgegateway" "k8s" {
+data "vcd_edgegateway" "k8s_gateway" {
   name = var.vcd_edgegateway
 }
 
 # vCD NSX-V network for Kubernetes nodes
-resource "vcd_network_routed_v2" "k8s_nodes" {
-  name = "k8s_nodes"
+resource "vcd_network_routed_v2" "k8s_network" {
+  name = var.k8s_cluster_name
 
   interface_type  = "internal"
-  edge_gateway_id = data.vcd_edgegateway.k8s.id
+  edge_gateway_id = data.vcd_edgegateway.k8s_gateway.id
   gateway         = cidrhost(var.k8s_cidr, 1)
   prefix_length   = split("/", var.k8s_cidr)[1]
   dns1            = "1.1.1.1"
@@ -24,19 +24,20 @@ resource "vcd_nsxv_snat" "outbound" {
   edge_gateway = var.vcd_edgegateway
 
   network_type = "org"
-  network_name = vcd_network_routed_v2.k8s_nodes.name
+  network_name = vcd_network_routed_v2.k8s_network.name
 
   original_address   = var.k8s_cidr
-  translated_address = data.vcd_edgegateway.k8s.default_external_network_ip
+  translated_address = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
 }
 
 resource "vcd_nsxv_dnat" "bastion_ssh" {
   edge_gateway = var.vcd_edgegateway
 
-  network_type = "ext"
-  network_name = vcd_network_routed_v2.k8s_nodes.name
+  //network_type = "ext"
+  network_type = "org"
+  network_name = vcd_network_routed_v2.k8s_network.name
 
-  original_address = data.vcd_edgegateway.k8s.default_external_network_ip
+  original_address = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
   original_port    = 2222
 
   translated_address = cidrhost(var.k8s_cidr, 20)
