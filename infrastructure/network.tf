@@ -3,7 +3,17 @@ data "vcd_edgegateway" "k8s_gateway" {
   name = var.vcd_edgegateway
 }
 
-# vCD NSX-V network for Kubernetes nodes
+resource "vcd_edgegateway_settings" "k8s_gateway" {
+  edge_gateway_id         = data.vcd_edgegateway.k8s_gateway.id
+  lb_enabled              = true
+  lb_acceleration_enabled = false
+  lb_logging_enabled      = false
+
+  fw_enabled                      = true
+  fw_default_rule_logging_enabled = false
+}
+
+# vCD NSX-V network for Kubernetes VMs
 resource "vcd_network_routed_v2" "k8s_network" {
   name = var.k8s_cluster_name
 

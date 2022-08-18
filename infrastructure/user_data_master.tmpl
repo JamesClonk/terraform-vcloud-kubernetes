@@ -1,0 +1,13 @@
+#cloud-config
+
+preserve_hostname: False
+hostname: ${hostname}
+
+ssh_pwauth: true
+
+packages:
+- open-iscsi
+
+runcmd:
+- systemctl enable iscsid.service
+- systemctl start iscsid.service

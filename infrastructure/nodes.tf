@@ -31,14 +31,24 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     is_primary         = true
   }
 
+  guest_properties = {
+    "hostname" = "${var.k8s_cluster_name}-bastion"
+    "password" = var.k8s_bastion_root_password
+    "user-data" = base64encode(templatefile("${path.module}/user_data_bastion.tmpl", {
+      "hostname" = "${var.k8s_cluster_name}-bastion"
+    }))
+  }
+
   customization {
+    force                      = true
+    enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_bastion_root_password
     # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    initscript = <<-EOT
-    ssh_pwauth: true
-    EOT
+    # initscript = <<-EOT
+    # ssh_pwauth: true
+    # EOT
   }
 
   depends_on = [
@@ -87,20 +97,28 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   #   "public-keys" = var.guest-ssh-public-key
   #   "user-data"   = base64encode(file("script.sh"))
   # }
+  guest_properties = {
+    "hostname" = "${var.k8s_cluster_name}-master-${count.index}"
+    "password" = var.k8s_control_plane_root_password
+    "user-data" = base64encode(templatefile("${path.module}/user_data_master.tmpl", {
+      "hostname" = "${var.k8s_cluster_name}-master-${count.index}"
+    }))
+  }
 
   customization {
+    enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_control_plane_root_password
     # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    initscript = <<-EOT
-    ssh_pwauth: true
-    packages:
-    - open-iscsi
-    runcmd:
-    - systemctl enable iscsid.service
-    - systemctl start iscsid.service
-    EOT
+    # initscript = <<-EOT
+    # ssh_pwauth: true
+    # packages:
+    # - open-iscsi
+    # runcmd:
+    # - systemctl enable iscsid.service
+    # - systemctl start iscsid.service
+    # EOT
     # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
     # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
   }
@@ -145,19 +163,28 @@ resource "vcd_vapp_vm" "k8s_worker" {
     is_primary         = true
   }
 
+  guest_properties = {
+    "hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
+    "password" = var.k8s_worker_root_password
+    "user-data" = base64encode(templatefile("${path.module}/user_data_worker.tmpl", {
+      "hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
+    }))
+  }
+
   customization {
+    enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_worker_root_password
     # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    initscript = <<-EOT
-    ssh_pwauth: true
-    packages:
-    - open-iscsi
-    runcmd:
-    - systemctl enable iscsid.service
-    - systemctl start iscsid.service
-    EOT
+    # initscript = <<-EOT
+    # ssh_pwauth: true
+    # packages:
+    # - open-iscsi
+    # runcmd:
+    # - systemctl enable iscsid.service
+    # - systemctl start iscsid.service
+    # EOT
     # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
     # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
   }
