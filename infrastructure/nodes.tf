@@ -32,8 +32,9 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   }
 
   guest_properties = {
-    "hostname" = "${var.k8s_cluster_name}-bastion"
-    "password" = var.k8s_bastion_root_password
+    "guest.hostname" = "${var.k8s_cluster_name}-bastion"
+    "hostname"       = "${var.k8s_cluster_name}-bastion"
+    "password"       = var.k8s_bastion_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data_bastion.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-bastion"
     }))
@@ -98,8 +99,9 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   #   "user-data"   = base64encode(file("script.sh"))
   # }
   guest_properties = {
-    "hostname" = "${var.k8s_cluster_name}-master-${count.index}"
-    "password" = var.k8s_control_plane_root_password
+    "guest.hostname" = "${var.k8s_cluster_name}-master-${count.index}"
+    "hostname"       = "${var.k8s_cluster_name}-master-${count.index}"
+    "password"       = var.k8s_control_plane_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data_master.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-master-${count.index}"
     }))
@@ -164,8 +166,9 @@ resource "vcd_vapp_vm" "k8s_worker" {
   }
 
   guest_properties = {
-    "hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
-    "password" = var.k8s_worker_root_password
+    "guest.hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
+    "hostname"       = "${var.k8s_cluster_name}-worker-${count.index}"
+    "password"       = var.k8s_worker_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data_worker.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
     }))

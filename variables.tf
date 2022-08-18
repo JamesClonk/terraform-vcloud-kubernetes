@@ -54,7 +54,7 @@ variable "vcd_catalog" {
 
 variable "vcd_template" {
   description = "vCD vApp template name"
-  default     = "ubuntu1804-vmware-dcs-20220325"
+  default     = "ubuntu2004-vmware-dcs-20220325"
   # The vApp template to use for your virtual machines.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
