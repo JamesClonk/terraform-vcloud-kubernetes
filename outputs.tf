@@ -1,3 +1,7 @@
+output "loadbalancer_ip" {
+  value = module.infrastructure.edge_gateway_external_ip
+}
+
 resource "local_sensitive_file" "kubeconfig_file" {
   filename        = "kubeconfig"
   content         = replace(module.kubernetes.kubeconfig, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)

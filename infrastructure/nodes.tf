@@ -40,7 +40,7 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   }
 
   customization {
-    force                      = true
+    # force                      = true
     enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
