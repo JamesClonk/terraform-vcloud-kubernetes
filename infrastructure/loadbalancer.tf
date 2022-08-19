@@ -12,7 +12,7 @@ resource "vcd_lb_app_profile" "tcp" {
 
 resource "vcd_lb_service_monitor" "k8s_tcp_monitor" {
   edge_gateway = var.vcd_edgegateway
-  name         = "tcp-monitor"
+  name         = "k8s-tcp-monitor"
   type         = "tcp"
 
   interval    = "5"
@@ -20,30 +20,30 @@ resource "vcd_lb_service_monitor" "k8s_tcp_monitor" {
   max_retries = "3"
 }
 
-resource "vcd_lb_service_monitor" "k8s_http_monitor" {
-  edge_gateway = var.vcd_edgegateway
-  name         = "http-monitor"
-  type         = "http"
+# resource "vcd_lb_service_monitor" "k8s_http_monitor" {
+#   edge_gateway = var.vcd_edgegateway
+#   name         = "k8s-http-monitor"
+#   type         = "http"
 
-  interval    = "5"
-  timeout     = "20"
-  max_retries = "3"
-  method      = "GET"
-  url         = "/"
-  expected    = "HTTP/1.1"
-}
+#   interval    = "5"
+#   timeout     = "20"
+#   max_retries = "3"
+#   method      = "GET"
+#   url         = "/"
+#   expected    = "HTTP/1.1"
+# }
 
-resource "vcd_lb_service_monitor" "k8s_https_monitor" {
-  edge_gateway = var.vcd_edgegateway
-  name         = "k8s-https-vs-monitor"
-  type         = "https"
+# resource "vcd_lb_service_monitor" "k8s_https_monitor" {
+#   edge_gateway = var.vcd_edgegateway
+#   name         = "k8s-https-monitor"
+#   type         = "https"
 
-  interval    = "5"
-  timeout     = "20"
-  max_retries = "3"
-  method      = "GET"
-  url         = "/"
-}
+#   interval    = "5"
+#   timeout     = "20"
+#   max_retries = "3"
+#   method      = "GET"
+#   url         = "/"
+# }
 
 resource "vcd_lb_server_pool" "k8s_api_pool" {
   edge_gateway = var.vcd_edgegateway
@@ -73,7 +73,7 @@ resource "vcd_lb_server_pool" "k8s_http_pool" {
 
   algorithm           = "round-robin"
   enable_transparency = "true"
-  monitor_id          = vcd_lb_service_monitor.k8s_http_monitor.id
+  monitor_id          = vcd_lb_service_monitor.k8s_tcp_monitor.id
 
   dynamic "member" {
     for_each = range(0, var.k8s_worker_instances)
@@ -95,7 +95,7 @@ resource "vcd_lb_server_pool" "k8s_https_pool" {
 
   algorithm           = "round-robin"
   enable_transparency = "true"
-  monitor_id          = vcd_lb_service_monitor.k8s_https_monitor.id
+  monitor_id          = vcd_lb_service_monitor.k8s_tcp_monitor.id
 
   dynamic "member" {
     for_each = range(0, var.k8s_worker_instances)
