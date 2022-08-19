@@ -13,3 +13,6 @@ output "client_key" {
 output "kubeconfig" {
   value = module.k3s.kube_config
 }
+output "kubernetes_ready" {
+  value = module.k3s.kubernetes_ready
+}

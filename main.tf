@@ -55,6 +55,14 @@ module "infrastructure" {
   k8s_worker_disk_size            = var.k8s_worker_disk_size
 }
 
+resource "time_sleep" "wait_after_infrastructure" {
+  depends_on = [
+    module.infrastructure.k8s_control_plane,
+    module.infrastructure.k8s_worker
+  ]
+  create_duration = "60s"
+}
+
 module "kubernetes" {
   source = "./kubernetes"
 
@@ -73,10 +81,12 @@ module "kubernetes" {
 
   k3s_version = var.k8s_k3s_version
 
-  depends_on = [
-    module.infrastructure.k8s_control_plane,
-    module.infrastructure.k8s_worker
-  ]
+  depends_on = [time_sleep.wait_after_infrastructure]
+}
+
+resource "time_sleep" "wait_after_kubernetes" {
+  depends_on      = [module.kubernetes.kubernetes_ready]
+  create_duration = "60s"
 }
 
 module "deployments" {
@@ -94,4 +104,6 @@ module "deployments" {
   helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
   helm_cert_manager_version         = var.k8s_helm_cert_manager_version
   helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
+
+  depends_on = [time_sleep.wait_after_kubernetes]
 }

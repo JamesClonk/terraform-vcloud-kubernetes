@@ -29,7 +29,9 @@ module "k3s" {
         bastion_password = var.k8s_bastion_root_password
       }
       flags = [
+        "--node-taint CriticalAddonsOnly=true:NoExecute",
         "--disable traefik",
+        "--disable local-storage",
         "--tls-san ${var.loadbalancer_ip}",
         "--tls-san ${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}"
       ]
