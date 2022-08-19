@@ -35,9 +35,6 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     "guest.hostname" = "${var.k8s_cluster_name}-bastion"
     "hostname"       = "${var.k8s_cluster_name}-bastion"
     "password"       = var.k8s_bastion_root_password
-    "user-data" = base64encode(templatefile("${path.module}/user_data_bastion.tmpl", {
-      "hostname" = "${var.k8s_cluster_name}-bastion"
-    }))
   }
 
   customization {
@@ -46,10 +43,19 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_bastion_root_password
-    # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    # initscript = <<-EOT
-    # ssh_pwauth: true
-    # EOT
+    initscript                 = <<-EOT
+    #!/bin/bash
+    ufw disable
+
+    hostnamectl set-hostname ${var.k8s_cluster_name}-bastion
+    sed 's/ubuntu2004-vmware-dcs-20220325-001/kubernetes-bastion/g' -i /etc/hosts || true
+
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf
+    echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+
+    apt-get update
+    apt-get install -y vim jq git
+    EOT
   }
 
   depends_on = [
@@ -91,38 +97,34 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     is_primary         = true
   }
 
-  # TODO: use guest customization for ssh-keys? maybe even for cloudinit/userdata?
-  # guest_properties = {
-  #   "instance-id" = var.guest_hostname
-  #   "hostname"    = var.guest_hostname
-  #   "public-keys" = var.guest-ssh-public-key
-  #   "user-data"   = base64encode(file("script.sh"))
-  # }
   guest_properties = {
     "guest.hostname" = "${var.k8s_cluster_name}-master-${count.index}"
     "hostname"       = "${var.k8s_cluster_name}-master-${count.index}"
     "password"       = var.k8s_control_plane_root_password
-    "user-data" = base64encode(templatefile("${path.module}/user_data_master.tmpl", {
-      "hostname" = "${var.k8s_cluster_name}-master-${count.index}"
-    }))
   }
 
   customization {
+    # force                      = true
     enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_control_plane_root_password
-    # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    # initscript = <<-EOT
-    # ssh_pwauth: true
-    # packages:
-    # - open-iscsi
-    # runcmd:
-    # - systemctl enable iscsid.service
-    # - systemctl start iscsid.service
-    # EOT
-    # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
-    # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
+    initscript                 = <<-EOT
+    #!/bin/bash
+    ufw disable
+
+    hostnamectl set-hostname ${var.k8s_cluster_name}-master-${count.index}
+    sed 's/ubuntu2004-vmware-dcs-20220325-001/${var.k8s_cluster_name}-master-${count.index}/g' -i /etc/hosts || true
+
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf
+    echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+
+    apt-get update
+    apt-get install -y jq open-iscsi
+
+    systemctl enable iscsid.service
+    systemctl start iscsid.service
+    EOT
   }
 
   depends_on = [
@@ -169,27 +171,30 @@ resource "vcd_vapp_vm" "k8s_worker" {
     "guest.hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
     "hostname"       = "${var.k8s_cluster_name}-worker-${count.index}"
     "password"       = var.k8s_worker_root_password
-    "user-data" = base64encode(templatefile("${path.module}/user_data_worker.tmpl", {
-      "hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
-    }))
   }
 
   customization {
+    # force                      = true
     enabled                    = true
     allow_local_admin_password = true
     auto_generate_password     = false
     admin_password             = var.k8s_worker_root_password
-    # TODO: or maybe this needs to be done like this: https://github.com/vmware/terraform-provider-vcd/issues/510#issuecomment-843721455
-    # initscript = <<-EOT
-    # ssh_pwauth: true
-    # packages:
-    # - open-iscsi
-    # runcmd:
-    # - systemctl enable iscsid.service
-    # - systemctl start iscsid.service
-    # EOT
-    # TODO: open-iscsi/iscsiadm installation! https://longhorn.io/docs/1.3.0/deploy/install/#using-the-environment-check-script
-    # TODO: https://longhorn.io/docs/1.3.0/deploy/install/
+    initscript                 = <<-EOT
+    #!/bin/bash
+    ufw disable
+
+    hostnamectl set-hostname ${var.k8s_cluster_name}-worker-${count.index}
+    sed 's/ubuntu2004-vmware-dcs-20220325-001/${var.k8s_cluster_name}-worker-${count.index}/g' -i /etc/hosts || true
+
+    echo 'nameserver 1.1.1.1' > /etc/resolv.conf
+    echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
+
+    apt-get update
+    apt-get install -y jq open-iscsi
+
+    systemctl enable iscsid.service
+    systemctl start iscsid.service
+    EOT
   }
 
   depends_on = [

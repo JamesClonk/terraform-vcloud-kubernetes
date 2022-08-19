@@ -13,7 +13,6 @@ resource "vcd_edgegateway_settings" "k8s_gateway" {
   fw_default_rule_logging_enabled = false
 }
 
-# vCD NSX-V network for Kubernetes VMs
 resource "vcd_network_routed_v2" "k8s_network" {
   name = var.k8s_cluster_name
 
@@ -28,13 +27,22 @@ resource "vcd_network_routed_v2" "k8s_network" {
     start_address = cidrhost(var.k8s_cidr, 20)
     end_address   = cidrhost(var.k8s_cidr, 200)
   }
+
+  depends_on = [
+    vcd_nsxv_firewall_rule.k8s_internal,
+    vcd_nsxv_firewall_rule.k8s_external,
+    vcd_nsxv_firewall_rule.k8s_bastion_ssh,
+    vcd_nsxv_firewall_rule.k8s_apiserver,
+    vcd_nsxv_firewall_rule.k8s_web_ingress,
+    vcd_nsxv_firewall_rule.k8s_nodeports
+  ]
 }
 
 resource "vcd_nsxv_snat" "outbound" {
   edge_gateway = var.vcd_edgegateway
 
-  network_type = "org"
-  network_name = vcd_network_routed_v2.k8s_network.name
+  network_type = "ext"
+  network_name = var.vcd_edgegateway
 
   original_address   = var.k8s_cidr
   translated_address = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
@@ -43,9 +51,8 @@ resource "vcd_nsxv_snat" "outbound" {
 resource "vcd_nsxv_dnat" "bastion_ssh" {
   edge_gateway = var.vcd_edgegateway
 
-  //network_type = "ext"
-  network_type = "org"
-  network_name = vcd_network_routed_v2.k8s_network.name
+  network_type = "ext"
+  network_name = var.vcd_edgegateway
 
   original_address = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
   original_port    = 2222

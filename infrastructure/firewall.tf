@@ -1,41 +1,26 @@
-# resource "vcd_nsxv_firewall_rule" "k8s_default_vse" {
-#   org          = var.vcd_org
-#   vdc          = var.vcd_vdc
-#   edge_gateway = var.vcd_edgegateway
-
-#   action = "accept"
-#   source {
-#     gateway_interfaces = ["vse"]
-#   }
-#   destination {
-#     ip_addresses = ["any"]
-#   }
-#   service {
-#     protocol = "any"
-#   }
-# }
-
-resource "vcd_nsxv_firewall_rule" "k8s_network_egress" {
+resource "vcd_nsxv_firewall_rule" "k8s_internal" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "internal network"
 
   action = "accept"
   source {
-    ip_addresses = [var.k8s_cidr]
+    gateway_interfaces = ["internal"]
   }
   destination {
-    gateway_interfaces = ["external"]
+    gateway_interfaces = ["internal"]
   }
   service {
     protocol = "any"
   }
 }
 
-resource "vcd_nsxv_firewall_rule" "k8s_internal_egress" {
+resource "vcd_nsxv_firewall_rule" "k8s_external" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "outbound traffic"
 
   action = "accept"
   source {
@@ -49,27 +34,11 @@ resource "vcd_nsxv_firewall_rule" "k8s_internal_egress" {
   }
 }
 
-resource "vcd_nsxv_firewall_rule" "k8s_network_internal" {
-  org          = var.vcd_org
-  vdc          = var.vcd_vdc
-  edge_gateway = var.vcd_edgegateway
-
-  action = "accept"
-  source {
-    ip_addresses = [var.k8s_cidr]
-  }
-  destination {
-    ip_addresses = [var.k8s_cidr]
-  }
-  service {
-    protocol = "any"
-  }
-}
-
 resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "bastion host"
 
   action = "accept"
   source {
@@ -84,28 +53,11 @@ resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh" {
   }
 }
 
-# resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh_internal" {
-#   org          = var.vcd_org
-#   vdc          = var.vcd_vdc
-#   edge_gateway = var.vcd_edgegateway
-
-#   action = "accept"
-#   source {
-#     gateway_interfaces = ["internal"]
-#   }
-#   destination {
-#     ip_addresses = [cidrhost(var.k8s_cidr, 20)]
-#   }
-#   service {
-#     protocol = "tcp"
-#     port     = "22"
-#   }
-# }
-
 resource "vcd_nsxv_firewall_rule" "k8s_apiserver" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "k8s api"
 
   action = "accept"
   source {
@@ -124,6 +76,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "k8s web traffic"
 
   action = "accept"
   source {
@@ -146,6 +99,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_nodeports" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
   edge_gateway = var.vcd_edgegateway
+  name         = "k8s nodeports"
 
   action = "accept"
   source {
