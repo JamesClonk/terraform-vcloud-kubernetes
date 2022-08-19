@@ -85,6 +85,10 @@ variable "k8s_cluster_name" {
   default     = "kubernetes"
 }
 
+variable "k8s_ssh_key" {
+  description = "ssh public key of all K8s nodes"
+}
+
 variable "k8s_bastion_root_password" {
   description = "root password of K8s bastion host"
 }

@@ -41,6 +41,7 @@ module "infrastructure" {
 
   k8s_cidr                        = var.k8s_cidr
   k8s_cluster_name                = var.k8s_cluster_name
+  k8s_ssh_key                     = var.k8s_ssh_key
   k8s_bastion_root_password       = var.k8s_bastion_root_password
   k8s_bastion_memory              = var.k8s_bastion_memory
   k8s_bastion_cpus                = var.k8s_bastion_cpus
@@ -53,14 +54,6 @@ module "infrastructure" {
   k8s_worker_memory               = var.k8s_worker_memory
   k8s_worker_cpus                 = var.k8s_worker_cpus
   k8s_worker_disk_size            = var.k8s_worker_disk_size
-}
-
-resource "time_sleep" "wait_after_infrastructure" {
-  depends_on = [
-    module.infrastructure.k8s_control_plane,
-    module.infrastructure.k8s_worker
-  ]
-  create_duration = "60s"
 }
 
 module "kubernetes" {
@@ -81,13 +74,16 @@ module "kubernetes" {
 
   k3s_version = var.k8s_k3s_version
 
-  depends_on = [time_sleep.wait_after_infrastructure]
+  depends_on = [
+    module.infrastructure.k8s_control_plane,
+    module.infrastructure.k8s_worker
+  ]
 }
 
-resource "time_sleep" "wait_after_kubernetes" {
-  depends_on      = [module.kubernetes.kubernetes_ready]
-  create_duration = "60s"
-}
+# resource "time_sleep" "wait_after_kubernetes" {
+#   depends_on      = [module.kubernetes.kubernetes_ready]
+#   create_duration = "60s"
+# }
 
 module "deployments" {
   source = "./deployments"
@@ -105,5 +101,5 @@ module "deployments" {
   helm_cert_manager_version         = var.k8s_helm_cert_manager_version
   helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
 
-  depends_on = [time_sleep.wait_after_kubernetes]
+  #depends_on = [time_sleep.wait_after_kubernetes]
 }

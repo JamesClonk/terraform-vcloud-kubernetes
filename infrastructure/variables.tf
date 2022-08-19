@@ -22,6 +22,7 @@ variable "k8s_cidr" {
 variable "k8s_cluster_name" {
   default = "kubernetes"
 }
+variable "k8s_ssh_key" {}
 variable "k8s_bastion_root_password" {}
 variable "k8s_bastion_memory" {
   default = 1024

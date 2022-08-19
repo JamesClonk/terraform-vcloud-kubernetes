@@ -38,3 +38,6 @@ override.tf.json
 # Generated kubeconfig
 k3s_kubeconfig
 kubeconfig
+
+# Ubuntu OS image
+*.ova
