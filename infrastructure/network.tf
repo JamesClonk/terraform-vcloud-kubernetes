@@ -31,10 +31,7 @@ resource "vcd_network_routed_v2" "k8s_network" {
   depends_on = [
     vcd_nsxv_firewall_rule.k8s_internal,
     vcd_nsxv_firewall_rule.k8s_external,
-    vcd_nsxv_firewall_rule.k8s_bastion_ssh,
-    vcd_nsxv_firewall_rule.k8s_apiserver,
-    vcd_nsxv_firewall_rule.k8s_web_ingress,
-    vcd_nsxv_firewall_rule.k8s_nodeports
+    vcd_nsxv_firewall_rule.k8s_bastion_ssh
   ]
 }
 

@@ -4,18 +4,18 @@ terraform {
       source  = "vmware/vcd"
       version = "~> 3.5.1"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.6.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.12.1"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
-    }
+    # helm = {
+    #   source  = "hashicorp/helm"
+    #   version = "~> 2.6.0"
+    # }
+    # kubernetes = {
+    #   source  = "hashicorp/kubernetes"
+    #   version = "~> 2.12.1"
+    # }
+    # kubectl = {
+    #   source  = "gavinbunney/kubectl"
+    #   version = "~> 1.14.0"
+    # }
     tls = {
       source  = "hashicorp/tls"
       version = "~> 3.1.0"
@@ -53,52 +53,52 @@ module "infrastructure" {
   k8s_worker_disk_size        = var.k8s_worker_disk_size
 }
 
-module "kubernetes" {
-  source = "./kubernetes"
+# module "kubernetes" {
+#   source = "./kubernetes"
 
-  k8s_cidr         = var.k8s_cidr
-  k8s_cluster_name = var.k8s_cluster_name
+#   k8s_cidr         = var.k8s_cidr
+#   k8s_cluster_name = var.k8s_cluster_name
 
-  k8s_ssh_private_key        = var.k8s_ssh_private_key
-  k8s_bastion_username       = "kubernetes"
-  k8s_control_plane_username = "kubernetes"
-  k8s_worker_username        = "kubernetes"
+#   k8s_ssh_private_key        = var.k8s_ssh_private_key
+#   k8s_bastion_username       = "kubernetes"
+#   k8s_control_plane_username = "kubernetes"
+#   k8s_worker_username        = "kubernetes"
 
-  loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
-  domain_name     = var.k8s_domain_name
+#   loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
+#   domain_name     = var.k8s_domain_name
 
-  k8s_bastion_ip              = module.infrastructure.edge_gateway_external_ip
-  k8s_control_plane_instances = var.k8s_control_plane_instances
-  k8s_worker_instances        = var.k8s_worker_instances
+#   k8s_bastion_ip              = module.infrastructure.edge_gateway_external_ip
+#   k8s_control_plane_instances = var.k8s_control_plane_instances
+#   k8s_worker_instances        = var.k8s_worker_instances
 
-  k3s_version = var.k8s_k3s_version
+#   k3s_version = var.k8s_k3s_version
 
-  depends_on = [
-    module.infrastructure.k8s_control_plane,
-    module.infrastructure.k8s_worker
-  ]
-}
-
-# resource "time_sleep" "wait_after_kubernetes" {
-#   depends_on      = [module.kubernetes.kubernetes_ready]
-#   create_duration = "60s"
+#   depends_on = [
+#     module.infrastructure.k8s_control_plane,
+#     module.infrastructure.k8s_worker
+#   ]
 # }
 
-module "deployments" {
-  source = "./deployments"
+# # resource "time_sleep" "wait_after_kubernetes" {
+# #   depends_on      = [module.kubernetes.kubernetes_ready]
+# #   create_duration = "60s"
+# # }
 
-  loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
-  domain_name     = var.k8s_domain_name
-  # cluster_api_endpoint   = replace(module.kubernetes.cluster_api_endpoint, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
-  cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
-  cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
-  client_certificate     = module.kubernetes.client_certificate
-  client_key             = module.kubernetes.client_key
+# module "deployments" {
+#   source = "./deployments"
 
-  helm_longhorn_version             = var.k8s_helm_longhorn_version
-  helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
-  helm_cert_manager_version         = var.k8s_helm_cert_manager_version
-  helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
+#   loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
+#   domain_name     = var.k8s_domain_name
+#   # cluster_api_endpoint   = replace(module.kubernetes.cluster_api_endpoint, cidrhost(var.k8s_cidr, 50), module.infrastructure.edge_gateway_external_ip)
+#   cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
+#   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
+#   client_certificate     = module.kubernetes.client_certificate
+#   client_key             = module.kubernetes.client_key
 
-  #depends_on = [time_sleep.wait_after_kubernetes]
-}
+#   helm_longhorn_version             = var.k8s_helm_longhorn_version
+#   helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
+#   helm_cert_manager_version         = var.k8s_helm_cert_manager_version
+#   helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
+
+#   #depends_on = [time_sleep.wait_after_kubernetes]
+# }
