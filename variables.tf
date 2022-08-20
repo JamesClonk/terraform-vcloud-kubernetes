@@ -22,13 +22,16 @@ variable "vcd_api_password" {
 
 variable "vcd_token" {
   default = ""
+  # Login with a Bearer token instead of username/password if specified.
 }
 variable "vcd_auth_type" {
   default = "integrated"
+  # Default login method is to use username/password.
 }
 variable "vcd_logging_enabled" {
   description = "Enable logging of vCD API interaction"
   default     = false
+  # If enabled it will log API debug output into "go-vcloud-director.log"
 }
 
 variable "vcd_org" {
@@ -46,16 +49,18 @@ variable "vcd_vdc" {
 
 variable "vcd_catalog" {
   description = "Catalog name"
-  default     = "DCS Catalog"
-  # The vCD catalog to use for your vApp templates.
-  # For Swisscom DCS+ use "DCS Catalog", see this documentation:
+  default     = ""
+  # The vCD catalog to use for your vApp templates. This is where the new Ubuntu OS image will be stored in.
+  # If not specified or left empty it will use the K8s cluster name.
+  # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#catalogs
 }
 
 variable "vcd_template" {
   description = "vCD vApp template name"
-  default     = "ubuntu2004-vmware-dcs-20220325"
-  # The vApp template to use for your virtual machines.
+  default     = ""
+  # The vApp template to use for your virtual machines. This is the name under which the new Ubuntu OS image will be stored.
+  # If not specified or left empty it will use a generated name based on K8s cluster name.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
 }
@@ -70,9 +75,9 @@ variable "vcd_edgegateway" {
 variable "k8s_domain_name" {
   description = "DNS domain name of your Kubernetes cluster (Fallback to <edgegateway-IP>.nip.io if missing)"
   default     = ""
-  # The DNS A/ANAME entry of your Kubernetes cluster's external edgegateway/loadbalancer IP.
+  # The DNS "A" entry of your Kubernetes cluster's external edgegateway/loadbalancer IP.
   # Please make sure to set an appropriate DNS entry after creating the edgegateway.
-  # If you do not set a value here, this terraform module will fallback to using <edgegateway-IP>.nip for domain name.
+  # If you do not set a value here, the terraform module will fallback to using <edgegateway-IP>.nip.io.
 }
 
 variable "k8s_cidr" {
@@ -85,13 +90,13 @@ variable "k8s_cluster_name" {
   default     = "kubernetes"
 }
 
-variable "k8s_ssh_key" {
-  description = "ssh public key of all K8s nodes"
+variable "k8s_ssh_public_key" {
+  description = "SSH public key of all K8s nodes"
+}
+variable "k8s_ssh_private_key" {
+  description = "SSH private key of all K8s nodes"
 }
 
-variable "k8s_bastion_root_password" {
-  description = "root password of K8s bastion host"
-}
 variable "k8s_bastion_memory" {
   description = "Memory of K8s bastion host (in MB)"
   default     = 1024
@@ -101,9 +106,6 @@ variable "k8s_bastion_cpus" {
   default     = 1
 }
 
-variable "k8s_control_plane_root_password" {
-  description = "root password of K8s control plane nodes"
-}
 variable "k8s_control_plane_instances" {
   description = "Number of K8s control plane nodes (VMs)"
   default     = 3
@@ -117,9 +119,6 @@ variable "k8s_control_plane_cpus" {
   default     = 2
 }
 
-variable "k8s_worker_root_password" {
-  description = "root password of K8s worker nodes"
-}
 variable "k8s_worker_instances" {
   description = "Number of K8s worker nodes (VMs)"
   default     = 3

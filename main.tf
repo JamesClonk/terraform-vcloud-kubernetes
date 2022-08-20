@@ -39,31 +39,30 @@ module "infrastructure" {
   vcd_template        = var.vcd_template
   vcd_edgegateway     = var.vcd_edgegateway
 
-  k8s_cidr                        = var.k8s_cidr
-  k8s_cluster_name                = var.k8s_cluster_name
-  k8s_ssh_key                     = var.k8s_ssh_key
-  k8s_bastion_root_password       = var.k8s_bastion_root_password
-  k8s_bastion_memory              = var.k8s_bastion_memory
-  k8s_bastion_cpus                = var.k8s_bastion_cpus
-  k8s_control_plane_root_password = var.k8s_control_plane_root_password
-  k8s_control_plane_instances     = var.k8s_control_plane_instances
-  k8s_control_plane_memory        = var.k8s_control_plane_memory
-  k8s_control_plane_cpus          = var.k8s_control_plane_cpus
-  k8s_worker_root_password        = var.k8s_worker_root_password
-  k8s_worker_instances            = var.k8s_worker_instances
-  k8s_worker_memory               = var.k8s_worker_memory
-  k8s_worker_cpus                 = var.k8s_worker_cpus
-  k8s_worker_disk_size            = var.k8s_worker_disk_size
+  k8s_cidr                    = var.k8s_cidr
+  k8s_cluster_name            = var.k8s_cluster_name
+  k8s_ssh_public_key          = var.k8s_ssh_public_key
+  k8s_bastion_memory          = var.k8s_bastion_memory
+  k8s_bastion_cpus            = var.k8s_bastion_cpus
+  k8s_control_plane_instances = var.k8s_control_plane_instances
+  k8s_control_plane_memory    = var.k8s_control_plane_memory
+  k8s_control_plane_cpus      = var.k8s_control_plane_cpus
+  k8s_worker_instances        = var.k8s_worker_instances
+  k8s_worker_memory           = var.k8s_worker_memory
+  k8s_worker_cpus             = var.k8s_worker_cpus
+  k8s_worker_disk_size        = var.k8s_worker_disk_size
 }
 
 module "kubernetes" {
   source = "./kubernetes"
 
-  k8s_cidr                        = var.k8s_cidr
-  k8s_cluster_name                = var.k8s_cluster_name
-  k8s_bastion_root_password       = var.k8s_bastion_root_password
-  k8s_control_plane_root_password = var.k8s_control_plane_root_password
-  k8s_worker_root_password        = var.k8s_worker_root_password
+  k8s_cidr         = var.k8s_cidr
+  k8s_cluster_name = var.k8s_cluster_name
+
+  k8s_ssh_private_key        = var.k8s_ssh_private_key
+  k8s_bastion_username       = "kubernetes"
+  k8s_control_plane_username = "kubernetes"
+  k8s_worker_username        = "kubernetes"
 
   loadbalancer_ip = module.infrastructure.edge_gateway_external_ip
   domain_name     = var.k8s_domain_name

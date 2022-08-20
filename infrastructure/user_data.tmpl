@@ -13,16 +13,14 @@ resolv_conf:
 preserve_hostname: false
 hostname: ${hostname}
 
-password: ${password}
-chpasswd: { expire: False }
-ssh_pwauth: true
+# ssh_pwauth: true
 disable_root: false
 
 users:
-- name: root
-  ssh_authorized_keys:
-  - ${sshkey}
-- name: ubuntu
+- name: kubernetes
+  groups: users, admin
+  lock_passwd: true
+  sudo: ALL=(ALL) NOPASSWD:ALL
   ssh_authorized_keys:
   - ${sshkey}
 

@@ -12,13 +12,15 @@ variable "k8s_bastion_ip" {}
 variable "k8s_bastion_port" {
   default = 2222
 }
-variable "k8s_bastion_root_password" {}
+variable "k8s_bastion_username" {}
 
 variable "k8s_control_plane_instances" {}
-variable "k8s_control_plane_root_password" {}
+variable "k8s_control_plane_username" {}
 
 variable "k8s_worker_instances" {}
-variable "k8s_worker_root_password" {}
+variable "k8s_worker_username" {}
+
+variable "k8s_ssh_private_key" {}
 
 variable "k3s_version" {
   default = "v1.24.3+k3s1"
