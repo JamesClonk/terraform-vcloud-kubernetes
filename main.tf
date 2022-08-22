@@ -37,6 +37,7 @@ module "infrastructure" {
   vcd_logging_enabled = var.vcd_logging_enabled
   vcd_catalog         = var.vcd_catalog
   vcd_template        = var.vcd_template
+  vcd_ova_file        = var.vcd_ova_file
   vcd_edgegateway     = var.vcd_edgegateway
 
   k8s_cidr                    = var.k8s_cidr

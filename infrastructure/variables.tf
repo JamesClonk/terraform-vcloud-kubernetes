@@ -14,6 +14,7 @@ variable "vcd_org" {}
 variable "vcd_vdc" {}
 variable "vcd_catalog" {}
 variable "vcd_template" {}
+variable "vcd_ova_file" {}
 variable "vcd_edgegateway" {}
 
 variable "k8s_cidr" {

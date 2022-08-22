@@ -1,3 +1,6 @@
+# ======================================================================================================================
+# vCloud Director settings
+# ======================================================================================================================
 variable "vcd_api_url" {
   description = "vCD API URL"
   # This is the URL of the vCloud Director API.
@@ -5,14 +8,12 @@ variable "vcd_api_url" {
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#cloud-director-api
   # Example: https://vcd-pod-charlie.swisscomcloud.com/api
 }
-
 variable "vcd_api_username" {
   description = "vCD API username"
   # The API username for vCloud Director access.
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#cloud-director-api-user
 }
-
 variable "vcd_api_password" {
   description = "vCD API password"
   # The API password for vCloud Director access.
@@ -47,6 +48,13 @@ variable "vcd_vdc" {
   # https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#dynamic-data-center
 }
 
+variable "vcd_edgegateway" {
+  description = "vCD VDC Edge Gateway"
+  # The edge gateway / virtual router of your VDC networks, necessary for internet access.
+  # For Swisscom DCS+ see this documentation:
+  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
+}
+
 variable "vcd_catalog" {
   description = "Catalog name"
   default     = ""
@@ -55,7 +63,6 @@ variable "vcd_catalog" {
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#catalogs
 }
-
 variable "vcd_template" {
   description = "vCD vApp template name"
   default     = ""
@@ -64,14 +71,16 @@ variable "vcd_template" {
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
 }
-
-variable "vcd_edgegateway" {
-  description = "vCD VDC Edge Gateway"
-  # The edge gateway / virtual router of your VDC networks, necessary for internet access.
-  # For Swisscom DCS+ see this documentation:
-  # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#edges
+variable "vcd_ova_file" {
+  description = "vCD vApp template OVA filename"
+  default     = "jammy-server-cloudimg-amd64.ova"
+  # The OVA filename/path to upload as a vApp template. Defaults to "jammy-server-cloudimg-amd64.ova", to be downloaded from https://cloud-images.ubuntu.com/jammy/current/ and placed into the current working directory:
+  # wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O jammy-server-cloudimg-amd64.ova
 }
 
+# ======================================================================================================================
+# Kubernetes settings
+# ======================================================================================================================
 variable "k8s_domain_name" {
   description = "DNS domain name of your Kubernetes cluster (Fallback to <edgegateway-IP>.nip.io if missing)"
   default     = ""
@@ -136,6 +145,9 @@ variable "k8s_worker_disk_size" {
   default     = 245760
 }
 
+# ======================================================================================================================
+# Versions
+# ======================================================================================================================
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
   default     = "v1.24.3+k3s1"
