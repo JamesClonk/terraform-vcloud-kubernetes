@@ -41,9 +41,9 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] Output Grafana Ingress URL at the end for the user
 - [x] Output Kubernetes-Dashboard Ingress URL at the end for the user
 - [x] Add Helm chart and component versions to variables / tfvars
-- [ ] Make sure loadbalancer rules cover everything
-  - [ ] k8s-api for cp, http and https ports for workers, entire nodeport range for workers
-  - [ ] should bastion host SSH stay via DNAT or also be ported onto the loadbalancer?
+- [x] Make sure loadbalancer rules cover everything
+  - [x] k8s-api for cp, http and https ports for workers, entire nodeport range for workers
+  - [x] should bastion host SSH stay via DNAT or also be ported onto the loadbalancer?
 
 #### Maybe in the future?
 - [ ] Replace standalone K3s control plane with Rancher module control plane
