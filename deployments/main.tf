@@ -291,9 +291,6 @@ resource "helm_release" "grafana" {
         node-exporter:
           gnetId: 1860
           revision: 27
-        ingress-nginx:
-          gnetId: 9614
-          revision: 1
     EOT
   ]
 
