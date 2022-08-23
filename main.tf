@@ -96,10 +96,13 @@ module "infrastructure" {
 #   client_certificate     = module.kubernetes.client_certificate
 #   client_key             = module.kubernetes.client_key
 
+#   enable_monitoring                 = var.k8s_enable_monitoring
 #   helm_longhorn_version             = var.k8s_helm_longhorn_version
 #   helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
 #   helm_cert_manager_version         = var.k8s_helm_cert_manager_version
 #   helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version
+#   helm_prometheus                   = var.k8s_helm_prometheus
+#   helm_grafana                      = var.k8s_helm_grafana
 
 #   #depends_on = [time_sleep.wait_after_kubernetes]
 # }

@@ -207,3 +207,94 @@ resource "kubectl_manifest" "kubernetes_dashboard_cluster_role_binding" {
   apply_only = true
   depends_on = [helm_release.kubernetes_dashboard]
 }
+
+resource "helm_release" "prometheus" {
+  count = var.enable_monitoring ? 1 : 0
+
+  name             = "prometheus"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "prometheus"
+  version          = var.helm_prometheus
+  namespace        = "prometheus"
+  create_namespace = "true"
+
+  depends_on = [
+    helm_release.longhorn,
+    helm_release.cert_manager
+  ]
+}
+
+resource "helm_release" "grafana" {
+  count = var.enable_monitoring ? 1 : 0
+
+  name             = "grafana"
+  repository       = "https://grafana.github.io/helm-charts"
+  chart            = "grafana"
+  version          = var.helm_grafana
+  namespace        = "grafana"
+  create_namespace = "true"
+
+  set {
+    name  = "persistence.enabled"
+    value = "true"
+  }
+  set {
+    name  = "ingress.enabled"
+    value = "true"
+  }
+
+  values = [
+    <<-EOT
+    ingress:
+      hosts:
+      - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
+      tls:
+      - secretName: grafana-tls
+        hosts:
+        - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+        cert-manager.io/cluster-issuer: "lets-encrypt"
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-server.prometheus.svc.cluster.local
+          access: proxy
+          isDefault: true
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+    dashboards:
+      default:
+        node-exporter:
+          gnetId: 1860
+          revision: 27
+        ingress-nginx:
+          gnetId: 9614
+          revision: 1
+    EOT
+  ]
+
+  depends_on = [
+    kubectl_manifest.cluster_issuer,
+    helm_release.ingress_nginx,
+    helm_release.cert_manager,
+    helm_release.prometheus
+  ]
+}

@@ -25,3 +25,14 @@ output "loadbalancer_ip" {
 # output "kubernetes_dashboard_url" {
 #   value = module.deployments.kubernetes_dashboard_url
 # }
+
+# output "grafana_admin_password" {
+#   value = format(
+#     "export KUBECONFIG=%s; %s",
+#     local_sensitive_file.kubeconfig_file.filename,
+#     module.deployments.grafana_admin_password,
+#   )
+# }
+# output "grafana_url" {
+#   value = module.deployments.grafana_url
+# }

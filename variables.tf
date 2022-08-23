@@ -146,8 +146,12 @@ variable "k8s_worker_disk_size" {
 }
 
 # ======================================================================================================================
-# Versions
+# Helm charts
 # ======================================================================================================================
+variable "k8s_enable_monitoring" {
+  description = "Enable installation of Prometheus and Grafana on Kubernetes"
+  default     = false
+}
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
   default     = "v1.24.3+k3s1"
@@ -172,4 +176,14 @@ variable "k8s_helm_kubernetes_dashboard_version" {
   description = "Helm chart version of Kubernetes-Dashboard to install"
   default     = "5.8.0"
   # See https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
+}
+variable "k8s_helm_prometheus" {
+  description = "Helm chart version of Prometheus to install"
+  default     = "15.12.0"
+  # See https://artifacthub.io/packages/helm/prometheus-community/prometheus
+}
+variable "k8s_helm_grafana" {
+  description = "Helm chart version of Grafana to install"
+  default     = "6.32.18"
+  # See https://artifacthub.io/packages/helm/grafana/grafana
 }
