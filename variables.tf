@@ -150,7 +150,7 @@ variable "k8s_worker_disk_size" {
 # ======================================================================================================================
 variable "k8s_enable_monitoring" {
   description = "Enable installation of Prometheus and Grafana on Kubernetes"
-  default     = false
+  default     = true
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
