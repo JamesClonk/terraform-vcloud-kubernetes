@@ -53,67 +53,67 @@ resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh" {
   }
 }
 
-# resource "vcd_nsxv_firewall_rule" "k8s_apiserver" {
-#   org          = var.vcd_org
-#   vdc          = var.vcd_vdc
-#   edge_gateway = var.vcd_edgegateway
-#   name         = "k8s api"
+resource "vcd_nsxv_firewall_rule" "k8s_apiserver" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+  name         = "k8s api"
 
-#   action = "accept"
-#   source {
-#     gateway_interfaces = ["external"]
-#   }
-#   destination {
-#     ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
-#   }
-#   service {
-#     protocol = "tcp"
-#     port     = "6443"
-#   }
-# }
+  action = "accept"
+  source {
+    gateway_interfaces = ["external"]
+  }
+  destination {
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
+  }
+  service {
+    protocol = "tcp"
+    port     = "6443"
+  }
+}
 
-# resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
-#   org          = var.vcd_org
-#   vdc          = var.vcd_vdc
-#   edge_gateway = var.vcd_edgegateway
-#   name         = "k8s web traffic"
+resource "vcd_nsxv_firewall_rule" "k8s_web_ingress" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+  name         = "k8s web traffic"
 
-#   action = "accept"
-#   source {
-#     gateway_interfaces = ["external"]
-#   }
-#   destination {
-#     ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
-#   }
-#   service {
-#     protocol = "tcp"
-#     port     = "80"
-#   }
-#   service {
-#     protocol = "tcp"
-#     port     = "443"
-#   }
-# }
+  action = "accept"
+  source {
+    gateway_interfaces = ["external"]
+  }
+  destination {
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
+  }
+  service {
+    protocol = "tcp"
+    port     = "80"
+  }
+  service {
+    protocol = "tcp"
+    port     = "443"
+  }
+}
 
-# resource "vcd_nsxv_firewall_rule" "k8s_nodeports" {
-#   org          = var.vcd_org
-#   vdc          = var.vcd_vdc
-#   edge_gateway = var.vcd_edgegateway
-#   name         = "k8s nodeports"
+resource "vcd_nsxv_firewall_rule" "k8s_nodeports" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+  name         = "k8s nodeports"
 
-#   action = "accept"
-#   source {
-#     gateway_interfaces = ["external"]
-#   }
-#   destination {
-#     ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
-#   }
-#   service {
-#     protocol = "tcp"
-#     port     = "30000-32767"
-#   }
-#   service {
-#     protocol = "udp"
-#     port     = "30000-32767"
-#   }
-# }
+  action = "accept"
+  source {
+    gateway_interfaces = ["external"]
+  }
+  destination {
+    ip_addresses = ["${data.vcd_edgegateway.k8s_gateway.default_external_network_ip}"]
+  }
+  service {
+    protocol = "tcp"
+    port     = "30000-32767"
+  }
+  service {
+    protocol = "udp"
+    port     = "30000-32767"
+  }
+}

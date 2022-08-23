@@ -40,6 +40,10 @@ provider "kubectl" {
   apply_retry_count      = 5
 }
 
+resource "time_sleep" "wait_for_kubernetes" {
+  create_duration = "120s"
+}
+
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.
 resource "helm_release" "longhorn" {
   name             = "longhorn"
@@ -48,9 +52,12 @@ resource "helm_release" "longhorn" {
   version          = var.helm_longhorn_version
   namespace        = "longhorn-system"
   create_namespace = "true"
+
+  depends_on = [time_sleep.wait_for_kubernetes]
 }
 
-# Strictly speaking anything below here is entirely optional and not required for a functioning cluster, but it is highly recommended to have an ingress-controller like ingress-nginx and cert-manager for TLS management installed nonetheless.
+# ======================================================================================================================
+# Strictly speaking everything below here is entirely optional and not required for a functioning cluster, but it is highly recommended to have an ingress-controller like ingress-nginx and cert-manager for TLS management installed nonetheless.
 resource "helm_release" "ingress_nginx" {
   name             = "ingress-controller"
   repository       = "https://kubernetes.github.io/ingress-nginx"
@@ -75,6 +82,8 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.service.nodePorts.https"
     value = "30443"
   }
+
+  depends_on = [time_sleep.wait_for_kubernetes]
 }
 
 # data "kubectl_path_documents" "hairpin_proxy" {

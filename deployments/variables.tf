@@ -2,12 +2,14 @@ variable "cluster_api_endpoint" {}
 variable "cluster_ca_certificate" {}
 variable "client_certificate" {}
 variable "client_key" {}
+variable "kubernetes_ready" {
+  default = ""
+}
 
 variable "domain_name" {
   default = ""
 }
 variable "loadbalancer_ip" {}
-
 variable "enable_monitoring" {}
 
 variable "helm_longhorn_version" {}

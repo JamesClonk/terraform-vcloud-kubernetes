@@ -1,20 +1,12 @@
 #cloud-config
-
 bootcmd:
 - printf "[Resolve]\nDNS=8.8.8.8" > /etc/systemd/resolved.conf
 - [systemctl, restart, systemd-resolved]
 
-manage_resolv_conf: true
-resolv_conf:
-  nameservers:
-  - 1.1.1.1
-  - 8.8.8.8
-
 preserve_hostname: false
 hostname: ${hostname}
-
-# ssh_pwauth: true
-disable_root: false
+ssh_pwauth: false
+disable_root: true
 
 users:
 - name: kubernetes
@@ -24,6 +16,23 @@ users:
   ssh_authorized_keys:
   - ${sshkey}
 
+write_files:
+- path: /etc/netplan/50-cloud-init.yaml
+  owner: root
+  content: |
+    network:
+      version: 2
+      ethernets:
+        eth0:
+          match:
+            name: en*
+          addresses: [${ip}/24]
+          gateway4: ${gateway}
+          dhcp6: false
+          nameservers:
+            addresses: [1.1.1.1, 8.8.8.8]
+          dhcp4: false
+
 package_update: true
 packages:
 - git
@@ -32,8 +41,7 @@ packages:
 - open-iscsi
 
 runcmd:
+- netplan apply
 - ufw disable
 - systemctl enable iscsid.service
 - systemctl start iscsid.service
-- echo 'nameserver 1.1.1.1' > /etc/resolv.conf
-- echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
