@@ -40,6 +40,10 @@ provider "kubectl" {
   apply_retry_count      = 5
 }
 
+resource "time_sleep" "wait_for_kubernetes" {
+  create_duration = "120s"
+}
+
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.
 resource "helm_release" "longhorn" {
   name             = "longhorn"
@@ -48,9 +52,12 @@ resource "helm_release" "longhorn" {
   version          = var.helm_longhorn_version
   namespace        = "longhorn-system"
   create_namespace = "true"
+
+  depends_on = [time_sleep.wait_for_kubernetes]
 }
 
-# Strictly speaking anything below here is entirely optional and not required for a functioning cluster, but it is highly recommended to have an ingress-controller like ingress-nginx and cert-manager for TLS management installed nonetheless.
+# ======================================================================================================================
+# Strictly speaking everything below here is entirely optional and not required for a functioning cluster, but it is highly recommended to have an ingress-controller like ingress-nginx and cert-manager for TLS management installed nonetheless.
 resource "helm_release" "ingress_nginx" {
   name             = "ingress-controller"
   repository       = "https://kubernetes.github.io/ingress-nginx"
@@ -75,6 +82,16 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.service.nodePorts.https"
     value = "30443"
   }
+  values = [
+    <<-EOT
+    controller:
+      service:
+        externalIPs:
+        - ${var.loadbalancer_ip}
+    EOT
+  ]
+
+  depends_on = [time_sleep.wait_for_kubernetes]
 }
 
 data "kubectl_path_documents" "hairpin_proxy" {
@@ -100,16 +117,6 @@ resource "helm_release" "cert_manager" {
     name  = "installCRDs"
     value = "true"
   }
-
-  # values = [
-  #   <<-EOT
-  #   podDnsPolicy: "None"
-  #   podDnsConfig:
-  #     nameservers:
-  #     - 1.1.1.1
-  #     - 8.8.8.8
-  #   EOT
-  # ]
 
   depends_on = [
     helm_release.ingress_nginx,
@@ -157,9 +164,19 @@ resource "helm_release" "kubernetes_dashboard" {
     name  = "ingress.className"
     value = "nginx"
   }
+  set {
+    name  = "protocolHttp"
+    value = "true"
+  }
+  set {
+    name  = "service.externalPort"
+    value = "80"
+  }
 
   values = [
     <<-EOT
+    extraArgs:
+    - --enable-insecure-login
     ingress:
       hosts:
       - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
@@ -168,9 +185,6 @@ resource "helm_release" "kubernetes_dashboard" {
         hosts:
         - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         cert-manager.io/cluster-issuer: "lets-encrypt"
     EOT
   ]
@@ -200,4 +214,90 @@ resource "kubectl_manifest" "kubernetes_dashboard_cluster_role_binding" {
     YAML
   apply_only = true
   depends_on = [helm_release.kubernetes_dashboard]
+}
+
+resource "helm_release" "prometheus" {
+  count = var.enable_monitoring ? 1 : 0
+
+  name             = "prometheus"
+  repository       = "https://prometheus-community.github.io/helm-charts"
+  chart            = "prometheus"
+  version          = var.helm_prometheus
+  namespace        = "prometheus"
+  create_namespace = "true"
+
+  depends_on = [
+    helm_release.longhorn,
+    helm_release.cert_manager
+  ]
+}
+
+resource "helm_release" "grafana" {
+  count = var.enable_monitoring ? 1 : 0
+
+  name             = "grafana"
+  repository       = "https://grafana.github.io/helm-charts"
+  chart            = "grafana"
+  version          = var.helm_grafana
+  namespace        = "grafana"
+  create_namespace = "true"
+
+  set {
+    name  = "persistence.enabled"
+    value = "true"
+  }
+  set {
+    name  = "ingress.enabled"
+    value = "true"
+  }
+
+  values = [
+    <<-EOT
+    ingress:
+      hosts:
+      - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
+      tls:
+      - secretName: grafana-tls
+        hosts:
+        - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: "lets-encrypt"
+
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+        - name: Prometheus
+          type: prometheus
+          url: http://prometheus-server.prometheus.svc.cluster.local
+          access: proxy
+          isDefault: true
+
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+    dashboards:
+      default:
+        node-exporter:
+          gnetId: 1860
+          revision: 27
+    EOT
+  ]
+
+  depends_on = [
+    kubectl_manifest.cluster_issuer,
+    helm_release.ingress_nginx,
+    helm_release.cert_manager,
+    helm_release.prometheus
+  ]
 }

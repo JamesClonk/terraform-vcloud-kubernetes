@@ -34,33 +34,12 @@ resource "vcd_vapp_vm" "k8s_bastion" {
   guest_properties = {
     "guest.hostname" = "${var.k8s_cluster_name}-bastion"
     "hostname"       = "${var.k8s_cluster_name}-bastion"
-    "password"       = var.k8s_bastion_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-bastion",
-      "password" = var.k8s_bastion_root_password,
-      "sshkey"   = var.k8s_ssh_key
+      "sshkey"   = var.k8s_ssh_public_key,
+      "ip"       = cidrhost(var.k8s_cidr, 20),
+      "gateway"  = cidrhost(var.k8s_cidr, 1)
     }))
-  }
-
-  customization {
-    # force                      = true
-    enabled = false
-    # allow_local_admin_password = true
-    # auto_generate_password     = false
-    # admin_password             = var.k8s_bastion_root_password
-    # initscript                 = <<-EOT
-    # #!/bin/bash
-    # ufw disable
-
-    # hostnamectl set-hostname ${var.k8s_cluster_name}-bastion
-    # sed 's/ubuntu2004-vmware-dcs-20220325-001/kubernetes-bastion/g' -i /etc/hosts || true
-
-    # echo 'nameserver 1.1.1.1' > /etc/resolv.conf
-    # echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-
-    # apt-get update
-    # apt-get install -y vim jq git
-    # EOT
   }
 
   depends_on = [
@@ -105,41 +84,12 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
   guest_properties = {
     "guest.hostname" = "${var.k8s_cluster_name}-master-${count.index}"
     "hostname"       = "${var.k8s_cluster_name}-master-${count.index}"
-    "password"       = var.k8s_control_plane_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-master-${count.index}",
-      "password" = var.k8s_control_plane_root_password,
-      "sshkey"   = var.k8s_ssh_key
+      "sshkey"   = var.k8s_ssh_public_key,
+      "ip"       = cidrhost(var.k8s_cidr, 50 + count.index),
+      "gateway"  = cidrhost(var.k8s_cidr, 1)
     }))
-  }
-
-  customization {
-    # force                      = true
-    enabled = false
-    # allow_local_admin_password = true
-    # auto_generate_password     = false
-    # admin_password             = var.k8s_control_plane_root_password
-    # initscript                 = <<-EOT
-    # #!/bin/bash
-    # growpart /dev/sda 3
-    # pvresize /dev/sda3
-    # lvextend -l 100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
-    # resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
-
-    # ufw disable
-
-    # hostnamectl set-hostname ${var.k8s_cluster_name}-master-${count.index}
-    # sed 's/ubuntu2004-vmware-dcs-20220325-001/${var.k8s_cluster_name}-master-${count.index}/g' -i /etc/hosts || true
-
-    # echo 'nameserver 1.1.1.1' > /etc/resolv.conf
-    # echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-
-    # apt-get update
-    # apt-get install -y jq open-iscsi
-
-    # systemctl enable iscsid.service
-    # systemctl start iscsid.service
-    # EOT
   }
 
   depends_on = [
@@ -185,41 +135,12 @@ resource "vcd_vapp_vm" "k8s_worker" {
   guest_properties = {
     "guest.hostname" = "${var.k8s_cluster_name}-worker-${count.index}"
     "hostname"       = "${var.k8s_cluster_name}-worker-${count.index}"
-    "password"       = var.k8s_worker_root_password
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-worker-${count.index}",
-      "password" = var.k8s_worker_root_password,
-      "sshkey"   = var.k8s_ssh_key
+      "sshkey"   = var.k8s_ssh_public_key,
+      "ip"       = cidrhost(var.k8s_cidr, 100 + count.index),
+      "gateway"  = cidrhost(var.k8s_cidr, 1)
     }))
-  }
-
-  customization {
-    # force                      = true
-    enabled = false
-    # allow_local_admin_password = true
-    # auto_generate_password     = false
-    # admin_password             = var.k8s_worker_root_password
-    # initscript                 = <<-EOT
-    # #!/bin/bash
-    # growpart /dev/sda 3
-    # pvresize /dev/sda3
-    # lvextend -l 100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
-    # resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
-
-    # ufw disable
-
-    # hostnamectl set-hostname ${var.k8s_cluster_name}-worker-${count.index}
-    # sed 's/ubuntu2004-vmware-dcs-20220325-001/${var.k8s_cluster_name}-worker-${count.index}/g' -i /etc/hosts || true
-
-    # echo 'nameserver 1.1.1.1' > /etc/resolv.conf
-    # echo 'nameserver 8.8.8.8' >> /etc/resolv.conf
-
-    # apt-get update
-    # apt-get install -y jq open-iscsi
-
-    # systemctl enable iscsid.service
-    # systemctl start iscsid.service
-    # EOT
   }
 
   depends_on = [

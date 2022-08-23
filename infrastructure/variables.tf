@@ -14,6 +14,7 @@ variable "vcd_org" {}
 variable "vcd_vdc" {}
 variable "vcd_catalog" {}
 variable "vcd_template" {}
+variable "vcd_ova_file" {}
 variable "vcd_edgegateway" {}
 
 variable "k8s_cidr" {
@@ -22,15 +23,13 @@ variable "k8s_cidr" {
 variable "k8s_cluster_name" {
   default = "kubernetes"
 }
-variable "k8s_ssh_key" {}
-variable "k8s_bastion_root_password" {}
+variable "k8s_ssh_public_key" {}
 variable "k8s_bastion_memory" {
   default = 1024
 }
 variable "k8s_bastion_cpus" {
   default = 1
 }
-variable "k8s_control_plane_root_password" {}
 variable "k8s_control_plane_instances" {
   default = 3
 }
@@ -40,7 +39,6 @@ variable "k8s_control_plane_memory" {
 variable "k8s_control_plane_cpus" {
   default = 2
 }
-variable "k8s_worker_root_password" {}
 variable "k8s_worker_instances" {
   default = 3
 }
