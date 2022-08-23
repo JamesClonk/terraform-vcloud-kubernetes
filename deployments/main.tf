@@ -82,20 +82,28 @@ resource "helm_release" "ingress_nginx" {
     name  = "controller.service.nodePorts.https"
     value = "30443"
   }
+  values = [
+    <<-EOT
+    controller:
+      service:
+        externalIPs:
+        - ${var.loadbalancer_ip}
+    EOT
+  ]
 
   depends_on = [time_sleep.wait_for_kubernetes]
 }
 
-# data "kubectl_path_documents" "hairpin_proxy" {
-#   pattern = "${path.module}/external/hairpin-proxy-0.2.1.yaml"
-# }
+data "kubectl_path_documents" "hairpin_proxy" {
+  pattern = "${path.module}/external/hairpin-proxy-0.2.1.yaml"
+}
 
-# resource "kubectl_manifest" "hairpin_proxy" {
-#   for_each   = toset(data.kubectl_path_documents.hairpin_proxy.documents)
-#   yaml_body  = each.value
-#   apply_only = true
-#   depends_on = [helm_release.ingress_nginx]
-# }
+resource "kubectl_manifest" "hairpin_proxy" {
+  for_each   = toset(data.kubectl_path_documents.hairpin_proxy.documents)
+  yaml_body  = each.value
+  apply_only = true
+  depends_on = [helm_release.ingress_nginx]
+}
 
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
@@ -110,21 +118,10 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  # values = [
-  #   <<-EOT
-  #   podDnsPolicy: "None"
-  #   podDnsConfig:
-  #     nameservers:
-  #     - 1.1.1.1
-  #     - 8.8.8.8
-  #   EOT
-  # ]
-
-  depends_on = [helm_release.ingress_nginx]
-  # depends_on = [
-  #   helm_release.ingress_nginx,
-  #   kubectl_manifest.hairpin_proxy
-  # ]
+  depends_on = [
+    helm_release.ingress_nginx,
+    kubectl_manifest.hairpin_proxy
+  ]
 }
 
 resource "kubectl_manifest" "cluster_issuer" {
@@ -167,9 +164,19 @@ resource "helm_release" "kubernetes_dashboard" {
     name  = "ingress.className"
     value = "nginx"
   }
+  set {
+    name  = "protocolHttp"
+    value = "true"
+  }
+  set {
+    name  = "service.externalPort"
+    value = "80"
+  }
 
   values = [
     <<-EOT
+    extraArgs:
+    - --enable-insecure-login
     ingress:
       hosts:
       - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
@@ -178,24 +185,16 @@ resource "helm_release" "kubernetes_dashboard" {
         hosts:
         - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       annotations:
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         cert-manager.io/cluster-issuer: "lets-encrypt"
     EOT
   ]
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
+    kubectl_manifest.hairpin_proxy,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
   ]
-  # depends_on = [
-  #   kubectl_manifest.cluster_issuer,
-  #   kubectl_manifest.hairpin_proxy,
-  #   helm_release.ingress_nginx,
-  #   helm_release.cert_manager,
-  # ]
 }
 
 resource "kubectl_manifest" "kubernetes_dashboard_cluster_role_binding" {
@@ -263,8 +262,6 @@ resource "helm_release" "grafana" {
         - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       annotations:
         kubernetes.io/ingress.class: nginx
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
-        nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
         cert-manager.io/cluster-issuer: "lets-encrypt"
 
     datasources:
