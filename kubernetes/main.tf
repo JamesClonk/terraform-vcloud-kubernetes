@@ -30,6 +30,7 @@ module "k3s" {
         bastion_private_key = var.k8s_ssh_private_key
       }
       flags = [
+        "--write-kubeconfig-mode '0644'",
         "--node-taint CriticalAddonsOnly=true:NoExecute",
         "--disable traefik",
         "--disable local-storage",
