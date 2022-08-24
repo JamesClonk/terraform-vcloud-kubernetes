@@ -26,6 +26,41 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 
 ### Configuration
 
+#### Sizing recommendations
+
+##### Small / Starter
+| Node type | Setting | Variable name | Value |
+| --- | --- | --- | --- |
+| Control plane | Number of VMs | `k8s_control_plane_instances` | `1` |
+| Control plane | Number of VMs | `k8s_control_plane_cpus` | `1` |
+| Control plane | Number of VMs | `k8s_control_plane_memory` | `2048` |
+| Worker | Number of VMs | `k8s_worker_instances` | `1` |
+| Worker | vCPUs | `k8s_worker_cpus` | `2` |
+| Worker | Memory (in MB) | `k8s_worker_memory` | `4096` |
+| Worker | Disk size (in MB) | `k8s_worker_disk_size` | `81920` |
+
+##### Medium / Default values
+| Node type | Setting | Variable name | Value |
+| --- | --- | --- | --- |
+| Control plane | Number of VMs | `k8s_control_plane_instances` | `3` |
+| Control plane | Number of VMs | `k8s_control_plane_cpus` | `2` |
+| Control plane | Number of VMs | `k8s_control_plane_memory` | `2048` |
+| Worker | Number of VMs | `k8s_worker_instances` | `3` |
+| Worker | vCPUs | `k8s_worker_cpus` | `4` |
+| Worker | Memory (in MB) | `k8s_worker_memory` | `8192` |
+| Worker | Disk size (in MB) | `k8s_worker_disk_size` | `245760` |
+
+##### Large
+| Node type | Setting | Variable name | Value |
+| --- | --- | --- | --- |
+| Control plane | Number of VMs | `k8s_control_plane_instances` | `3` |
+| Control plane | Number of VMs | `k8s_control_plane_cpus` | `2` |
+| Control plane | Number of VMs | `k8s_control_plane_memory` | `4096` |
+| Worker | Number of VMs | `k8s_worker_instances` | `9` |
+| Worker | vCPUs | `k8s_worker_cpus` | `4` |
+| Worker | Memory (in MB) | `k8s_worker_memory` | `16384` |
+| Worker | Disk size (in MB) | `k8s_worker_disk_size` | `163840` |
+
 ### Provisioning
 ![DCS+ Terraform](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_terraform.gif)
 
