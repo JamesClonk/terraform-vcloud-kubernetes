@@ -226,10 +226,67 @@ resource "helm_release" "prometheus" {
   namespace        = "prometheus"
   create_namespace = "true"
 
+  set {
+    name  = "server.persistentVolume.size"
+    value = "15Gi"
+  }
+  set {
+    name  = "alertmanager.persistentVolume.size"
+    value = "5Gi"
+  }
+
   depends_on = [
     helm_release.longhorn,
     helm_release.cert_manager
   ]
+}
+
+resource "helm_release" "loki" {
+  count = var.enable_logging ? 1 : 0
+
+  name             = "loki"
+  repository       = "https://grafana.github.io/helm-charts"
+  chart            = "loki"
+  version          = var.helm_loki
+  namespace        = "loki"
+  create_namespace = "true"
+
+  values = [
+    <<-EOT
+    config:
+      compactor:
+        retention_enabled: true
+    persistence:
+      enabled: true
+      size: 20Gi
+    EOT
+  ]
+
+  depends_on = [
+    helm_release.longhorn,
+    helm_release.cert_manager
+  ]
+}
+
+resource "helm_release" "promtail" {
+  count = var.enable_logging ? 1 : 0
+
+  name             = "promtail"
+  repository       = "https://grafana.github.io/helm-charts"
+  chart            = "promtail"
+  version          = var.helm_promtail
+  namespace        = "promtail"
+  create_namespace = "true"
+
+  values = [
+    <<-EOT
+    config:
+      clients:
+      - url: http://loki.loki.svc.cluster.local:3100/loki/api/v1/push
+    EOT
+  ]
+
+  depends_on = [helm_release.loki]
 }
 
 resource "helm_release" "grafana" {
@@ -273,6 +330,9 @@ resource "helm_release" "grafana" {
           url: http://prometheus-server.prometheus.svc.cluster.local
           access: proxy
           isDefault: true
+        - name: Loki
+          type: loki
+          url: http://loki.loki.svc.cluster.local:3100
 
     dashboardProviders:
       dashboardproviders.yaml:
@@ -298,6 +358,7 @@ resource "helm_release" "grafana" {
     kubectl_manifest.cluster_issuer,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
-    helm_release.prometheus
+    helm_release.prometheus,
+    helm_release.loki
   ]
 }

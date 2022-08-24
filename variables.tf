@@ -152,6 +152,10 @@ variable "k8s_enable_monitoring" {
   description = "Enable installation of Prometheus and Grafana on Kubernetes"
   default     = true
 }
+variable "k8s_enable_logging" {
+  description = "Enable installation of Loki and Promtail on Kubernetes"
+  default     = true
+}
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
   default     = "v1.24.3+k3s1"
@@ -181,6 +185,16 @@ variable "k8s_helm_prometheus" {
   description = "Helm chart version of Prometheus to install"
   default     = "15.12.0"
   # See https://artifacthub.io/packages/helm/prometheus-community/prometheus
+}
+variable "k8s_helm_loki" {
+  description = "Helm chart version of Loki to install"
+  default     = "2.14.1"
+  # See https://artifacthub.io/packages/helm/grafana/loki
+}
+variable "k8s_helm_promtail" {
+  description = "Helm chart version of Promtail to install"
+  default     = "6.3.0"
+  # See https://artifacthub.io/packages/helm/grafana/promtail
 }
 variable "k8s_helm_grafana" {
   description = "Helm chart version of Grafana to install"
