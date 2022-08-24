@@ -5,8 +5,11 @@
 **/.terraform/*
 
 # .tfstate files
-*.tfstate
-*.tfstate.*
+/*.tfstate
+/*.tfstate.*
+
+# .tfstate directories
+/.tfstate/
 
 # Crash log files
 crash.log
@@ -39,5 +42,5 @@ override.tf.json
 k3s_kubeconfig
 kubeconfig
 
-# Ubuntu OS image
+# OS images
 *.ova
