@@ -17,6 +17,8 @@ Deploy Kubernetes on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.co
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
 ##### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
+##### Longhorn
+![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
 # TODO:
 
