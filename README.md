@@ -1,23 +1,42 @@
 # terraform-vcloud-kubernetes
-Deploy Kubernetes on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
+Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
 
 ## Kubernetes cluster with k3s
 
 ### Architecture
 ![DCS+ Kubernetes Architecture](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s.png)
 
+### Components on cluster
+
+| Component | Type | Description |
+| --- | --- | --- |
+| [Longhorn](https://longhorn.io/) | Storage | Highly available persistent storage for Kubernetes, provides cloud-native block storage with backup functionality |
+| [Ingress NGINX](https://kubernetes.github.io/ingress-nginx/) | Routing | Provides HTTP load balancing, SSL termination and name-based virtual hosting |
+| [Cert Manager](https://cert-manager.io/) | Certificates | Cloud-native, automated TLS certificate management and [Let's Encrypt](https://letsencrypt.org/) integration for Kubernetes |
+- Hairpin Proxy
+- Kubernetes Dashboard
+- Prometheus
+- Loki
+- Grafana
+
+## Installation
+
+### Requirements
+
+### Configuration
+
 ### Provisioning
 ![DCS+ Terraform](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_terraform.gif)
 
 ### Up and running
 
-##### DCS+
+#### DCS+
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_dashboard.png)
-##### Kubernetes-Dashboard
+#### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
-##### Grafana
+#### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
-##### Longhorn
+#### Longhorn
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
 # TODO:
