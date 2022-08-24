@@ -28,7 +28,7 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 
 #### Cluster sizing recommendations for your `terraform.tfvars`
 
-Here are some examples for possible cluster sizes. Note that the more worker nodes you have, the smaller the disk size gets that they need in order to distribute and cover all your `PersistentVolume` needs. This is why the worker nodes in the *Large* cluster example actually have a smaller disk than the *Medium* example.
+Here are some examples for possible cluster sizes:
 
 ##### Small / Starter
 | Node type | Setting | Variable name | Value |
@@ -62,6 +62,8 @@ Here are some examples for possible cluster sizes. Note that the more worker nod
 | Worker | vCPUs | `k8s_worker_cpus` | `4` |
 | Worker | Memory (in MB) | `k8s_worker_memory` | `16384` |
 | Worker | Disk size (in MB) | `k8s_worker_disk_size` | `163840` |
+
+> **Note**: The more worker nodes you have, the smaller the disk size gets that they need in order to distribute and cover all your `PersistentVolume` needs. This is why the worker nodes in the *Large* cluster example actually have a smaller disk than in the *Medium* example.
 
 ### Provisioning
 ![DCS+ Terraform](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_terraform.gif)
