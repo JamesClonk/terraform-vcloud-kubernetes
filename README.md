@@ -26,14 +26,16 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 
 ### Configuration
 
-#### Sizing recommendations
+#### Cluster sizing recommendations for your `terraform.tfvars`
+
+Here are some examples for possible cluster sizes. Note that the more worker nodes you have, the smaller the disk size gets that they need in order to distribute and cover all your `PersistentVolume` needs. This is why the worker nodes in the *Large* cluster example actually have a smaller disk than the *Medium* example.
 
 ##### Small / Starter
 | Node type | Setting | Variable name | Value |
 | --- | --- | --- | --- |
 | Control plane | Number of VMs | `k8s_control_plane_instances` | `1` |
-| Control plane | Number of VMs | `k8s_control_plane_cpus` | `1` |
-| Control plane | Number of VMs | `k8s_control_plane_memory` | `2048` |
+| Control plane | vCPUs | `k8s_control_plane_cpus` | `1` |
+| Control plane | Memory (in MB) | `k8s_control_plane_memory` | `2048` |
 | Worker | Number of VMs | `k8s_worker_instances` | `1` |
 | Worker | vCPUs | `k8s_worker_cpus` | `2` |
 | Worker | Memory (in MB) | `k8s_worker_memory` | `4096` |
@@ -43,8 +45,8 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 | Node type | Setting | Variable name | Value |
 | --- | --- | --- | --- |
 | Control plane | Number of VMs | `k8s_control_plane_instances` | `3` |
-| Control plane | Number of VMs | `k8s_control_plane_cpus` | `2` |
-| Control plane | Number of VMs | `k8s_control_plane_memory` | `2048` |
+| Control plane | vCPUs | `k8s_control_plane_cpus` | `2` |
+| Control plane | Memory (in MB) | `k8s_control_plane_memory` | `2048` |
 | Worker | Number of VMs | `k8s_worker_instances` | `3` |
 | Worker | vCPUs | `k8s_worker_cpus` | `4` |
 | Worker | Memory (in MB) | `k8s_worker_memory` | `8192` |
@@ -54,8 +56,8 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 | Node type | Setting | Variable name | Value |
 | --- | --- | --- | --- |
 | Control plane | Number of VMs | `k8s_control_plane_instances` | `3` |
-| Control plane | Number of VMs | `k8s_control_plane_cpus` | `2` |
-| Control plane | Number of VMs | `k8s_control_plane_memory` | `4096` |
+| Control plane | vCPUs | `k8s_control_plane_cpus` | `2` |
+| Control plane | Memory (in MB) | `k8s_control_plane_memory` | `4096` |
 | Worker | Number of VMs | `k8s_worker_instances` | `9` |
 | Worker | vCPUs | `k8s_worker_cpus` | `4` |
 | Worker | Memory (in MB) | `k8s_worker_memory` | `16384` |
