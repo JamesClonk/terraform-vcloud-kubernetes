@@ -77,7 +77,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 #### DCS+
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_dashboard.png)
 
-By default (unless configured otherwise in your `terraform.tfvars`) once the deployment is done you should something similar to above in your DCS+ Portal. There will be 1 bastion host (a jumphost VM for SSH access to the other VMs), 3 control plane VMs for the Kubernetes server nodes, and 3 worker VMs that are responsible for running your Kubernetes workload.
+By default (unless configured otherwise in your `terraform.tfvars`) once the deployment is done you should see something similar to above in your DCS+ Portal. There will be 1 bastion host (a jumphost VM for SSH access to the other VMs), 3 control plane VMs for the Kubernetes server nodes, and 3 worker VMs that are responsible for running your Kubernetes workload.
 
 #### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
@@ -129,8 +129,8 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] Module description, for each of the 3 submodules
   - [ ] Customization, explain possible customization options to users
   - [ ] Day 2 operations, component and cluster upgrades
-  - [ ] Document access to components, Grafana and Kubernetes-Dashboard specifically, with screenshots
-  - [ ] Document user token creation for Kubernetes-Dashboard access
+  - [x] Document access to components, Grafana and Kubernetes-Dashboard specifically, with screenshots
+  - [x] Document user token creation for Kubernetes-Dashboard access
 - [x] add Prometheus to `deployments` module
   - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
 - [x] add Loki to `deployments` module
