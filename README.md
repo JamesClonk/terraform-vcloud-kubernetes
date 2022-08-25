@@ -83,6 +83,12 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 #### Longhorn
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
+To access the Longhorn dashboard you have to initialize a localhost port-forwarding towards the service on the cluster, since it is not exposed externally:
+```
+kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
+```
+This will setup a port-forwarding for `localhost:9999` on your machine. Now you can open the Longhorn dashboard in your browser by going to [http://localhost:9999/#/dashboard](http://localhost:9999/).
+
 # TODO:
 
 This still needs to be done to finish this repo. The text here and below will be removed before its done and ready for `v1.0.0`.

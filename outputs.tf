@@ -15,6 +15,14 @@ output "cluster_info" {
   )
 }
 
+output "longhorn_dashboard" {
+  value = format(
+    "export KUBECONFIG=%s; %s",
+    local_sensitive_file.kubeconfig_file.filename,
+    module.deployments.longhorn_dashboard,
+  )
+}
+
 output "kubernetes_dashboard_token" {
   value = format(
     "export KUBECONFIG=%s; %s",
