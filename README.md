@@ -76,14 +76,27 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 #### DCS+
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_dashboard.png)
+
+By default (unless configured otherwise in your `terraform.tfvars`) once the deployment is done you should something similar to above in your DCS+ Portal. There will be 1 bastion host (a jumphost VM for SSH access to the other VMs), 3 control plane VMs for the Kubernetes server nodes, and 3 worker VMs that are responsible for running your Kubernetes workload.
+
 #### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
+
+The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
+
+In order to login you will first need to request a temporary access token from your Kubernetes cluster:
+```
+kubectl -n kubernetes-dashboard create token kubernetes-dashboard
+```
+With this token you will be able to sign in into the dashboard.
+> **Note**: This token is only valid temporarily, you will need request a new one each time it has expired.
+
 #### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
 
-The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars`:`k8s_domain_name`)
+The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
-The username for accessing Grafana will be `admin`, and the password can be retrieved from Kubernetes by running:
+The username for accessing Grafana will be `admin` and the password can be retrieved from Kubernetes by running:
 ```
 kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
