@@ -72,14 +72,67 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 ### Provisioning
 ![DCS+ Terraform](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_terraform.gif)
 
-### Up and running
+## Up and running
 
-#### DCS+
+After the initial installation or upgrade via `terraform apply` has finished, you should see a couple of output parameters in your terminal:
+```
+Outputs:
+
+cluster_info = "export KUBECONFIG=kubeconfig; kubectl cluster-info; kubectl get pods -A"
+grafana_admin_password = "export KUBECONFIG=kubeconfig; kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo"
+grafana_url = "https://grafana.your-domain-name.com"
+kubernetes_dashboard_token = "export KUBECONFIG=kubeconfig; kubectl -n kubernetes-dashboard create token kubernetes-dashboard"
+kubernetes_dashboard_url = "https://dashboard.your-domain-name.com"
+loadbalancer_ip = "147.5.206.133"
+longhorn_dashboard = "export KUBECONFIG=kubeconfig; kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80"
+```
+These give you a starting point and some example commands you can run to access and use your newly provisioned Kubernetes cluster.
+
+### kubectl
+
+There should be a `kubeconfig` file written to the Terraform module working directory. This file contains the configuration and credentials to access and manage your Kubernetes cluster. You can set the environment variable `KUBECONFIG` to this file to have your `kubectl` CLI use it for the remainder of your terminal session.
+```
+export KUBECONFIG=$(pwd)/kubeconfig
+```
+Now you can run any `kubectl` commands you want to manage your cluster, for example:
+```
+$ kubectl cluster-info
+Kubernetes control plane is running at https://147.5.206.133:6443
+CoreDNS is running at https://147.5.206.133:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://147.5.206.133:6443/api/v1/namespaces/kube-system/services/https:metrics-server:https/proxy
+
+$ kubectl get nodes -o wide
+NAME           STATUS   ROLES                       AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
+k8s-server-0   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.50    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-server-1   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.51    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-server-2   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.52    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-0   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.100   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-1   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.101   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-2   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.102   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+
+$ kubectl get namespaces
+NAME                   STATUS   AGE
+cert-manager           Active   39h
+default                Active   40h
+grafana                Active   37h
+hairpin-proxy          Active   38h
+ingress-nginx          Active   39h
+kube-node-lease        Active   40h
+kube-public            Active   40h
+kube-system            Active   40h
+kubernetes-dashboard   Active   39h
+loki                   Active   36h
+longhorn-system        Active   39h
+prometheus             Active   37h
+promtail               Active   36h
+```
+
+### DCS+
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_dashboard.png)
 
 By default (unless configured otherwise in your `terraform.tfvars`) once the deployment is done you should see something similar to above in your DCS+ Portal. There will be 1 bastion host (a jumphost VM for SSH access to the other VMs), 3 control plane VMs for the Kubernetes server nodes, and 3 worker VMs that are responsible for running your Kubernetes workload.
 
-#### Kubernetes-Dashboard
+### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
 
 The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
@@ -91,7 +144,7 @@ kubectl -n kubernetes-dashboard create token kubernetes-dashboard
 With this token you will be able to sign in into the dashboard.
 > **Note**: This token is only valid temporarily, you will need request a new one each time it has expired.
 
-#### Grafana
+### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
 
 The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
@@ -101,7 +154,7 @@ The username for accessing Grafana will be `admin` and the password can be retri
 kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
-#### Longhorn
+### Longhorn
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
 To access the Longhorn dashboard you have to initialize a localhost port-forwarding towards the service on the cluster, since it is not exposed externally:
