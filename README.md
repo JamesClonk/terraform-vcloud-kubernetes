@@ -80,6 +80,14 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
 #### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
+
+The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars`:`k8s_domain_name`)
+
+The username for accessing Grafana will be `admin`, and the password can be retrieved from Kubernetes by running:
+```
+kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
+```
+
 #### Longhorn
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
@@ -112,8 +120,8 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] Document user token creation for Kubernetes-Dashboard access
 - [x] add Prometheus to `deployments` module
   - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
-- [ ] add Loki to `deployments` module
-  - [ ] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
+- [x] add Loki to `deployments` module
+  - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
 - [x] add Grafana to `deployments` module
   - [x] customize Grafana with local admin user, to be provided via variables / tfvars
   - [x] Add ingress to Grafana for access
