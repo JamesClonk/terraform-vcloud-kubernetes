@@ -301,6 +301,10 @@ resource "helm_release" "grafana" {
   create_namespace = "true"
 
   set {
+    name  = "deploymentStrategy.type"
+    value = "Recreate"
+  }
+  set {
     name  = "persistence.enabled"
     value = "true"
   }
