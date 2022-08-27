@@ -30,6 +30,18 @@ Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.s
 
 ### Requirements
 
+#### DCS+ resources
+
+#### :warning: Download Ubuntu OS image
+
+Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
+It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
+```bash
+wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
+```
+
+> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
+
 ### Configuration
 
 #### Cluster sizing recommendations for your `terraform.tfvars`
@@ -81,7 +93,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 ## Up and running
 
 After the initial installation or upgrade via `terraform apply` has finished, you should see a couple of output parameters in your terminal:
-```
+```bash
 Outputs:
 
 cluster_info = "export KUBECONFIG=kubeconfig; kubectl cluster-info; kubectl get pods -A"
@@ -97,11 +109,11 @@ These give you a starting point and some example commands you can run to access 
 ### kubectl
 
 There should be a `kubeconfig` file written to the Terraform module working directory. This file contains the configuration and credentials to access and manage your Kubernetes cluster. You can set the environment variable `KUBECONFIG` to this file to have your `kubectl` CLI use it for the remainder of your terminal session.
-```
+```bash
 export KUBECONFIG=$(pwd)/kubeconfig
 ```
 Now you can run any `kubectl` commands you want to manage your cluster, for example:
-```
+```bash
 $ kubectl cluster-info
 Kubernetes control plane is running at https://147.5.206.133:6443
 CoreDNS is running at https://147.5.206.133:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
@@ -144,7 +156,7 @@ By default (unless configured otherwise in your `terraform.tfvars`) once the dep
 The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 In order to login you will first need to request a temporary access token from your Kubernetes cluster:
-```
+```bash
 kubectl -n kubernetes-dashboard create token kubernetes-dashboard
 ```
 With this token you will be able to sign in into the dashboard.
@@ -156,7 +168,7 @@ With this token you will be able to sign in into the dashboard.
 The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 The username for accessing Grafana will be `admin` and the password can be retrieved from Kubernetes by running:
-```
+```bash
 kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
@@ -164,7 +176,7 @@ kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | bas
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
 To access the Longhorn dashboard you have to initialize a localhost port-forwarding towards the service on the cluster, since it is not exposed externally:
-```
+```bash
 kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
 ```
 This will setup a port-forwarding for `localhost:9999` on your machine. Now you can open the Longhorn dashboard in your browser by going to [http://localhost:9999/#/dashboard](http://localhost:9999/).
@@ -173,14 +185,8 @@ This will setup a port-forwarding for `localhost:9999` on your machine. Now you 
 
 This still needs to be done to finish this repo. The text here and below will be removed before its done and ready for `v1.0.0`.
 
-- [x] add this TODO list 😂
-- [x] change SSH procedure from root/pw to ssh-keys
-  - [x] add ssh-keys to variables / tfvars, remove root passwords
-  - [x] change VM/node setup in `infrastructure` module on vcloud
-  - [x] change VM/node access for K3s setup in `kubernetes` module
 - [ ] write proper, extensive documentation
   - [ ] overhaul README.md
-  - [ ] add all documentation it into a /docs subdir, as per tf convention
   - [ ] Explain architecture picture, document decisions and setup
   - [ ] Requirements for DCS tenant: VDC, Edge Gateway with Internet
   - [ ] Installation instructions, full in-depth guide with screenshots
@@ -188,26 +194,3 @@ This still needs to be done to finish this repo. The text here and below will be
   - [ ] Module description, for each of the 3 submodules
   - [ ] Customization, explain possible customization options to users
   - [ ] Day 2 operations, component and cluster upgrades
-  - [x] Document access to components, Grafana and Kubernetes-Dashboard specifically, with screenshots
-  - [x] Document user token creation for Kubernetes-Dashboard access
-- [x] add Prometheus to `deployments` module
-  - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
-- [x] add Loki to `deployments` module
-  - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
-- [x] add Grafana to `deployments` module
-  - [x] customize Grafana with local admin user, to be provided via variables / tfvars
-  - [x] Add ingress to Grafana for access
-  - [x] Output Grafana Ingress URL at the end for the user
-  - [x] make it optional via boolean flag and `count = var.flag ? 1 : 0` in resource, to be disabled by default?
-- [x] Output Kubernetes-Dashboard Ingress URL at the end for the user
-- [x] Add Helm chart and component versions to variables / tfvars
-- [x] Make sure loadbalancer rules cover everything
-  - [x] k8s-api for cp, http and https ports for workers, entire nodeport range for workers
-  - [x] should bastion host SSH stay via DNAT or also be ported onto the loadbalancer?
-
-#### Maybe in the future?
-- [ ] Replace standalone K3s control plane with Rancher module control plane
-  - [ ] Deploy Rancher control plane after Bastion host
-  - [ ] Deploy "workload" cluster (with its own cp) through Rancher tf module
-
-To consider: A standalone Rancher control plane just for one single workload cluster might be overkill? 🤔

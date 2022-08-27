@@ -73,9 +73,9 @@ variable "vcd_template" {
 }
 variable "vcd_ova_file" {
   description = "vCD vApp template OVA filename"
-  default     = "jammy-server-cloudimg-amd64.ova"
-  # The OVA filename/path to upload as a vApp template. Defaults to "jammy-server-cloudimg-amd64.ova", to be downloaded from https://cloud-images.ubuntu.com/jammy/current/ and placed into the current working directory:
-  # wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O jammy-server-cloudimg-amd64.ova
+  default     = "ubuntu-22.04-server-cloudimg-amd64.ova"
+  # The OVA filename/path to upload as a vApp template. Defaults to "ubuntu-22.04-server-cloudimg-amd64.ova", to be downloaded from https://cloud-images.ubuntu.com/jammy/current/ and placed into the current working directory:
+  # wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
 }
 
 # ======================================================================================================================
@@ -158,7 +158,7 @@ variable "k8s_enable_logging" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.3+k3s1"
+  default     = "v1.24.4+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_helm_longhorn_version" {
@@ -168,7 +168,7 @@ variable "k8s_helm_longhorn_version" {
 }
 variable "k8s_helm_ingress_nginx_version" {
   description = "Helm chart version of Ingress-NGINX to install"
-  default     = "4.2.1"
+  default     = "4.2.3"
   # See https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
 }
 variable "k8s_helm_cert_manager_version" {
@@ -178,7 +178,7 @@ variable "k8s_helm_cert_manager_version" {
 }
 variable "k8s_helm_kubernetes_dashboard_version" {
   description = "Helm chart version of Kubernetes-Dashboard to install"
-  default     = "5.8.0"
+  default     = "5.10.0"
   # See https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
 }
 variable "k8s_helm_prometheus" {
@@ -198,6 +198,6 @@ variable "k8s_helm_promtail" {
 }
 variable "k8s_helm_grafana" {
   description = "Helm chart version of Grafana to install"
-  default     = "6.32.18"
+  default     = "6.33.1"
   # See https://artifacthub.io/packages/helm/grafana/grafana
 }
