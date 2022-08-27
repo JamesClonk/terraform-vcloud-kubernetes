@@ -71,7 +71,7 @@ Make sure you also set the API URL at `vcd_api_url`. Check out the official DCS+
 Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
 It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
 ```bash
-wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
+$ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
 ```
 
 > **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
@@ -102,9 +102,8 @@ EOT
 
 You can just copy this file over to `terraform.tfvars` and start editing it to fill in your values:
 ```bash
-cp terraform.example.tfvars terraform.tfvars
-
-vim terraform.tfvars
+$ cp terraform.example.tfvars terraform.tfvars
+$ vim terraform.tfvars
 ```
 
 #### Helm charts
@@ -163,11 +162,31 @@ Set the amount of control plane nodes to either be 1, 3 or 5. They have to be an
 The amount of worker nodes can be set to anything between 1 and 100. Do not set it to a number higher than that, this Terraform module currently supports only a maximum of 100 worker nodes!
 
 ### Provisioning
-![DCS+ Terraform](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_terraform.gif)
+
+Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already.
+
+After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module:
+```bash
+$ terraform init
+```
+
+Before you provision the new Kubernetes cluster you can do a "dry-run" and check what Terraform would do:
+```bash
+$ terraform plan
+```
+If this is your first run of `terraform plan` this will likely show you a huge list of changes and missing resources. Everything shown here is what Terraform will create for you in order to provision a Kubernetes cluster on DCS+.
+
+Finally once everything is ready and you are satisfied with the `plan` output, you can then run `terraform apply` to actually create the Kubernetes cluster:
+```bash
+$ terraform apply
+```
+It will once more display the difference between current and target state, and ask you to confirm if you want to proceed. Type `yes` and hit Enter to continue.
+
+The first run of `terraform apply` is likely going to take quite a bit of time to finish, up to 20 minutes, as it needs to create a lot of new resources on DCS+. Just let it run until it finishes.
 
 ## Up and running
 
-After the initial installation or upgrade via `terraform apply` has finished, you should see a couple of output parameters in your terminal:
+After the initial installation or upgrade with `terraform apply` has finished, you should see a couple of output parameters in your terminal:
 ```bash
 Outputs:
 
@@ -185,7 +204,7 @@ These give you a starting point and some example commands you can run to access 
 
 There should be a `kubeconfig` file written to the Terraform module working directory. This file contains the configuration and credentials to access and manage your Kubernetes cluster. You can set the environment variable `KUBECONFIG` to this file to have your `kubectl` CLI use it for the remainder of your terminal session.
 ```bash
-export KUBECONFIG=$(pwd)/kubeconfig
+$ export KUBECONFIG=$(pwd)/kubeconfig
 ```
 Now you can run any `kubectl` commands you want to manage your cluster, for example:
 ```bash
@@ -232,7 +251,7 @@ The Kubernetes dashboard will automatically be available to you after installati
 
 In order to login you will first need to request a temporary access token from your Kubernetes cluster:
 ```bash
-kubectl -n kubernetes-dashboard create token kubernetes-dashboard
+$ kubectl -n kubernetes-dashboard create token kubernetes-dashboard
 ```
 With this token you will be able to sign in into the dashboard.
 > **Note**: This token is only valid temporarily, you will need request a new one each time it has expired.
@@ -244,7 +263,7 @@ The Grafana dashboard will automatically be available to you after installation 
 
 The username for accessing Grafana will be `admin` and the password can be retrieved from Kubernetes by running:
 ```bash
-kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
+$ kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo
 ```
 
 ### Longhorn
@@ -252,20 +271,6 @@ kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | bas
 
 To access the Longhorn dashboard you have to initialize a localhost port-forwarding towards the service on the cluster, since it is not exposed externally:
 ```bash
-kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
+$ kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
 ```
 This will setup a port-forwarding for `localhost:9999` on your machine. Now you can open the Longhorn dashboard in your browser by going to [http://localhost:9999/#/dashboard](http://localhost:9999/).
-
-# TODO:
-
-This still needs to be done to finish this repo. The text here and below will be removed before its done and ready for `v1.0.0`.
-
-- [ ] write proper, extensive documentation
-  - [ ] overhaul README.md
-  - [ ] Explain architecture picture, document decisions and setup
-  - [ ] Requirements for DCS tenant: VDC, Edge Gateway with Internet
-  - [ ] Installation instructions, full in-depth guide with screenshots
-  - [ ] Configuration instructions, explain all tfvars / variables in detail
-  - [ ] Module description, for each of the 3 submodules
-  - [ ] Customization, explain possible customization options to users
-  - [ ] Day 2 operations, component and cluster upgrades
