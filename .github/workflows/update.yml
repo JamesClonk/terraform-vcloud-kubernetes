@@ -22,6 +22,11 @@ jobs:
         TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
       run: echo "${TF_OVERRIDE}" > override.tf
 
+    - name: Setup Terraform tfvars
+      env:
+        TF_TFVARS: ${{ secrets.TF_TFVARS }}
+      run: echo "${TF_TFVARS}" > terraform.tfvars
+
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2
       with:
@@ -47,3 +52,7 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master'
       run: terraform apply -auto-approve -input=false
+
+    - name: Cleanup
+      if: ${{ always() }}
+      run: rm -f terraform.tfvars || true
