@@ -1,4 +1,9 @@
 # terraform-vcloud-kubernetes
+
+[![Build](https://img.shields.io/github/workflow/status/JamesClonk/terraform-vcloud-kubernetes/Update?label=Build)](https://github.com/JamesClonk/terraform-vcloud-kubernetes/actions/workflows/update.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-lightgrey)](https://github.com/JamesClonk/terraform-vcloud-kubernetes/blob/master/LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Kubernetes-blue)](https://kubernetes.io/)
+
 Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
 
 ## Kubernetes cluster with k3s
