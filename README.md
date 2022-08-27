@@ -7,6 +7,34 @@
 
 Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
 
+-----
+
+Table of Contents
+=================
+* [Kubernetes cluster with k3s](#kubernetes-cluster-with-k3s)
+  + [Architecture](#architecture)
+  + [Components on cluster](#components-on-cluster)
+* [Installation](#installation)
+  + [Requirements](#requirements)
+    - [DCS+ resources](#dcs-resources)
+      * [Dynamic Data Center](#dynamic-data-center)
+      * [Edge Gateway](#edge-gateway)
+      * [API User](#api-user)
+    - [Download Ubuntu OS image](#download-ubuntu-os-image)
+  + [Configuration](#configuration)
+    - [Helm charts](#helm-charts)
+    - [Cluster sizing recommendations](#cluster-sizing-recommendations)
+      * [Small / Starter](#small--starter)
+      * [Medium / Default values](#medium--default-values)
+      * [Large](#large)
+  + [Provisioning](#provisioning)
+* [Up and running](#up-and-running)
+  + [kubectl](#kubectl)
+  + [DCS+](#dcs)
+  + [Kubernetes-Dashboard](#kubernetes-dashboard)
+  + [Grafana](#grafana)
+  + [Longhorn](#longhorn)
+
 ## Kubernetes cluster with k3s
 
 ### Architecture
@@ -66,7 +94,7 @@ See the official DCS+ documentation on [Cloud Director API Users](https://dcsgui
 Configure the new API username and password in `terraform.tfvars` at `vcd_api_username` and `vcd_api_password`.
 Make sure you also set the API URL at `vcd_api_url`. Check out the official DCS+ documentation on how to determine the API URL value, see [Cloud Director API - API access methods](https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#api-access-methods).
 
-#### :warning: Download Ubuntu OS image
+#### Download Ubuntu OS image
 
 Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
 It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
@@ -74,7 +102,7 @@ It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) i
 $ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
 ```
 
-> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
+> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded! :warning:
 
 ### Configuration
 
@@ -116,7 +144,7 @@ The variable `k8s_enable_logging` allows you to enable or disable the installati
 
 Additionally the **Helm charts** section in `variables.tf` also specifies what versions are used for each of the Helm chart installations, and also for [K3s](https://k3s.io/) (Kubernetes) itself. Add these variables to your `terraform.tfvars` if you want to override any of them, but please be aware that versions other than the ones preconfigured in `variables.tf` are untested and thus not supported.
 
-#### Cluster sizing recommendations for your `terraform.tfvars`
+#### Cluster sizing recommendations
 
 There are also separate configuration variables for each aspect of the virtual machines that will be provisioned by this Terraform module. Have a look at the **Kubernetes resources** section in `variables.tf` if you want to have more control over the size and resources of your Kubernetes cluster.
 
@@ -165,7 +193,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already.
 
-After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module:
+After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module and install all its dependencies:
 ```bash
 $ terraform init
 ```
