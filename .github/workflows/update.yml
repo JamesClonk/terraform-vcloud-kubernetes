@@ -17,6 +17,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
+    - name: Setup Terraform Override
+      run: echo ${{ secrets.TF_OVERRIDE }} > override.tf
+
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2
       with:
