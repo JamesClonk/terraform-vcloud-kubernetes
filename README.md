@@ -36,14 +36,14 @@ Configure your contract number (PRO-number) in `terraform.tfvars -> vcd_org`.
 
 #### DCS+ resources
 
-For deploying a Kubernetes cluster on DCS+ you will need to manually created the following resources first before you can proceed:
+For deploying a Kubernetes cluster on DCS+ you will need to manually create the following resources first before you can proceed:
 - a VCD / Dynamic Data Center (DDC)
 - an Edge Gateway with Internet in your VCD/DDC
 - an API User
 
 ##### Dynamic Data Center
 
-Login to the DCS+ management portal and go the [catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **Dynamic Data Center**. The *"Service Level"* doesn't matter for Kubernetes, pick anything you want.
+Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **Dynamic Data Center**. The *"Service Level"* doesn't matter for Kubernetes, pick anything you want.
 
 See the official DCS+ documentation on [Dynamic Data Center](https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#dynamic-data-center) for more information.
 
@@ -51,7 +51,7 @@ Configure the name of your newly created DDC in `terraform.tfvars -> vcd_vdc`.
 
 ##### Edge Gateway
 
-Login to the DCS+ management portal and go the [My Items](https://portal.swisscomcloud.com/my-items/) view. From here click on the right hand side on *"Actions"* and then select **Create Internet Access** for your *Dynamic Data Center*. Make sure to check the box *"Edge Gateway"* and then fill out all the other values. For *"IP Range Size"* you can select the smallest value available, this Terraform module will only need one public IP for an external LoadBalancer. On *"Edge Gateway Configuration"* it is important that you select the **Large** configuration option to create an Edge Gateway with an advanced feature set, otherwise it will will be missing loadbalancing features and not function correctly!
+Login to the DCS+ management portal and go to [My Items](https://portal.swisscomcloud.com/my-items/) view. From here click on the right hand side on *"Actions"* and then select **Create Internet Access** for your *Dynamic Data Center*. Make sure to check the box *"Edge Gateway"* and then fill out all the other values. For *"IP Range Size"* you can select the smallest value available, this Terraform module will only need one public IP for an external LoadBalancer. On *"Edge Gateway Configuration"* it is important that you select the **Large** configuration option to create an Edge Gateway with an advanced feature set, otherwise it will will be missing loadbalancing features and not function correctly!
 
 See the official DCS+ documentation on [Create Internet Access](https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#internet-access) for more information.
 
@@ -59,7 +59,7 @@ Configure the name of this Edge Gateway in `terraform.tfvars -> vcd_edgegateway`
 
 ##### API User
 
-Login to the DCS+ management portal and go the [catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **vCloudDirector API User**. Make sure to leave *"Read only user?"* unchecked, otherwise your new API user will not be able to do anything!
+Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **vCloudDirector API User**. Make sure to leave *"Read only user?"* unchecked, otherwise your new API user will not be able to do anything!
 
 See the official DCS+ documentation on [Cloud Director API Users](https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#cloud-director-api-user) for more information.
 
@@ -78,9 +78,50 @@ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.o
 
 ### Configuration
 
+All possible configuration variables are specified in the [variables.tf](/variables.tf) file in this repository. Most of them already have a sensible default value and only a small handful are required to be configured manually. For any such variable that does not have a default (or you want to set to a different value) you will have to create and add a configuration entry in your `terraform.tfvars` file.
+
+To get you started quickly there is also an example configuration file included, [terraform.example.tfvars](/terraform.example.tfvars), which contains the minimal set of variables required to use this Terraform module.
+
+```terraform
+vcd_api_url      = "https://vcd-pod-bravo.swisscomcloud.com/api"
+vcd_api_username = "api_vcd_my_username"
+vcd_api_password = "my_password"
+
+vcd_org         = "PRO-0123456789"
+vcd_vdc         = "my-data-center"
+vcd_edgegateway = "PRO-0123456789-my-gateway"
+
+k8s_domain_name     = "my-kubernetes.my-domain.com"
+k8s_ssh_public_key  = "ssh-rsa AAAAB3..."
+k8s_ssh_private_key = <<EOT
+-----BEGIN OPENSSH PRIVATE KEY-----
+...
+-----END OPENSSH PRIVATE KEY-----
+EOT
+```
+
+You can just copy this file over to `terraform.tfvars` and start editing it to fill in your values:
+```bash
+cp terraform.example.tfvars terraform.tfvars
+
+vim terraform.tfvars
+```
+
+#### Helm charts
+
+Apart from just provisioning a Kubernetes cluster on DCS+, this Terraform module will also install a set of commonly used components on top of your Kubernetes cluster. (See section "[Components on cluster](#components-on-cluster)" above for details)
+
+The variable `k8s_enable_monitoring` allows you to enable or disable the installation of `Prometheus` and `Grafana` on your cluster. Set if to `false` if you do not want these components preinstalled.
+
+The variable `k8s_enable_logging` allows you to enable or disable the installation of `Loki` and `Promtail` on your cluster. Set if to `false` if you do not want these components preinstalled.
+
+Additionally the **Helm charts** section in `variables.tf` also specifies what versions are used for each of the Helm chart installations, and also for [K3s](https://k3s.io/) (Kubernetes) itself. Add these variables to your `terraform.tfvars` if you want to override any of them, but please be aware that versions other than the ones preconfigured in `variables.tf` are untested and thus not supported.
+
 #### Cluster sizing recommendations for your `terraform.tfvars`
 
-Here are some examples for possible cluster sizes:
+There are also separate configuration variables for each aspect of the virtual machines that will be provisioned by this Terraform module. Have a look at the **Kubernetes resources** section in `variables.tf` if you want to have more control over the size and resources of your Kubernetes cluster.
+
+Here are some examples for possible cluster size customizations:
 
 ##### Small / Starter
 | Node type | Setting | Variable name | Value |

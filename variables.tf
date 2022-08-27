@@ -106,6 +106,9 @@ variable "k8s_ssh_private_key" {
   description = "SSH private key of all K8s nodes"
 }
 
+# ======================================================================================================================
+# Kubernetes resources
+# ======================================================================================================================
 variable "k8s_bastion_memory" {
   description = "Memory of K8s bastion host (in MB)"
   default     = 1024
