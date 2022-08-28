@@ -1,4 +1,4 @@
-## Note: this project has been moved to https://github.com/swisscom/terraform-dcs-kubernetes, go there if you want to report issues or open pull requests.
+## Note: this project has been moved to [https://github.com/swisscom/terraform-dcs-kubernetes](https://github.com/swisscom/terraform-dcs-kubernetes), go there if you want to report issues or open pull requests.
 
 # terraform-vcloud-kubernetes
 
