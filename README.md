@@ -2,12 +2,12 @@
 
 # terraform-vcloud-kubernetes
 
-[![Build](https://img.shields.io/github/workflow/status/JamesClonk/terraform-vcloud-kubernetes/Update?label=Build)](https://github.com/JamesClonk/terraform-vcloud-kubernetes/actions/workflows/update.yml)
-[![License](https://img.shields.io/badge/License-Apache--2.0-lightgrey)](https://github.com/JamesClonk/terraform-vcloud-kubernetes/blob/master/LICENSE)
+[![Build](https://img.shields.io/github/workflow/status/swisscom/terraform-dcs-kubernetes/Update?label=Build)](https://github.com/swisscom/terraform-dcs-kubernetes/actions/workflows/update.yml)
+[![License](https://img.shields.io/badge/License-Apache--2.0-lightgrey)](https://github.com/swisscom/terraform-dcs-kubernetes/blob/master/LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Kubernetes-blue)](https://kubernetes.io/)
 [![IaC](https://img.shields.io/badge/IaC-Terraform-purple)](https://www.terraform.io/)
 
-Deploy a Kubernetes cluster on vCloud / [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
+Deploy a Kubernetes cluster on [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
 
 -----
 
@@ -24,6 +24,7 @@ Table of Contents
       * [API User](#api-user)
     - [Download Ubuntu OS image](#download-ubuntu-os-image)
   + [Configuration](#configuration)
+    - [Domain name](#domain-name)
     - [Helm charts](#helm-charts)
     - [Cluster sizing recommendations](#cluster-sizing-recommendations)
       * [Small / Starter](#small--starter)
@@ -38,6 +39,17 @@ Table of Contents
   + [Longhorn](#longhorn)
 
 ## Kubernetes cluster with k3s
+
+This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
+It consists of three different submodules, [infrastructure](/infrastructure/), [kubernetes](/kubernetes/) and [deployments](/deployments/). Each of these is responsible for a specific subset of features provided by the overall Terraform module.
+
+The **infrastructure** module will provision resources on DCS+ and setup a private internal network (10.0.80.0/24 CIDR by default), attach an Edge Gateway with an external public IP and configure loadbalancing services, deploy a bastion host (jumphost) for external SSH access into the private network, and finally a set of Kubernetes control plane and worker nodes for hosting your workload.
+
+The **kubernetes** module will then connect via SSH over the bastion host to all those control plane and worker nodes and install a K3s Kubernetes cluster on them.
+
+Finally the **deployments** module is responsible for installing system components and software on to the Kubernetes cluster. It does most of its work through the official Helm charts of each component, plus some additional customization directly via kubectl / manifests.
+
+The final result is a fully functioning, highly available Kubernetes cluster, complete with all the batteries included you need to get you started. *Ingress* Controller for HTTP virtual hosting / routing, TLS certificate management with automatic Let's Encrypt certificates for all your HTTPS traffic, *PersistVolume* and storage management with optional backups, and an entire monitoring stack for metrics and logs.
 
 ### Architecture
 ![DCS+ Kubernetes Architecture](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s.png)
@@ -87,6 +99,8 @@ See the official DCS+ documentation on [Create Internet Access](https://dcsguide
 
 Configure the name of this Edge Gateway in `terraform.tfvars -> vcd_edgegateway`.
 
+> **Note**: Also have a look in the vCloud Director web UI and check what the external/public IP assigned to this newly created Edge Gateway is. You need the IP to set up a DNS *A* and a *CNAME* record with it.
+
 ##### API User
 
 Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **vCloudDirector API User**. Make sure to leave *"Read only user?"* unchecked, otherwise your new API user will not be able to do anything!
@@ -98,13 +112,13 @@ Make sure you also set the API URL at `vcd_api_url`. Check out the official DCS+
 
 #### Download Ubuntu OS image
 
-Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
+:warning: Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
 It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
 ```bash
 $ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
 ```
 
-> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded! :warning:
+> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
 
 ### Configuration
 
@@ -135,6 +149,21 @@ You can just copy this file over to `terraform.tfvars` and start editing it to f
 $ cp terraform.example.tfvars terraform.tfvars
 $ vim terraform.tfvars
 ```
+
+#### Domain name
+
+The variable `k8s_domain_name` plays an important role in setting up your Kubernetes cluster. Many of the components that are installed will have [Ingresses](https://kubernetes.io/docs/concepts/services-networking/ingress/) created and configured with that domain name as part of their hostname. For example Grafana will be made available on `https://grafana.<k8s_domain_name>`.
+
+In order for this to work correctly you should setup a new DNS **A** record for the domain name you want to be using, pointing it to the external/public IP of the Edge Gateway. Look for the IP in the vCloud Director web UI. After that you will also have to add a wildcard **CNAME** record, pointing to the newly created *A* record.
+
+For example, if you want to use `my-kubernetes.my-domain.com`, the DNS entries would look something like this:
+```bash
+;ANSWER
+*.my-kubernetes.my-domain.com. 600 IN CNAME my-kubernetes.my-domain.com.
+my-kubernetes.my-domain.com. 600 IN A 147.5.206.13
+```
+
+> **Note**: If you do not set `k8s_domain_name`, or set it to an empty value, then the Terraform module will fallback to using `<loadbalancer_IP>.nip.io`. This should work for basic Ingress access, but might cause issues for automatic Let's Encrypt certificates!
 
 #### Helm charts
 
@@ -222,9 +251,9 @@ Outputs:
 
 cluster_info = "export KUBECONFIG=kubeconfig; kubectl cluster-info; kubectl get pods -A"
 grafana_admin_password = "export KUBECONFIG=kubeconfig; kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo"
-grafana_url = "https://grafana.your-domain-name.com"
+grafana_url = "https://grafana.my-kubernetes.my-domain.com"
 kubernetes_dashboard_token = "export KUBECONFIG=kubeconfig; kubectl -n kubernetes-dashboard create token kubernetes-dashboard"
-kubernetes_dashboard_url = "https://dashboard.your-domain-name.com"
+kubernetes_dashboard_url = "https://dashboard.my-kubernetes.my-domain.com"
 loadbalancer_ip = "147.5.206.133"
 longhorn_dashboard = "export KUBECONFIG=kubeconfig; kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80"
 ```
@@ -277,7 +306,7 @@ By default (unless configured otherwise in your `terraform.tfvars`) once the dep
 ### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
 
-The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
+The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.my-kubernetes.my-domain.com](https://grafana.my-kubernetes.my-domain.com) (with *my-kubernetes.my-domain.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 In order to login you will first need to request a temporary access token from your Kubernetes cluster:
 ```bash
@@ -289,7 +318,7 @@ With this token you will be able to sign in into the dashboard.
 ### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
 
-The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
+The Grafana dashboard will automatically be available to you after installation under [https://grafana.my-kubernetes.my-domain.com](https://grafana.my-kubernetes.my-domain.com) (with *my-kubernetes.my-domain.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 The username for accessing Grafana will be `admin` and the password can be retrieved from Kubernetes by running:
 ```bash
