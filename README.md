@@ -1,3 +1,5 @@
+## Note: this project has been moved to https://github.com/swisscom/terraform-dcs-kubernetes, go there if you want to report issues or open pull requests.
+
 # terraform-vcloud-kubernetes
 
 [![Build](https://img.shields.io/github/workflow/status/JamesClonk/terraform-vcloud-kubernetes/Update?label=Build)](https://github.com/JamesClonk/terraform-vcloud-kubernetes/actions/workflows/update.yml)
