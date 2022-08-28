@@ -37,6 +37,17 @@ Table of Contents
 
 ## Kubernetes cluster with k3s
 
+This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
+It consists of three different submodules, [infrastructure](/infrastructure/), [kubernetes](/kubernetes/) and [deployments](/deployments/). Each of these is responsible for a specific subset of features provided by the overall Terraform module.
+
+The **infrastructure** module will provision resources on DCS+ and setup a private internal network (10.0.80.0/24 CIDR by default), attach an Edge Gateway with an external public IP and configure loadbalancing services, deploy a bastion host (jumphost) for external SSH access into the private network, and finally a set of Kubernetes control plane and worker nodes for hosting your workload.
+
+The **kubernetes** module will then connect via SSH over the bastion host to all those control plane and worker nodes and install a K3s Kubernetes cluster on them.
+
+Finally the **deployments** module is responsible for installing system components and software on to the Kubernetes cluster. It does most of its work through the official Helm charts of each component, plus some additional customization directly via kubectl / manifests.
+
+The final result is a fully functioning, highly available Kubernetes cluster, complete with all the batteries included you need to get you started. *Ingress* Controller for HTTP virtual hosting / routing, TLS certificate management with automatic Let's Encrypt certificates for all your HTTPS traffic, *PersistVolume* and storage management with optional backups, and an entire monitoring stack for metrics and logs.
+
 ### Architecture
 ![DCS+ Kubernetes Architecture](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s.png)
 
