@@ -1,4 +1,6 @@
-# terraform-dcs-kubernetes
+## Note: this project has been moved to https://github.com/swisscom/terraform-dcs-kubernetes, go there if you want to report issues or open pull requests.
+
+# terraform-vcloud-kubernetes
 
 [![Build](https://img.shields.io/github/workflow/status/swisscom/terraform-dcs-kubernetes/Update?label=Build)](https://github.com/swisscom/terraform-dcs-kubernetes/actions/workflows/update.yml)
 [![License](https://img.shields.io/badge/License-Apache--2.0-lightgrey)](https://github.com/swisscom/terraform-dcs-kubernetes/blob/master/LICENSE)
