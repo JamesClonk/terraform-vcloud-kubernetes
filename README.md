@@ -152,7 +152,7 @@ $ vim terraform.tfvars
 
 The variable `k8s_domain_name` plays an important role in setting up your Kubernetes cluster. Many of the components that are installed will have [Ingresses](https://kubernetes.io/docs/concepts/services-networking/ingress/) created and configured with that domain name as part of their hostname. For example Grafana will be made available on `https://grafana.<k8s_domain_name>`.
 
-In order for this to work correctly you should setup a new DNS **A** and also a **CNAME** record for domain name you want to be using, pointing it to the external/public IP of the Edge Gateway. Look for the IP in the vCloud Director web UI.
+In order for this to work correctly you should setup a new DNS **A** record for the domain name you want to be using, pointing it to the external/public IP of the Edge Gateway. Look for the IP in the vCloud Director web UI. After that you will also have to add a wildcard **CNAME** record, pointing to the newly created *A* record.
 
 For example, if you want to use `my-kubernetes.my-domain.com`, the DNS entries would look something like this:
 ```bash
