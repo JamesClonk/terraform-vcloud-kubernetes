@@ -96,6 +96,8 @@ See the official DCS+ documentation on [Create Internet Access](https://dcsguide
 
 Configure the name of this Edge Gateway in `terraform.tfvars -> vcd_edgegateway`.
 
+> **Note**: Also have a look in the vCloud Director web UI and check what the external/public IP assigned to this newly created Edge Gateway is. You need the IP to set up a DNS *A* and a *CNAME* record with it.
+
 ##### API User
 
 Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **vCloudDirector API User**. Make sure to leave *"Read only user?"* unchecked, otherwise your new API user will not be able to do anything!
@@ -107,13 +109,13 @@ Make sure you also set the API URL at `vcd_api_url`. Check out the official DCS+
 
 #### Download Ubuntu OS image
 
-Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
+:warning: Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
 It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
 ```bash
 $ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
 ```
 
-> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded! :warning:
+> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
 
 ### Configuration
 
@@ -143,6 +145,19 @@ You can just copy this file over to `terraform.tfvars` and start editing it to f
 ```bash
 $ cp terraform.example.tfvars terraform.tfvars
 $ vim terraform.tfvars
+```
+
+#### Domain name
+
+The variable `k8s_domain_name` plays an important role in setting up your Kubernetes cluster. Many of the components that are installed will have [Ingresses](https://kubernetes.io/docs/concepts/services-networking/ingress/) created and configured with that domain name as part of their hostname. For example Grafana will be made available on `https://grafana.<k8s_domain_name>`.
+
+In order for this to work correctly you should setup a new DNS **A** and also a **CNAME** record for domain name you want to be using, pointing it to the external/public IP of the Edge Gateway. Look for the IP in the vCloud Director web UI.
+
+For example, if you want to use `my-kubernetes.my-domain.com`, the DNS entries would look something like this:
+```bash
+;ANSWER
+*.my-kubernetes.my-domain.com. 600 IN CNAME my-kubernetes.my-domain.com.
+my-kubernetes.my-domain.com. 600 IN A 147.5.206.13
 ```
 
 #### Helm charts
@@ -231,9 +246,9 @@ Outputs:
 
 cluster_info = "export KUBECONFIG=kubeconfig; kubectl cluster-info; kubectl get pods -A"
 grafana_admin_password = "export KUBECONFIG=kubeconfig; kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | base64 -d; echo"
-grafana_url = "https://grafana.your-domain-name.com"
+grafana_url = "https://grafana.my-kubernetes.my-domain.com"
 kubernetes_dashboard_token = "export KUBECONFIG=kubeconfig; kubectl -n kubernetes-dashboard create token kubernetes-dashboard"
-kubernetes_dashboard_url = "https://dashboard.your-domain-name.com"
+kubernetes_dashboard_url = "https://dashboard.my-kubernetes.my-domain.com"
 loadbalancer_ip = "147.5.206.133"
 longhorn_dashboard = "export KUBECONFIG=kubeconfig; kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80"
 ```
@@ -286,7 +301,7 @@ By default (unless configured otherwise in your `terraform.tfvars`) once the dep
 ### Kubernetes-Dashboard
 ![DCS+ Dashboard](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_dashboard.png)
 
-The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
+The Kubernetes dashboard will automatically be available to you after installation under [https://dashboard.my-kubernetes.my-domain.com](https://grafana.my-kubernetes.my-domain.com) (with *my-kubernetes.my-domain.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 In order to login you will first need to request a temporary access token from your Kubernetes cluster:
 ```bash
@@ -298,7 +313,7 @@ With this token you will be able to sign in into the dashboard.
 ### Grafana
 ![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_grafana.png)
 
-The Grafana dashboard will automatically be available to you after installation under [https://grafana.your-domain-name.com](https://grafana.your-domain-name.com) (with *your-domain-name.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
+The Grafana dashboard will automatically be available to you after installation under [https://grafana.my-kubernetes.my-domain.com](https://grafana.my-kubernetes.my-domain.com) (with *my-kubernetes.my-domain.com* being the value you configured in `terraform.tfvars -> k8s_domain_name`)
 
 The username for accessing Grafana will be `admin` and the password can be retrieved from Kubernetes by running:
 ```bash
