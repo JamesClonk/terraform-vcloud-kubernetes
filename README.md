@@ -22,6 +22,7 @@ Table of Contents
       * [API User](#api-user)
     - [Download Ubuntu OS image](#download-ubuntu-os-image)
   + [Configuration](#configuration)
+    - [Domain name](#domain-name)
     - [Helm charts](#helm-charts)
     - [Cluster sizing recommendations](#cluster-sizing-recommendations)
       * [Small / Starter](#small--starter)
@@ -159,6 +160,8 @@ For example, if you want to use `my-kubernetes.my-domain.com`, the DNS entries w
 *.my-kubernetes.my-domain.com. 600 IN CNAME my-kubernetes.my-domain.com.
 my-kubernetes.my-domain.com. 600 IN A 147.5.206.13
 ```
+
+> **Note**: If you do not set `k8s_domain_name`, or set it to an empty value, then the Terraform module will fallback to using `<loadbalancer_IP>.nip.io`. This should work for basic Ingress access, but might cause issues for automatic Let's Encrypt certificates!
 
 #### Helm charts
 
