@@ -47,7 +47,7 @@ The **kubernetes** module will then connect via SSH over the bastion host to all
 
 Finally the **deployments** module is responsible for installing system components and software on to the Kubernetes cluster. It does most of its work through the official Helm charts of each component, plus some additional customization directly via kubectl / manifests.
 
-The final result is a fully functioning, highly available Kubernetes cluster, complete with all the batteries included you need to get you started. *Ingress* Controller for HTTP virtual hosting / routing, TLS certificate management with automatic Let's Encrypt certificates for all your HTTPS traffic, *PersistVolume* and storage management with optional backups, and an entire monitoring stack for metrics and logs.
+The final result is a fully functioning, highly available Kubernetes cluster, complete with all the batteries included you need to get you started. *Ingress* Controller for HTTP virtual hosting / routing, TLS certificate management with automatic Let's Encrypt certificates for all your HTTPS traffic, *PersistentVolume* and storage management with optional backups, and an entire monitoring stack for metrics and logs.
 
 ### Architecture
 ![DCS+ Kubernetes Architecture](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s.png)
