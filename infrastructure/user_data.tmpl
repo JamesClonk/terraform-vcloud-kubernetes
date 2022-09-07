@@ -44,6 +44,7 @@ packages:
 - open-iscsi
 
 runcmd:
+- mount bpffs -t bpf /sys/fs/bpf
 - netplan apply
 - ufw disable
 - systemctl enable iscsid.service
