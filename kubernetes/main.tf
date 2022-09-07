@@ -36,6 +36,10 @@ module "k3s" {
       flags = [
         "--write-kubeconfig-mode '0644'",
         "--node-taint CriticalAddonsOnly=true:NoExecute",
+        "--kube-controller-manager-arg allocate-node-cidrs",
+        "--flannel-backend none",
+        "--disable-kube-proxy",
+        "--disable-network-policy",
         "--disable traefik",
         "--disable local-storage",
         "--tls-san ${var.loadbalancer_ip}",
