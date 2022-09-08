@@ -35,6 +35,7 @@ Table of Contents
   + [Kubernetes-Dashboard](#kubernetes-dashboard)
   + [Grafana](#grafana)
   + [Longhorn](#longhorn)
+  + [Cilium Hubble UI](#cilium-hubble-ui)
 
 ## Kubernetes cluster with k3s
 
@@ -56,6 +57,7 @@ The final result is a fully functioning, highly available Kubernetes cluster, co
 
 | Component | Type | Description |
 | --- | --- | --- |
+| [Cilium](https://cilium.io/) | Networking | An open-source, cloud native and eBPF-based Kubernetes CNI that is providing, securing and observing network connectivity between container workloads |
 | [Longhorn](https://longhorn.io/) | Storage | Highly available persistent storage for Kubernetes, provides cloud-native block storage with backup functionality |
 | [Ingress NGINX](https://kubernetes.github.io/ingress-nginx/) | Routing | Provides HTTP traffic routing, load balancing, SSL termination and name-based virtual hosting |
 | [Cert Manager](https://cert-manager.io/) | Certificates | Cloud-native, automated TLS certificate management and [Let's Encrypt](https://letsencrypt.org/) integration for Kubernetes |
@@ -331,3 +333,12 @@ To access the Longhorn dashboard you have to initialize a localhost port-forward
 $ kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
 ```
 This will setup a port-forwarding for `localhost:9999` on your machine. Now you can open the Longhorn dashboard in your browser by going to [http://localhost:9999/#/dashboard](http://localhost:9999/).
+
+### Cilium Hubble UI
+![DCS+ Hubble](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_cilium_hubble.png)
+
+The easiest way to access the Cilium Hubble UI is to download and install the [Cilium CLI](https://github.com/cilium/cilium-cli), and then simply run the following command:
+```bash
+$ cilium hubble ui
+```
+This will setup a port-forwarding in the background and open up a browser, pointing to the Hubble UI at [http://localhost:12000](http://localhost:12000).
