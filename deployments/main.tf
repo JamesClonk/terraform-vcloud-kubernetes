@@ -71,17 +71,6 @@ resource "helm_release" "ingress_nginx" {
   depends_on = [time_sleep.wait_for_kubernetes]
 }
 
-data "kubectl_path_documents" "hairpin_proxy" {
-  pattern = "${path.module}/external/hairpin-proxy-0.2.1.yaml"
-}
-
-resource "kubectl_manifest" "hairpin_proxy" {
-  for_each   = toset(data.kubectl_path_documents.hairpin_proxy.documents)
-  yaml_body  = each.value
-  apply_only = true
-  depends_on = [helm_release.ingress_nginx]
-}
-
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -97,7 +86,7 @@ resource "helm_release" "cert_manager" {
 
   depends_on = [
     helm_release.ingress_nginx,
-    kubectl_manifest.hairpin_proxy
+    null_resource.hairpin_proxy
   ]
 }
 
@@ -168,7 +157,7 @@ resource "helm_release" "kubernetes_dashboard" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
-    kubectl_manifest.hairpin_proxy,
+    null_resource.hairpin_proxy,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
   ]
