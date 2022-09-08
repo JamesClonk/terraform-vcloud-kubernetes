@@ -84,10 +84,7 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  depends_on = [
-    helm_release.ingress_nginx,
-    null_resource.hairpin_proxy
-  ]
+  depends_on = [helm_release.ingress_nginx]
 }
 
 resource "kubectl_manifest" "cluster_issuer" {
@@ -157,7 +154,6 @@ resource "helm_release" "kubernetes_dashboard" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
-    null_resource.hairpin_proxy,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
   ]
