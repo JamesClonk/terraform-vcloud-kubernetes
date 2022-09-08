@@ -13,7 +13,7 @@ resource "null_resource" "k8s_cilium_install" {
 
   connection {
     type                = "ssh"
-    host                = cidrhost(var.k8s_cidr, 50)
+    host                = cidrhost(var.k8s_node_cidr, 50)
     user                = var.k8s_control_plane_username
     private_key         = var.k8s_ssh_private_key
     bastion_host        = var.k8s_bastion_ip
@@ -30,10 +30,10 @@ resource "null_resource" "k8s_cilium_install" {
       set -o pipefail
 
       mkdir -p ~/.kube || true
-      # sed 's/127.0.0.1/${cidrhost(var.k8s_cidr, 50)}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
+      # sed 's/127.0.0.1/${cidrhost(var.k8s_node_cidr, 50)}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
       sed 's/127.0.0.1/kubernetes.default.svc.cluster.local/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
       export KUBECONFIG=~/.kube/config
-      grep 'kubernetes.default.svc.cluster.local' /etc/hosts >/dev/null || sudo sh -c 'echo "${cidrhost(var.k8s_cidr, 50)} kubernetes.default.svc.cluster.local" >> /etc/hosts'
+      grep 'kubernetes.default.svc.cluster.local' /etc/hosts >/dev/null || sudo sh -c 'echo "${cidrhost(var.k8s_node_cidr, 50)} kubernetes.default.svc.cluster.local" >> /etc/hosts'
 
       if [ ! -f "/usr/local/bin/cilium" ]; then
         # download cilium cli
@@ -84,7 +84,7 @@ resource "null_resource" "k8s_cilium_status" {
 
   connection {
     type                = "ssh"
-    host                = cidrhost(var.k8s_cidr, 50)
+    host                = cidrhost(var.k8s_node_cidr, 50)
     user                = var.k8s_control_plane_username
     private_key         = var.k8s_ssh_private_key
     bastion_host        = var.k8s_bastion_ip

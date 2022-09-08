@@ -63,7 +63,7 @@ module "infrastructure" {
   vcd_ova_file        = var.vcd_ova_file
   vcd_edgegateway     = var.vcd_edgegateway
 
-  k8s_cidr                    = var.k8s_cidr
+  k8s_node_cidr               = var.k8s_node_cidr
   k8s_cluster_name            = var.k8s_cluster_name
   k8s_ssh_public_key          = var.k8s_ssh_public_key
   k8s_bastion_memory          = var.k8s_bastion_memory
@@ -90,7 +90,9 @@ module "kubernetes" {
     http = http
   }
 
-  k8s_cidr         = var.k8s_cidr
+  k8s_node_cidr    = var.k8s_node_cidr
+  k8s_pod_cidr     = var.k8s_pod_cidr
+  k8s_service_cidr = var.k8s_service_cidr
   k8s_cluster_name = var.k8s_cluster_name
 
   k8s_ssh_private_key        = var.k8s_ssh_private_key

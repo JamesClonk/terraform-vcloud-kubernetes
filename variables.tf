@@ -89,9 +89,17 @@ variable "k8s_domain_name" {
   # If you do not set a value here, the terraform module will fallback to using <edgegateway-IP>.nip.io.
 }
 
-variable "k8s_cidr" {
-  description = "IP range for Kubernetes network in CIDR notation"
+variable "k8s_node_cidr" {
+  description = "IP range for Kubernetes node network in CIDR notation"
   default     = "10.0.80.0/24"
+}
+variable "k8s_pod_cidr" {
+  description = "IP range for Kubernetes pod network in CIDR notation"
+  default     = "10.82.0.0/16"
+}
+variable "k8s_service_cidr" {
+  description = "IP range for Kubernetes service network in CIDR notation"
+  default     = "10.84.0.0/16"
 }
 
 variable "k8s_cluster_name" {

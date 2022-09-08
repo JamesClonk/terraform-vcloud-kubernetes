@@ -1,6 +1,13 @@
-variable "k8s_cidr" {
+variable "k8s_node_cidr" {
   default = "10.0.80.0/24"
 }
+variable "k8s_pod_cidr" {
+  default = "10.82.0.0/16"
+}
+variable "k8s_service_cidr" {
+  default = "10.84.0.0/16"
+}
+
 variable "k8s_cluster_name" {
   default = "kubernetes"
 }

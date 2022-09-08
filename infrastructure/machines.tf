@@ -27,7 +27,7 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.k8s_cidr, 20)
+    ip                 = cidrhost(var.k8s_node_cidr, 20)
     is_primary         = true
   }
 
@@ -37,8 +37,8 @@ resource "vcd_vapp_vm" "k8s_bastion" {
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-bastion",
       "sshkey"   = var.k8s_ssh_public_key,
-      "ip"       = cidrhost(var.k8s_cidr, 20),
-      "gateway"  = cidrhost(var.k8s_cidr, 1)
+      "ip"       = cidrhost(var.k8s_node_cidr, 20),
+      "gateway"  = cidrhost(var.k8s_node_cidr, 1)
     }))
   }
 
@@ -78,7 +78,7 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.k8s_cidr, 50 + count.index)
+    ip                 = cidrhost(var.k8s_node_cidr, 50 + count.index)
     is_primary         = true
   }
 
@@ -88,8 +88,8 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-master-${count.index}",
       "sshkey"   = var.k8s_ssh_public_key,
-      "ip"       = cidrhost(var.k8s_cidr, 50 + count.index),
-      "gateway"  = cidrhost(var.k8s_cidr, 1)
+      "ip"       = cidrhost(var.k8s_node_cidr, 50 + count.index),
+      "gateway"  = cidrhost(var.k8s_node_cidr, 1)
     }))
   }
 
@@ -130,7 +130,7 @@ resource "vcd_vapp_vm" "k8s_worker" {
     type               = "org"
     name               = vcd_network_routed_v2.k8s_network.name
     ip_allocation_mode = "MANUAL"
-    ip                 = cidrhost(var.k8s_cidr, 100 + count.index)
+    ip                 = cidrhost(var.k8s_node_cidr, 100 + count.index)
     is_primary         = true
   }
 
@@ -140,8 +140,8 @@ resource "vcd_vapp_vm" "k8s_worker" {
     "user-data" = base64encode(templatefile("${path.module}/user_data.tmpl", {
       "hostname" = "${var.k8s_cluster_name}-worker-${count.index}",
       "sshkey"   = var.k8s_ssh_public_key,
-      "ip"       = cidrhost(var.k8s_cidr, 100 + count.index),
-      "gateway"  = cidrhost(var.k8s_cidr, 1)
+      "ip"       = cidrhost(var.k8s_node_cidr, 100 + count.index),
+      "gateway"  = cidrhost(var.k8s_node_cidr, 1)
     }))
   }
 

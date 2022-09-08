@@ -18,10 +18,15 @@ module "k3s" {
   drain_timeout  = "600s"
   managed_fields = ["label", "taint"]
 
+  cidr = {
+    pods     = var.k8s_pod_cidr
+    services = var.k8s_service_cidr
+  }
+
   servers = {
     for i in range(var.k8s_control_plane_instances) :
     "k8s-server-${i}" => {
-      ip = cidrhost(var.k8s_cidr, 50 + i)
+      ip = cidrhost(var.k8s_node_cidr, 50 + i)
       connection = {
         user                = var.k8s_control_plane_username
         private_key         = var.k8s_ssh_private_key
@@ -51,7 +56,7 @@ module "k3s" {
   agents = {
     for i in range(var.k8s_worker_instances) :
     "k8s-worker-${i}" => {
-      ip = cidrhost(var.k8s_cidr, 100 + i)
+      ip = cidrhost(var.k8s_node_cidr, 100 + i)
       connection = {
         user                = var.k8s_worker_username
         private_key         = var.k8s_ssh_private_key

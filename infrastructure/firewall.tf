@@ -42,7 +42,7 @@ resource "vcd_nsxv_firewall_rule" "k8s_network" {
 
   action = "accept"
   source {
-    ip_addresses = ["${var.k8s_cidr}"]
+    ip_addresses = ["${var.k8s_node_cidr}", "${var.k8s_pod_cidr}", "${var.k8s_service_cidr}"]
   }
   destination {
     ip_addresses = ["any"]
