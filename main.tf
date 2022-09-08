@@ -78,7 +78,7 @@ module "infrastructure" {
 }
 
 resource "time_sleep" "wait_for_infrastructure" {
-  create_duration = "60s"
+  create_duration = "30s"
   depends_on      = [module.infrastructure.k8s_nodes]
 }
 

@@ -1,6 +1,6 @@
 resource "time_sleep" "wait_for_kubernetes" {
   depends_on      = [module.k3s.kubernetes_ready]
-  create_duration = "120s"
+  create_duration = "60s"
 }
 
 resource "null_resource" "k8s_cilium_install" {
@@ -25,7 +25,12 @@ resource "null_resource" "k8s_cilium_install" {
   provisioner "remote-exec" {
     inline = [
       <<-EOT
-      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+      set -e
+      set -o pipefail
+
+      mkdir -p ~/.kube || true
+      sed 's/127.0.0.1/${var.loadbalancer_ip}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
+      export KUBECONFIG=~/.kube/config
 
       if [ ! -f "/usr/local/bin/cilium" ]; then
         # download cilium cli
@@ -36,7 +41,7 @@ resource "null_resource" "k8s_cilium_install" {
       fi
 
       # install cilium
-      cilium install --restart-unmanaged-pods --wait
+      cilium install --restart-unmanaged-pods --wait --wait-duration 15m
 
       # enable hubble observability, with UI
       cilium hubble enable --ui --wait
@@ -71,6 +76,9 @@ resource "null_resource" "k8s_cilium_status" {
   provisioner "remote-exec" {
     inline = [
       <<-EOT
+      set -e
+      set -o pipefail
+
       export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
       if [ ! -f "/usr/local/bin/cilium" ]; then
@@ -82,7 +90,7 @@ resource "null_resource" "k8s_cilium_status" {
       fi
 
       # check status
-      cilium status --wait --wait-duration 1m
+      cilium status --wait
       EOT
     ]
   }
