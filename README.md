@@ -39,7 +39,7 @@ Table of Contents
 
 ## Kubernetes cluster with k3s
 
-This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
+This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as cilium, ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
 It consists of three different submodules, [infrastructure](/infrastructure/), [kubernetes](/kubernetes/) and [deployments](/deployments/). Each of these is responsible for a specific subset of features provided by the overall Terraform module.
 
 The **infrastructure** module will provision resources on DCS+ and setup a private internal network (10.80.0.0/24 CIDR by default), attach an Edge Gateway with an external public IP and configure loadbalancing services, deploy a bastion host (jumphost) for external SSH access into the private network, and finally a set of Kubernetes control plane and worker nodes for hosting your workload.
