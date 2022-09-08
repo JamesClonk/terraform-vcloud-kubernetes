@@ -46,6 +46,8 @@ resource "vcd_nsxv_snat" "outbound" {
 
   original_address   = var.k8s_cidr
   translated_address = data.vcd_edgegateway.k8s_gateway.default_external_network_ip
+
+  depends_on = [vcd_vapp_org_network.k8s_org_network]
 }
 
 resource "vcd_nsxv_dnat" "bastion_ssh" {
@@ -60,4 +62,6 @@ resource "vcd_nsxv_dnat" "bastion_ssh" {
   translated_address = cidrhost(var.k8s_cidr, 20)
   translated_port    = 22
   protocol           = "tcp"
+
+  depends_on = [vcd_vapp_org_network.k8s_org_network]
 }
