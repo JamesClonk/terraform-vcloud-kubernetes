@@ -1,48 +1,24 @@
 terraform {
   required_providers {
     helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.6.0"
+      source = "hashicorp/helm"
     }
     kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.12.1"
+      source = "hashicorp/kubernetes"
     }
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
+      source = "gavinbunney/kubectl"
     }
   }
-  required_version = ">= 1.2.0"
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = var.cluster_api_endpoint
-    cluster_ca_certificate = var.cluster_ca_certificate
-    client_certificate     = var.client_certificate
-    client_key             = var.client_key
-  }
-}
-
-provider "kubernetes" {
-  host                   = var.cluster_api_endpoint
-  cluster_ca_certificate = var.cluster_ca_certificate
-  client_certificate     = var.client_certificate
-  client_key             = var.client_key
-}
-
-provider "kubectl" {
-  host                   = var.cluster_api_endpoint
-  cluster_ca_certificate = var.cluster_ca_certificate
-  client_certificate     = var.client_certificate
-  client_key             = var.client_key
-  load_config_file       = false
-  apply_retry_count      = 5
 }
 
 resource "time_sleep" "wait_for_kubernetes" {
-  create_duration = "120s"
+  create_duration = "30s"
+
+  depends_on = [
+    var.kubernetes_ready,
+    var.cilium_ready
+  ]
 }
 
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.
@@ -95,17 +71,6 @@ resource "helm_release" "ingress_nginx" {
   depends_on = [time_sleep.wait_for_kubernetes]
 }
 
-data "kubectl_path_documents" "hairpin_proxy" {
-  pattern = "${path.module}/external/hairpin-proxy-0.2.1.yaml"
-}
-
-resource "kubectl_manifest" "hairpin_proxy" {
-  for_each   = toset(data.kubectl_path_documents.hairpin_proxy.documents)
-  yaml_body  = each.value
-  apply_only = true
-  depends_on = [helm_release.ingress_nginx]
-}
-
 resource "helm_release" "cert_manager" {
   name             = "cert-manager"
   repository       = "https://charts.jetstack.io"
@@ -119,10 +84,7 @@ resource "helm_release" "cert_manager" {
     value = "true"
   }
 
-  depends_on = [
-    helm_release.ingress_nginx,
-    kubectl_manifest.hairpin_proxy
-  ]
+  depends_on = [helm_release.ingress_nginx]
 }
 
 resource "kubectl_manifest" "cluster_issuer" {
@@ -192,7 +154,6 @@ resource "helm_release" "kubernetes_dashboard" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
-    kubectl_manifest.hairpin_proxy,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
   ]
@@ -361,6 +322,7 @@ resource "helm_release" "grafana" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
+    helm_release.longhorn,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
     helm_release.prometheus,

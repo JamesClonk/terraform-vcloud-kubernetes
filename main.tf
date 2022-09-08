@@ -28,8 +28,27 @@ terraform {
   required_version = ">= 1.2.0"
 }
 
+provider "vcd" {
+  url      = var.vcd_api_url
+  user     = var.vcd_api_username
+  password = var.vcd_api_password
+  #token    = var.vcd_token
+  org = var.vcd_org
+  vdc = var.vcd_vdc
+
+  auth_type            = var.vcd_auth_type
+  max_retry_timeout    = 120
+  allow_unverified_ssl = true
+
+  logging = var.vcd_logging_enabled
+}
+
 module "infrastructure" {
   source = "./infrastructure"
+
+  providers = {
+    vcd = vcd
+  }
 
   vcd_api_url         = var.vcd_api_url
   vcd_api_username    = var.vcd_api_username
@@ -44,7 +63,7 @@ module "infrastructure" {
   vcd_ova_file        = var.vcd_ova_file
   vcd_edgegateway     = var.vcd_edgegateway
 
-  k8s_cidr                    = var.k8s_cidr
+  k8s_node_cidr               = var.k8s_node_cidr
   k8s_cluster_name            = var.k8s_cluster_name
   k8s_ssh_public_key          = var.k8s_ssh_public_key
   k8s_bastion_memory          = var.k8s_bastion_memory
@@ -58,10 +77,22 @@ module "infrastructure" {
   k8s_worker_disk_size        = var.k8s_worker_disk_size
 }
 
+resource "time_sleep" "wait_for_infrastructure" {
+  create_duration = "30s"
+  depends_on      = [module.infrastructure.k8s_nodes]
+}
+
 module "kubernetes" {
   source = "./kubernetes"
 
-  k8s_cidr         = var.k8s_cidr
+  providers = {
+    tls  = tls
+    http = http
+  }
+
+  k8s_node_cidr    = var.k8s_node_cidr
+  k8s_pod_cidr     = var.k8s_pod_cidr
+  k8s_service_cidr = var.k8s_service_cidr
   k8s_cluster_name = var.k8s_cluster_name
 
   k8s_ssh_private_key        = var.k8s_ssh_private_key
@@ -76,20 +107,59 @@ module "kubernetes" {
   k8s_control_plane_instances = var.k8s_control_plane_instances
   k8s_worker_instances        = var.k8s_worker_instances
 
-  k3s_version = var.k8s_k3s_version
+  k3s_version        = var.k8s_k3s_version
+  cilium_version     = var.k8s_cilium_version
+  cilium_cli_version = var.k8s_cilium_cli_version
 
+  depends_on = [time_sleep.wait_for_infrastructure]
+}
+
+resource "time_sleep" "wait_for_kubernetes" {
+  create_duration = "60s"
   depends_on = [
-    module.infrastructure.k8s_control_plane,
-    module.infrastructure.k8s_worker
+    module.kubernetes.kubernetes_ready,
+    module.kubernetes.cilium_ready
   ]
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
+    cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
+    client_certificate     = module.kubernetes.client_certificate
+    client_key             = module.kubernetes.client_key
+  }
+}
+
+provider "kubernetes" {
+  host                   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
+  cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
+  client_certificate     = module.kubernetes.client_certificate
+  client_key             = module.kubernetes.client_key
+}
+
+provider "kubectl" {
+  host                   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
+  cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
+  client_certificate     = module.kubernetes.client_certificate
+  client_key             = module.kubernetes.client_key
+  load_config_file       = false
+  apply_retry_count      = 5
 }
 
 module "deployments" {
   source = "./deployments"
 
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+    kubectl    = kubectl
+  }
+
   domain_name            = var.k8s_domain_name
   loadbalancer_ip        = module.infrastructure.edge_gateway_external_ip
   kubernetes_ready       = module.kubernetes.kubernetes_ready
+  cilium_ready           = module.kubernetes.cilium_ready
   cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate
@@ -105,4 +175,6 @@ module "deployments" {
   helm_loki                         = var.k8s_helm_loki
   helm_promtail                     = var.k8s_helm_promtail
   helm_grafana                      = var.k8s_helm_grafana
+
+  depends_on = [time_sleep.wait_for_kubernetes]
 }

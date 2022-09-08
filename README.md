@@ -35,13 +35,14 @@ Table of Contents
   + [Kubernetes-Dashboard](#kubernetes-dashboard)
   + [Grafana](#grafana)
   + [Longhorn](#longhorn)
+  + [Cilium Hubble UI](#cilium-hubble-ui)
 
 ## Kubernetes cluster with k3s
 
-This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
+This Terraform module supports you in creating a Kubernetes cluster with [K3s](https://k3s.io/) on [Swisscom DCS+](https://www.swisscom.ch/en/business/enterprise/offer/cloud/cloudservices/dynamic-computing-services.html) infrastructure. It also installs and manages additional deployments on the cluster, such as cilium, ingress-nginx, cert-manager, longhorn, and a whole set of logging/metrics/monitoring related components.
 It consists of three different submodules, [infrastructure](/infrastructure/), [kubernetes](/kubernetes/) and [deployments](/deployments/). Each of these is responsible for a specific subset of features provided by the overall Terraform module.
 
-The **infrastructure** module will provision resources on DCS+ and setup a private internal network (10.0.80.0/24 CIDR by default), attach an Edge Gateway with an external public IP and configure loadbalancing services, deploy a bastion host (jumphost) for external SSH access into the private network, and finally a set of Kubernetes control plane and worker nodes for hosting your workload.
+The **infrastructure** module will provision resources on DCS+ and setup a private internal network (10.80.0.0/24 CIDR by default), attach an Edge Gateway with an external public IP and configure loadbalancing services, deploy a bastion host (jumphost) for external SSH access into the private network, and finally a set of Kubernetes control plane and worker nodes for hosting your workload.
 
 The **kubernetes** module will then connect via SSH over the bastion host to all those control plane and worker nodes and install a K3s Kubernetes cluster on them.
 
@@ -56,10 +57,10 @@ The final result is a fully functioning, highly available Kubernetes cluster, co
 
 | Component | Type | Description |
 | --- | --- | --- |
+| [Cilium](https://cilium.io/) | Networking | An open-source, cloud native and eBPF-based Kubernetes CNI that is providing, securing and observing network connectivity between container workloads |
 | [Longhorn](https://longhorn.io/) | Storage | Highly available persistent storage for Kubernetes, provides cloud-native block storage with backup functionality |
 | [Ingress NGINX](https://kubernetes.github.io/ingress-nginx/) | Routing | Provides HTTP traffic routing, load balancing, SSL termination and name-based virtual hosting |
 | [Cert Manager](https://cert-manager.io/) | Certificates | Cloud-native, automated TLS certificate management and [Let's Encrypt](https://letsencrypt.org/) integration for Kubernetes |
-| [Hairpin Proxy](https://github.com/compumike/hairpin-proxy) | Proxy | PROXY protocol support for internal-to-LoadBalancer traffic for Kubernetes Ingresses, specifically for passing cert-manager self-checks |
 | [Kubernetes Dashboard](https://github.com/kubernetes/dashboard) | Dashboard | A general purpose, web-based UI for Kubernetes clusters that allows users to manage and troubleshoot applications on the cluster, as well as manage the cluster itself |
 | [Prometheus](https://prometheus.io/) | Metrics | An open-source systems monitoring and alerting platform, collects and stores metrics in a time series database |
 | [Loki](https://grafana.com/oss/loki/) | Logs | A horizontally scalable, highly available log aggregation and storage system |
@@ -272,19 +273,18 @@ Metrics-server is running at https://147.5.206.133:6443/api/v1/namespaces/kube-s
 
 $ kubectl get nodes -o wide
 NAME           STATUS   ROLES                       AGE   VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION      CONTAINER-RUNTIME
-k8s-server-0   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.50    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
-k8s-server-1   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.51    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
-k8s-server-2   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.0.80.52    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
-k8s-worker-0   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.100   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
-k8s-worker-1   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.101   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
-k8s-worker-2   Ready    <none>                      39h   v1.24.3+k3s1   10.0.80.102   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-server-0   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.80.0.50    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-server-1   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.80.0.51    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-server-2   Ready    control-plane,etcd,master   40h   v1.24.3+k3s1   10.80.0.52    <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-0   Ready    <none>                      39h   v1.24.3+k3s1   10.80.0.100   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-1   Ready    <none>                      39h   v1.24.3+k3s1   10.80.0.101   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
+k8s-worker-2   Ready    <none>                      39h   v1.24.3+k3s1   10.80.0.102   <none>        Ubuntu 22.04.1 LTS   5.15.0-46-generic   containerd://1.6.6-k3s1
 
 $ kubectl get namespaces
 NAME                   STATUS   AGE
 cert-manager           Active   39h
 default                Active   40h
 grafana                Active   37h
-hairpin-proxy          Active   38h
 ingress-nginx          Active   39h
 kube-node-lease        Active   40h
 kube-public            Active   40h
@@ -331,3 +331,12 @@ To access the Longhorn dashboard you have to initialize a localhost port-forward
 $ kubectl -n longhorn-system port-forward service/longhorn-frontend 9999:80
 ```
 This will setup a port-forwarding for `localhost:9999` on your machine. Now you can open the Longhorn dashboard in your browser by going to [http://localhost:9999/#/dashboard](http://localhost:9999/).
+
+### Cilium Hubble UI
+![DCS+ Hubble](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_cilium_hubble.png)
+
+The easiest way to access the Cilium Hubble UI is to download and install the [Cilium CLI](https://github.com/cilium/cilium-cli), and then simply run the following command:
+```bash
+$ cilium hubble ui
+```
+This will setup a port-forwarding in the background and open up a browser, pointing to the Hubble UI at [http://localhost:12000](http://localhost:12000).

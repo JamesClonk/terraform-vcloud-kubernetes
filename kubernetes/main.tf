@@ -1,15 +1,12 @@
 terraform {
   required_providers {
     tls = {
-      source  = "hashicorp/tls"
-      version = "~> 3.1.0"
+      source = "hashicorp/tls"
     }
     http = {
-      source  = "hashicorp/http"
-      version = "~> 2.1.0"
+      source = "hashicorp/http"
     }
   }
-  required_version = ">= 1.2.0"
 }
 
 module "k3s" {
@@ -21,10 +18,15 @@ module "k3s" {
   drain_timeout  = "600s"
   managed_fields = ["label", "taint"]
 
+  cidr = {
+    pods     = var.k8s_pod_cidr
+    services = var.k8s_service_cidr
+  }
+
   servers = {
     for i in range(var.k8s_control_plane_instances) :
     "k8s-server-${i}" => {
-      ip = cidrhost(var.k8s_cidr, 50 + i)
+      ip = cidrhost(var.k8s_node_cidr, 50 + i)
       connection = {
         user                = var.k8s_control_plane_username
         private_key         = var.k8s_ssh_private_key
@@ -32,10 +34,15 @@ module "k3s" {
         bastion_port        = var.k8s_bastion_port
         bastion_user        = var.k8s_bastion_username
         bastion_private_key = var.k8s_ssh_private_key
+        timeout             = "15m"
       }
       flags = [
         "--write-kubeconfig-mode '0644'",
         "--node-taint CriticalAddonsOnly=true:NoExecute",
+        "--kube-controller-manager-arg allocate-node-cidrs",
+        "--flannel-backend none",
+        "--disable-kube-proxy",
+        "--disable-network-policy",
         "--disable traefik",
         "--disable local-storage",
         "--tls-san ${var.loadbalancer_ip}",
@@ -49,7 +56,7 @@ module "k3s" {
   agents = {
     for i in range(var.k8s_worker_instances) :
     "k8s-worker-${i}" => {
-      ip = cidrhost(var.k8s_cidr, 100 + i)
+      ip = cidrhost(var.k8s_node_cidr, 100 + i)
       connection = {
         user                = var.k8s_worker_username
         private_key         = var.k8s_ssh_private_key
@@ -57,6 +64,7 @@ module "k3s" {
         bastion_port        = var.k8s_bastion_port
         bastion_user        = var.k8s_bastion_username
         bastion_private_key = var.k8s_ssh_private_key
+        timeout             = "15m"
       }
       labels      = { "node.kubernetes.io/pool" = "worker" }
       annotations = { "worker.index" : i }
