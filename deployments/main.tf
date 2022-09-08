@@ -13,7 +13,7 @@ terraform {
 }
 
 resource "time_sleep" "wait_for_kubernetes" {
-  create_duration = "60s"
+  create_duration = "30s"
 
   depends_on = [
     var.kubernetes_ready,

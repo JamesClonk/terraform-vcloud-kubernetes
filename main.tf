@@ -115,7 +115,7 @@ module "kubernetes" {
 }
 
 resource "time_sleep" "wait_for_kubernetes" {
-  create_duration = "120s"
+  create_duration = "60s"
   depends_on = [
     module.kubernetes.kubernetes_ready,
     module.kubernetes.cilium_ready
