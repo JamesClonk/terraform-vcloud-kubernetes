@@ -1,48 +1,24 @@
 terraform {
   required_providers {
     helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.6.0"
+      source = "hashicorp/helm"
     }
     kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.12.1"
+      source = "hashicorp/kubernetes"
     }
     kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
+      source = "gavinbunney/kubectl"
     }
   }
-  required_version = ">= 1.2.0"
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = var.cluster_api_endpoint
-    cluster_ca_certificate = var.cluster_ca_certificate
-    client_certificate     = var.client_certificate
-    client_key             = var.client_key
-  }
-}
-
-provider "kubernetes" {
-  host                   = var.cluster_api_endpoint
-  cluster_ca_certificate = var.cluster_ca_certificate
-  client_certificate     = var.client_certificate
-  client_key             = var.client_key
-}
-
-provider "kubectl" {
-  host                   = var.cluster_api_endpoint
-  cluster_ca_certificate = var.cluster_ca_certificate
-  client_certificate     = var.client_certificate
-  client_key             = var.client_key
-  load_config_file       = false
-  apply_retry_count      = 5
 }
 
 resource "time_sleep" "wait_for_kubernetes" {
   create_duration = "60s"
+
+  depends_on = [
+    var.kubernetes_ready,
+    var.cilium_ready
+  ]
 }
 
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.

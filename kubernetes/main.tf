@@ -1,15 +1,12 @@
 terraform {
   required_providers {
     tls = {
-      source  = "hashicorp/tls"
-      version = "~> 3.1.0"
+      source = "hashicorp/tls"
     }
     http = {
-      source  = "hashicorp/http"
-      version = "~> 2.1.0"
+      source = "hashicorp/http"
     }
   }
-  required_version = ">= 1.2.0"
 }
 
 module "k3s" {

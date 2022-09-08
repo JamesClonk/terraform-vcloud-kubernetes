@@ -1,35 +1,9 @@
-terraform {
-  required_providers {
-    vcd = {
-      source  = "vmware/vcd"
-      version = "~> 3.5.1"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.6.0"
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "~> 2.12.1"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "~> 1.14.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 3.1.0"
-    }
-    http = {
-      source  = "hashicorp/http"
-      version = "~> 2.1.0"
-    }
-  }
-  required_version = ">= 1.2.0"
-}
-
 module "infrastructure" {
   source = "./infrastructure"
+
+  providers = {
+    vcd = vcd
+  }
 
   vcd_api_url         = var.vcd_api_url
   vcd_api_username    = var.vcd_api_username
@@ -61,6 +35,11 @@ module "infrastructure" {
 module "kubernetes" {
   source = "./kubernetes"
 
+  providers = {
+    tls  = tls
+    http = http
+  }
+
   k8s_cidr         = var.k8s_cidr
   k8s_cluster_name = var.k8s_cluster_name
 
@@ -89,9 +68,16 @@ module "kubernetes" {
 module "deployments" {
   source = "./deployments"
 
+  providers = {
+    helm       = helm
+    kubernetes = kubernetes
+    kubectl    = kubectl
+  }
+
   domain_name            = var.k8s_domain_name
   loadbalancer_ip        = module.infrastructure.edge_gateway_external_ip
   kubernetes_ready       = module.kubernetes.kubernetes_ready
+  cilium_ready           = module.kubernetes.cilium_ready
   cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate
@@ -109,6 +95,7 @@ module "deployments" {
   helm_grafana                      = var.k8s_helm_grafana
 
   depends_on = [
+    module.kubernetes.kubernetes_ready,
     module.kubernetes.cilium_ready
   ]
 }
