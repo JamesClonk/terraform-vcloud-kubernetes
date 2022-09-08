@@ -25,12 +25,15 @@ resource "null_resource" "k8s_cilium_install" {
   provisioner "remote-exec" {
     inline = [
       <<-EOT
+      #!/bin/bash
       set -e
       set -o pipefail
 
       mkdir -p ~/.kube || true
-      sed 's/127.0.0.1/${var.loadbalancer_ip}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
+      # sed 's/127.0.0.1/${cidrhost(var.k8s_cidr, 50)}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
+      sed 's/127.0.0.1/kubernetes.default.svc.cluster.local/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
       export KUBECONFIG=~/.kube/config
+      grep 'kubernetes.default.svc.cluster.local' /etc/hosts >/dev/null || sudo sh -c 'echo "${cidrhost(var.k8s_cidr, 50)} kubernetes.default.svc.cluster.local" >> /etc/hosts'
 
       if [ ! -f "/usr/local/bin/cilium" ]; then
         # download cilium cli
@@ -41,16 +44,33 @@ resource "null_resource" "k8s_cilium_install" {
       fi
 
       # install cilium
-      cilium install --restart-unmanaged-pods --wait --wait-duration 15m
+      set +e
+      cilium install --version "${var.cilium_version}" --restart-unmanaged-pods --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
+      CILIUM_EXITCODE=$?
+      set -e
+      if [[ "$CILIUM_EXITCODE" -ne 0 ]]; then
+        grep 'secrets "hubble-server-certs" already exists' cilium_output.txt 1>/dev/null
+      fi
+      rm -f cilium_output.txt || true
+
+      # operator ready?
+      kubectl wait --for condition=available deploy --all --timeout=240s -n "kube-system" | grep 'cilium-operator'
 
       # enable hubble observability, with UI
-      cilium hubble enable --ui --wait
+      set +e
+      cilium hubble enable --ui --wait 2>&1 | tee hubble_output.txt
+      HUBBLE_EXITCODE=$?
+      set -e
+      if [[ "$HUBBLE_EXITCODE" -ne 0 ]]; then
+        grep 'services "hubble-peer" already exists' hubble_output.txt 1>/dev/null
+      fi
+      rm -f hubble_output.txt || true
 
       # check status
       cilium status --wait
 
-      # test connectivity
-      cilium connectivity test --timestamp
+      # # test connectivity
+      # cilium connectivity test --timestamp
       EOT
     ]
   }
@@ -76,6 +96,7 @@ resource "null_resource" "k8s_cilium_status" {
   provisioner "remote-exec" {
     inline = [
       <<-EOT
+      #!/bin/bash
       set -e
       set -o pipefail
 
