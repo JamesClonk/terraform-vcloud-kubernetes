@@ -42,7 +42,7 @@ provider "kubectl" {
 }
 
 resource "time_sleep" "wait_for_kubernetes" {
-  create_duration = "120s"
+  create_duration = "60s"
 }
 
 # Longhorn is required to be installed, otherwise there would be no storage class for PVs/PVCs present on your cluster.
@@ -361,6 +361,7 @@ resource "helm_release" "grafana" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
+    helm_release.longhorn,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
     helm_release.prometheus,

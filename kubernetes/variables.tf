@@ -22,6 +22,6 @@ variable "k8s_worker_username" {}
 
 variable "k8s_ssh_private_key" {}
 
-variable "k3s_version" {
-  default = "v1.24.3+k3s1"
-}
+variable "k3s_version" {}
+variable "cilium_version" {}
+variable "cilium_cli_version" {}

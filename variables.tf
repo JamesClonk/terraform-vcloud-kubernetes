@@ -164,6 +164,16 @@ variable "k8s_k3s_version" {
   default     = "v1.24.4+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
+variable "k8s_cilium_version" {
+  description = "Cilium version to install"
+  default     = "v1.12.1"
+  # See https://github.com/cilium/cilium/releases
+}
+variable "k8s_cilium_cli_version" {
+  description = "Cilium CLI version to use for Cilium installation"
+  default     = "v0.12.3"
+  # See https://github.com/cilium/cilium-cli/releases
+}
 variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"
   default     = "1.3.1"

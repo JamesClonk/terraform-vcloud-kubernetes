@@ -22,3 +22,6 @@ output "kubeconfig" {
 output "kubernetes_ready" {
   value = module.k3s.kubernetes_ready
 }
+output "cilium_ready" {
+  value = null_resource.k8s_cilium_status
+}

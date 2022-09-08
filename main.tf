@@ -76,7 +76,9 @@ module "kubernetes" {
   k8s_control_plane_instances = var.k8s_control_plane_instances
   k8s_worker_instances        = var.k8s_worker_instances
 
-  k3s_version = var.k8s_k3s_version
+  k3s_version        = var.k8s_k3s_version
+  cilium_version     = var.k8s_cilium_version
+  cilium_cli_version = var.k8s_cilium_cli_version
 
   depends_on = [
     module.infrastructure.k8s_control_plane,
@@ -105,4 +107,8 @@ module "deployments" {
   helm_loki                         = var.k8s_helm_loki
   helm_promtail                     = var.k8s_helm_promtail
   helm_grafana                      = var.k8s_helm_grafana
+
+  depends_on = [
+    module.kubernetes.cilium_ready
+  ]
 }
