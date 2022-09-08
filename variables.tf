@@ -89,9 +89,17 @@ variable "k8s_domain_name" {
   # If you do not set a value here, the terraform module will fallback to using <edgegateway-IP>.nip.io.
 }
 
-variable "k8s_cidr" {
-  description = "IP range for Kubernetes network in CIDR notation"
-  default     = "10.0.80.0/24"
+variable "k8s_node_cidr" {
+  description = "IP range for Kubernetes node network in CIDR notation"
+  default     = "10.80.0.0/24"
+}
+variable "k8s_pod_cidr" {
+  description = "IP range for Kubernetes pod network in CIDR notation"
+  default     = "10.82.0.0/16"
+}
+variable "k8s_service_cidr" {
+  description = "IP range for Kubernetes service network in CIDR notation"
+  default     = "10.84.0.0/16"
 }
 
 variable "k8s_cluster_name" {
@@ -163,6 +171,16 @@ variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
   default     = "v1.24.4+k3s1"
   # See https://github.com/k3s-io/k3s/releases
+}
+variable "k8s_cilium_version" {
+  description = "Cilium version to install"
+  default     = "v1.12.1"
+  # See https://github.com/cilium/cilium/releases
+}
+variable "k8s_cilium_cli_version" {
+  description = "Cilium CLI version to use for Cilium installation"
+  default     = "v0.12.3"
+  # See https://github.com/cilium/cilium-cli/releases
 }
 variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"

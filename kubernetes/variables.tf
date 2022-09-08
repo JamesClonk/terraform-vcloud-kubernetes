@@ -1,6 +1,13 @@
-variable "k8s_cidr" {
-  default = "10.0.80.0/24"
+variable "k8s_node_cidr" {
+  default = "10.80.0.0/24"
 }
+variable "k8s_pod_cidr" {
+  default = "10.82.0.0/16"
+}
+variable "k8s_service_cidr" {
+  default = "10.84.0.0/16"
+}
+
 variable "k8s_cluster_name" {
   default = "kubernetes"
 }
@@ -22,6 +29,6 @@ variable "k8s_worker_username" {}
 
 variable "k8s_ssh_private_key" {}
 
-variable "k3s_version" {
-  default = "v1.24.3+k3s1"
-}
+variable "k3s_version" {}
+variable "cilium_version" {}
+variable "cilium_cli_version" {}

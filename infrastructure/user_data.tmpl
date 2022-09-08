@@ -48,3 +48,4 @@ runcmd:
 - ufw disable
 - systemctl enable iscsid.service
 - systemctl start iscsid.service
+- mount bpffs -t bpf /sys/fs/bpf
