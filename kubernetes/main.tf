@@ -29,6 +29,7 @@ module "k3s" {
         bastion_port        = var.k8s_bastion_port
         bastion_user        = var.k8s_bastion_username
         bastion_private_key = var.k8s_ssh_private_key
+        timeout             = "15m"
       }
       flags = [
         "--write-kubeconfig-mode '0644'",
@@ -58,6 +59,7 @@ module "k3s" {
         bastion_port        = var.k8s_bastion_port
         bastion_user        = var.k8s_bastion_username
         bastion_private_key = var.k8s_ssh_private_key
+        timeout             = "15m"
       }
       labels      = { "node.kubernetes.io/pool" = "worker" }
       annotations = { "worker.index" : i }

@@ -32,6 +32,11 @@ module "infrastructure" {
   k8s_worker_disk_size        = var.k8s_worker_disk_size
 }
 
+resource "time_sleep" "wait_for_infrastructure" {
+  create_duration = "60s"
+  depends_on      = [module.infrastructure.k8s_nodes]
+}
+
 module "kubernetes" {
   source = "./kubernetes"
 
@@ -59,9 +64,14 @@ module "kubernetes" {
   cilium_version     = var.k8s_cilium_version
   cilium_cli_version = var.k8s_cilium_cli_version
 
+  depends_on = [time_sleep.wait_for_infrastructure]
+}
+
+resource "time_sleep" "wait_for_kubernetes" {
+  create_duration = "120s"
   depends_on = [
-    module.infrastructure.k8s_control_plane,
-    module.infrastructure.k8s_worker
+    module.kubernetes.kubernetes_ready,
+    module.kubernetes.cilium_ready
   ]
 }
 
@@ -94,8 +104,5 @@ module "deployments" {
   helm_promtail                     = var.k8s_helm_promtail
   helm_grafana                      = var.k8s_helm_grafana
 
-  depends_on = [
-    module.kubernetes.kubernetes_ready,
-    module.kubernetes.cilium_ready
-  ]
+  depends_on = [time_sleep.wait_for_kubernetes]
 }

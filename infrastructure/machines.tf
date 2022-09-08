@@ -151,3 +151,11 @@ resource "vcd_vapp_vm" "k8s_worker" {
     vcd_vapp_vm.k8s_control_plane
   ]
 }
+
+resource "null_resource" "k8s_nodes" {
+  depends_on = [
+    vcd_vapp_vm.k8s_bastion,
+    vcd_vapp_vm.k8s_control_plane,
+    vcd_vapp_vm.k8s_worker,
+  ]
+}
