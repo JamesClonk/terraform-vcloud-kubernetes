@@ -91,7 +91,7 @@ variable "k8s_domain_name" {
 
 variable "k8s_node_cidr" {
   description = "IP range for Kubernetes node network in CIDR notation"
-  default     = "10.0.80.0/24"
+  default     = "10.80.0.0/24"
 }
 variable "k8s_pod_cidr" {
   description = "IP range for Kubernetes pod network in CIDR notation"

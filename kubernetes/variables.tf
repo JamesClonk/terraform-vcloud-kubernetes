@@ -1,5 +1,5 @@
 variable "k8s_node_cidr" {
-  default = "10.0.80.0/24"
+  default = "10.80.0.0/24"
 }
 variable "k8s_pod_cidr" {
   default = "10.82.0.0/16"

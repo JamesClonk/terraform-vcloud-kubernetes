@@ -45,7 +45,7 @@ resource "null_resource" "k8s_cilium_install" {
 
       # install cilium
       set +e
-      cilium install --version "${var.cilium_version}" --restart-unmanaged-pods --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
+      cilium install --helm-set 'ipam.operator.clusterPoolIPv4PodCIDRList=${var.k8s_pod_cidr},ipam.operator.clusterPoolIPv4PodCIDR=${var.k8s_pod_cidr}' --version "${var.cilium_version}" --restart-unmanaged-pods --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
       CILIUM_EXITCODE=$?
       set -e
       if [[ "$CILIUM_EXITCODE" -ne 0 ]]; then
