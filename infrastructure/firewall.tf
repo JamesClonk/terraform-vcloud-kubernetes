@@ -34,6 +34,24 @@ resource "vcd_nsxv_firewall_rule" "k8s_external" {
   }
 }
 
+resource "vcd_nsxv_firewall_rule" "k8s_network" {
+  org          = var.vcd_org
+  vdc          = var.vcd_vdc
+  edge_gateway = var.vcd_edgegateway
+  name         = "k8s network"
+
+  action = "accept"
+  source {
+    ip_addresses = ["${var.k8s_cidr}"]
+  }
+  destination {
+    ip_addresses = ["any"]
+  }
+  service {
+    protocol = "any"
+  }
+}
+
 resource "vcd_nsxv_firewall_rule" "k8s_bastion_ssh" {
   org          = var.vcd_org
   vdc          = var.vcd_vdc
