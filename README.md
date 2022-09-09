@@ -98,7 +98,7 @@ See the official DCS+ documentation on [Create Internet Access](https://dcsguide
 
 Configure the name of this Edge Gateway in `terraform.tfvars -> vcd_edgegateway`.
 
-> **Note**: Also have a look in the vCloud Director web UI and check what the external/public IP assigned to this newly created Edge Gateway is. You need the IP to set up a DNS *A* and a *CNAME* record with it.
+> **Note**: Also have a look in the vCloud Director web UI and check what the external/public IP assigned to this newly created Edge Gateway is by going to its **Configuration -> Gateway Interfaces** page and looking for the **Primary IP**. You will need this IP to set up a DNS *A* and a *CNAME* record with it.
 
 ##### API User
 
