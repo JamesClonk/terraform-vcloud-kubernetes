@@ -41,9 +41,32 @@ resource "null_resource" "k8s_cilium_install" {
         rm -f cilium-linux-amd64.tar.gz{,.sha256sum}
       fi
 
+      # cilium configuration
+      cat > ~/cilium.yml <<EOF
+      ipam:
+        operator:
+          clusterPoolIPv4PodCIDR: ${var.k8s_pod_cidr}
+          clusterPoolIPv4PodCIDRList:
+          - ${var.k8s_pod_cidr}
+      prometheus:
+        enabled: true
+      operator:
+        prometheus:
+          enabled: true
+      hubble:
+        metrics:
+          enabled:
+          - dns:query;ignoreAAAA
+          - drop
+          - tcp
+          - flow
+          - icmp
+          - http
+      EOF
+
       # install cilium
       set +e
-      cilium install --helm-set 'ipam.operator.clusterPoolIPv4PodCIDRList=${var.k8s_pod_cidr},ipam.operator.clusterPoolIPv4PodCIDR=${var.k8s_pod_cidr}' --version "${var.cilium_version}" --restart-unmanaged-pods --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
+      cilium install --restart-unmanaged-pods --helm-values ~/cilium.yml --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
       CILIUM_EXITCODE=$?
       set -e
       if [[ "$CILIUM_EXITCODE" -ne 0 ]]; then
@@ -56,7 +79,7 @@ resource "null_resource" "k8s_cilium_install" {
 
       # enable hubble observability, with UI
       set +e
-      cilium hubble enable --ui --wait 2>&1 | tee hubble_output.txt
+      cilium hubble enable --ui --helm-values ~/cilium.yml --wait 2>&1 | tee hubble_output.txt
       HUBBLE_EXITCODE=$?
       set -e
       if [[ "$HUBBLE_EXITCODE" -ne 0 ]]; then
