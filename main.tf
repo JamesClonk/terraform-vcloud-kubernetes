@@ -167,6 +167,7 @@ module "deployments" {
 
   enable_monitoring                 = var.k8s_enable_monitoring
   enable_logging                    = var.k8s_enable_logging
+  cilium_version                    = var.k8s_cilium_version
   helm_longhorn_version             = var.k8s_helm_longhorn_version
   helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
   helm_cert_manager_version         = var.k8s_helm_cert_manager_version

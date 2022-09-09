@@ -197,6 +197,21 @@ resource "helm_release" "prometheus" {
     value = "5Gi"
   }
 
+  values = [
+    <<-EOT
+    nodeExporter:
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+      - key: CriticalAddonsOnly
+        operator: Exists
+    EOT
+  ]
+
   depends_on = [
     helm_release.longhorn,
     helm_release.cert_manager
@@ -245,6 +260,16 @@ resource "helm_release" "promtail" {
     config:
       clients:
       - url: http://loki.loki.svc.cluster.local:3100/loki/api/v1/push
+
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
     EOT
   ]
 
@@ -317,6 +342,15 @@ resource "helm_release" "grafana" {
         node-exporter:
           gnetId: 1860
           revision: 27
+        cilium:
+          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-dashboard.json
+          token: ''
+        cilium-operator:
+          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-operator-dashboard.json
+          token: ''
+        hubble:
+          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/hubble-dashboard.json
+          token: ''
     EOT
   ]
 

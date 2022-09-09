@@ -12,6 +12,7 @@ variable "loadbalancer_ip" {}
 variable "enable_monitoring" {}
 variable "enable_logging" {}
 
+variable "cilium_version" {}
 variable "helm_longhorn_version" {}
 variable "helm_ingress_nginx_version" {}
 variable "helm_cert_manager_version" {}
