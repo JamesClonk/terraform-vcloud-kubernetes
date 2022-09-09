@@ -43,28 +43,21 @@ resource "helm_release" "ingress_nginx" {
   namespace        = "ingress-nginx"
   create_namespace = "true"
 
-  set {
-    name  = "controller.metrics.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.service.type"
-    value = "NodePort"
-  }
-  set {
-    name  = "controller.service.nodePorts.http"
-    value = "30080"
-  }
-  set {
-    name  = "controller.service.nodePorts.https"
-    value = "30443"
-  }
   values = [
     <<-EOT
     controller:
+      metrics:
+        enabled: true
       service:
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "10254"
         externalIPs:
         - ${var.loadbalancer_ip}
+        type: NodePort
+        nodePorts:
+          http: "30080"
+          https: "30443"
     EOT
   ]
 
@@ -342,14 +335,17 @@ resource "helm_release" "grafana" {
         node-exporter:
           gnetId: 1860
           revision: 27
-        cilium:
-          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-dashboard.json
+        ingress-controller:
+          url: https://raw.githubusercontent.com/swisscom/terraform-dcs-kubernetes/master/deployments/dashboards/ingress-controller.json
+          token: ''
+        cilium-agent:
+          url: https://raw.githubusercontent.com/swisscom/terraform-dcs-kubernetes/master/deployments/dashboards/cilium-agent.json
           token: ''
         cilium-operator:
-          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-operator-dashboard.json
+          url: https://raw.githubusercontent.com/swisscom/terraform-dcs-kubernetes/master/deployments/dashboards/cilium-operator.json
           token: ''
         hubble:
-          url: https://raw.githubusercontent.com/cilium/cilium/${var.cilium_version}/examples/kubernetes/addons/prometheus/files/grafana-dashboards/hubble-dashboard.json
+          url: https://raw.githubusercontent.com/swisscom/terraform-dcs-kubernetes/master/deployments/dashboards/hubble.json
           token: ''
     EOT
   ]
