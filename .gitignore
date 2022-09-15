@@ -45,3 +45,6 @@ kubeconfig
 
 # OS images
 *.ova
+
+# Test manifests
+/*.yml
