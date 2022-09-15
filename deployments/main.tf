@@ -29,8 +29,14 @@ resource "helm_release" "longhorn" {
   version          = var.helm_longhorn_version
   namespace        = "longhorn-system"
   create_namespace = "true"
+  wait             = "true"
 
   depends_on = [time_sleep.wait_for_kubernetes]
+}
+
+resource "time_sleep" "wait_for_longhorn" {
+  create_duration = "120s"
+  depends_on      = [helm_release.longhorn]
 }
 
 # ======================================================================================================================
@@ -180,6 +186,7 @@ resource "helm_release" "prometheus" {
   version          = var.helm_prometheus
   namespace        = "prometheus"
   create_namespace = "true"
+  timeout          = "600"
 
   set {
     name  = "server.persistentVolume.size"
@@ -206,7 +213,7 @@ resource "helm_release" "prometheus" {
   ]
 
   depends_on = [
-    helm_release.longhorn,
+    time_sleep.wait_for_longhorn,
     helm_release.cert_manager
   ]
 }
@@ -220,6 +227,7 @@ resource "helm_release" "loki" {
   version          = var.helm_loki
   namespace        = "loki"
   create_namespace = "true"
+  timeout          = "600"
 
   values = [
     <<-EOT
@@ -233,7 +241,7 @@ resource "helm_release" "loki" {
   ]
 
   depends_on = [
-    helm_release.longhorn,
+    time_sleep.wait_for_longhorn,
     helm_release.cert_manager
   ]
 }
@@ -278,6 +286,7 @@ resource "helm_release" "grafana" {
   version          = var.helm_grafana
   namespace        = "grafana"
   create_namespace = "true"
+  timeout          = "600"
 
   set {
     name  = "deploymentStrategy.type"
@@ -352,7 +361,7 @@ resource "helm_release" "grafana" {
 
   depends_on = [
     kubectl_manifest.cluster_issuer,
-    helm_release.longhorn,
+    time_sleep.wait_for_longhorn,
     helm_release.ingress_nginx,
     helm_release.cert_manager,
     helm_release.prometheus,
