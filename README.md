@@ -219,6 +219,8 @@ Set the amount of control plane nodes to either be 1, 3 or 5. They have to be an
 
 The amount of worker nodes can be set to anything between 1 and 100. Do not set it to a number higher than that, this Terraform module currently supports only a maximum of 100 worker nodes!
 
+> **Note**: Be aware that if you use less than 3 workers you should also decrease the default replica count of Longhorn volumes, either in the Longhorn global settings or for each volume itself. Otherwise they will be in a degraded state (since Longhorn can't provide the requested amount of replicas with less worker nodes) and might not work at all!
+
 ### Provisioning
 
 Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already.
