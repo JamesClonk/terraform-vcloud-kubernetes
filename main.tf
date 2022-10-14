@@ -158,6 +158,7 @@ module "deployments" {
 
   domain_name            = var.k8s_domain_name
   loadbalancer_ip        = module.infrastructure.edge_gateway_external_ip
+  kubernetes_summary     = module.kubernetes.kubernetes_summary
   kubernetes_ready       = module.kubernetes.kubernetes_ready
   cilium_ready           = module.kubernetes.cilium_ready
   cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"

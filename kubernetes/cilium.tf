@@ -33,6 +33,13 @@ resource "null_resource" "k8s_cilium_install" {
       sed 's/127.0.0.1/${var.loadbalancer_ip}/g' /etc/rancher/k3s/k3s.yaml > ~/.kube/config
       export KUBECONFIG=~/.kube/config
 
+      if [ -f "/usr/local/bin/cilium" ]; then
+        CILIUM_CLI_VERSION=$(cilium version | grep 'cilium-cli' | awk '{print $2;}')
+        if [ "$CILIUM_CLI_VERSION" != "${var.cilium_cli_version}" ]; then
+          sudo rm -f /usr/local/bin/cilium
+        fi
+      fi
+
       if [ ! -f "/usr/local/bin/cilium" ]; then
         # download cilium cli
         curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${var.cilium_cli_version}/cilium-linux-amd64.tar.gz{,.sha256sum}
@@ -64,9 +71,9 @@ resource "null_resource" "k8s_cilium_install" {
           - http
       EOF
 
-      # install cilium
+      # install/upgrade cilium
       set +e
-      cilium install --restart-unmanaged-pods --helm-values ~/cilium.yml --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1 | tee cilium_output.txt
+      (cilium install --restart-unmanaged-pods --helm-values ~/cilium.yml --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1 || cilium upgrade --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1) | tee cilium_output.txt
       CILIUM_EXITCODE=$?
       set -e
       if [[ "$CILIUM_EXITCODE" -ne 0 ]]; then

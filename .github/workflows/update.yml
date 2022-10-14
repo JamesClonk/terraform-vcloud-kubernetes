@@ -53,6 +53,18 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: terraform apply -auto-approve -input=false
 
+    - name: Run Sonobuoy
+      if: github.ref == 'refs/heads/master'
+      run: |
+        wget https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
+        tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
+        chmod +x sonobuoy
+        ./sonobuoy run --mode quick --wait --plugin-env=e2e.E2E_EXTRA_ARGS=--non-blocking-taints=CriticalAddonsOnly,true,NoExecute
+        ./sonobuoy status
+        results=$(./sonobuoy retrieve)
+        ./sonobuoy results $results
+        ./sonobuoy delete --wait
+
     - name: Cleanup
       if: ${{ always() }}
       run: rm -f terraform.tfvars || true

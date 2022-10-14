@@ -16,6 +16,7 @@ resource "time_sleep" "wait_for_kubernetes" {
   create_duration = "30s"
 
   depends_on = [
+    var.kubernetes_summary,
     var.kubernetes_ready,
     var.cilium_ready
   ]
@@ -188,6 +189,14 @@ resource "helm_release" "prometheus" {
   create_namespace = "true"
   timeout          = "600"
 
+  set {
+    name  = "alertmanager.strategy.type"
+    value = "Recreate"
+  }
+  set {
+    name  = "server.strategy.type"
+    value = "Recreate"
+  }
   set {
     name  = "server.persistentVolume.size"
     value = "15Gi"
