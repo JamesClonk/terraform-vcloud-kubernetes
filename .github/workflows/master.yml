@@ -93,3 +93,41 @@ jobs:
       if: ${{ always() }}
       run: |
         rm -f kubeconfig || true
+
+  kubernetes-testing:
+    name: 'kubernetes-testing'
+    needs: [ sonobuoy-run ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout kubernetes-testing
+      uses: actions/checkout@v3
+      with:
+        repository: swisscom/kubernetes-testing
+        ref: master
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7'
+        bundler-cache: true
+
+    - name: Setup configs
+      if: github.ref == 'refs/heads/master'
+      env:
+        MASTER_KUBECONFIG: ${{ secrets.MASTER_KUBECONFIG }}
+        MASTER_TESTING_CONFIG: ${{ secrets.MASTER_TESTING_CONFIG }}
+      run: |
+        echo "${MASTER_KUBECONFIG}" > kubeconfig
+        echo "${MASTER_TESTING_CONFIG}" > config.yml
+
+    - name: Run kubernetes-testing specs
+      run: |
+        export KUBECONFIG=kubeconfig
+        make test
+
+    - name: Cleanup
+      if: ${{ always() }}
+      run: |
+        rm -f kubeconfig || true
+        rm -f config.yml || true
