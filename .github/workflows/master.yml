@@ -82,6 +82,7 @@ jobs:
         tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
         chmod +x sonobuoy
         export KUBECONFIG=kubeconfig
+        ./sonobuoy delete --wait || true
         ./sonobuoy run --mode quick --wait --plugin-env=e2e.E2E_EXTRA_ARGS=--non-blocking-taints=CriticalAddonsOnly,true,NoExecute
         ./sonobuoy status
         results=$(./sonobuoy retrieve)
