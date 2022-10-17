@@ -78,7 +78,7 @@ jobs:
 
     - name: Run Sonobuoy
       run: |
-        wget https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
+        wget --quiet https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
         tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
         chmod +x sonobuoy
         export KUBECONFIG=kubeconfig
