@@ -305,14 +305,12 @@ resource "helm_release" "grafana" {
     name  = "persistence.enabled"
     value = "true"
   }
-  set {
-    name  = "ingress.enabled"
-    value = "true"
-  }
 
   values = [
     <<-EOT
     ingress:
+      enabled: true
+      ingressClassName: nginx
       hosts:
       - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       tls:
@@ -320,7 +318,6 @@ resource "helm_release" "grafana" {
         hosts:
         - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       annotations:
-        kubernetes.io/ingress.class: nginx
         cert-manager.io/cluster-issuer: "lets-encrypt"
 
     datasources:
