@@ -112,11 +112,14 @@ jobs:
         ruby-version: '2.7'
         bundler-cache: true
 
-    - name: Setup kubeconfig
+    - name: Setup configs
       if: github.ref == 'refs/heads/develop'
       env:
         DEV_KUBECONFIG: ${{ secrets.DEV_KUBECONFIG }}
-      run: echo "${DEV_KUBECONFIG}" > kubeconfig
+        DEV_TESTING_CONFIG: ${{ secrets.DEV_TESTING_CONFIG }}
+      run: |
+        echo "${DEV_KUBECONFIG}" > kubeconfig
+        echo "${DEV_TESTING_CONFIG}" > config.yml
 
     - name: Run kubernetes-testing specs
       run: |
@@ -127,3 +130,4 @@ jobs:
       if: ${{ always() }}
       run: |
         rm -f kubeconfig || true
+        rm -f config.yml || true
