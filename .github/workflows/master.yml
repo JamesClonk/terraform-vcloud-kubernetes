@@ -10,19 +10,21 @@ permissions:
 
 jobs:
   terraform-apply:
-    name: 'run terraform apply'
+    name: 'terraform apply'
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Setup Terraform Override
+    - name: Setup Terraform override
+      if: github.ref == 'refs/heads/master'
       env:
         TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
       run: echo "${TF_OVERRIDE}" > override.tf
 
     - name: Setup Terraform tfvars
+      if: github.ref == 'refs/heads/master'
       env:
         TF_TFVARS: ${{ secrets.TF_TFVARS }}
       run: echo "${TF_TFVARS}" > terraform.tfvars
@@ -53,8 +55,28 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: terraform apply -auto-approve -input=false
 
-    - name: Run Sonobuoy
+    - name: Cleanup
+      if: ${{ always() }}
+      run: |
+        rm -f kubeconfig || true
+        rm -f terraform.tfvars || true
+
+  sonobuoy-run:
+    name: 'sonobuoy run'
+    needs: [ terraform-apply ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup kubeconfig
       if: github.ref == 'refs/heads/master'
+      env:
+        MASTER_KUBECONFIG: ${{ secrets.MASTER_KUBECONFIG }}
+      run: echo "${MASTER_KUBECONFIG}" > kubeconfig
+
+    - name: Run Sonobuoy
       run: |
         wget https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
         tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
@@ -70,4 +92,3 @@ jobs:
       if: ${{ always() }}
       run: |
         rm -f kubeconfig || true
-        rm -f terraform.tfvars || true
