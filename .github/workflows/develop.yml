@@ -1,8 +1,8 @@
-name: Update
+name: Update Develop
 
 on:
   push:
-    branches: [ master ]
+    branches: [ develop ]
   workflow_dispatch:
 
 permissions:
@@ -19,13 +19,13 @@ jobs:
 
     - name: Setup Terraform Override
       env:
-        TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
-      run: echo "${TF_OVERRIDE}" > override.tf
+        DEV_TF_OVERRIDE: ${{ secrets.DEV_TF_OVERRIDE }}
+      run: echo "${DEV_TF_OVERRIDE}" > override.tf
 
     - name: Setup Terraform tfvars
       env:
-        TF_TFVARS: ${{ secrets.TF_TFVARS }}
-      run: echo "${TF_TFVARS}" > terraform.tfvars
+        DEV_TF_TFVARS: ${{ secrets.DEV_TF_TFVARS }}
+      run: echo "${DEV_TF_TFVARS}" > terraform.tfvars
 
     - name: Setup Terraform CLI
       uses: hashicorp/setup-terraform@v2
@@ -50,11 +50,11 @@ jobs:
       run: terraform plan -input=false
 
     - name: Terraform Apply
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/develop'
       run: terraform apply -auto-approve -input=false
 
     - name: Run Sonobuoy
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/develop'
       run: |
         wget https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
         tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
