@@ -21,13 +21,13 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Setup Terraform Override
-      if: github.ref == 'refs/heads/master'
+      if: github.event_name == 'pull_request'
       env:
         TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
       run: echo "${TF_OVERRIDE}" > override.tf
 
     - name: Setup Terraform tfvars
-      if: github.ref == 'refs/heads/master'
+      if: github.event_name == 'pull_request'
       env:
         TF_TFVARS: ${{ secrets.TF_TFVARS }}
       run: echo "${TF_TFVARS}" > terraform.tfvars
