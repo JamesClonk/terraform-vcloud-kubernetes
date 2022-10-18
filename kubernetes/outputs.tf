@@ -19,6 +19,9 @@ output "client_key" {
 output "kubeconfig" {
   value = local_sensitive_file.kubeconfig_file
 }
+output "kubernetes_summary" {
+  value = module.k3s.summary
+}
 output "kubernetes_ready" {
   value = module.k3s.kubernetes_ready
 }

@@ -1,0 +1,133 @@
+name: Update Master
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  terraform-apply:
+    name: 'terraform apply'
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform override
+      if: github.ref == 'refs/heads/master'
+      env:
+        TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
+      run: echo "${TF_OVERRIDE}" > override.tf
+
+    - name: Setup Terraform tfvars
+      if: github.ref == 'refs/heads/master'
+      env:
+        TF_TFVARS: ${{ secrets.TF_TFVARS }}
+      run: echo "${TF_TFVARS}" > terraform.tfvars
+
+    - name: Setup Terraform CLI
+      uses: hashicorp/setup-terraform@v2
+      with:
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        terraform_version: ~1.2.8
+
+    - name: Terraform Format
+      id: fmt
+      run: terraform fmt -check
+
+    - name: Terraform Init
+      id: init
+      run: terraform init
+
+    - name: Terraform Validate
+      id: validate
+      run: terraform validate
+
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -input=false
+
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/master'
+      run: terraform apply -auto-approve -input=false
+
+    - name: Cleanup
+      if: ${{ always() }}
+      run: |
+        rm -f kubeconfig || true
+        rm -f terraform.tfvars || true
+
+  sonobuoy-run:
+    name: 'sonobuoy run'
+    needs: [ terraform-apply ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup kubeconfig
+      if: github.ref == 'refs/heads/master'
+      env:
+        MASTER_KUBECONFIG: ${{ secrets.MASTER_KUBECONFIG }}
+      run: echo "${MASTER_KUBECONFIG}" > kubeconfig
+
+    - name: Run Sonobuoy
+      run: |
+        wget --quiet https://github.com/vmware-tanzu/sonobuoy/releases/download/v0.56.10/sonobuoy_0.56.10_linux_amd64.tar.gz
+        tar -xvzf sonobuoy_0.56.10_linux_amd64.tar.gz
+        chmod +x sonobuoy
+        export KUBECONFIG=kubeconfig
+        ./sonobuoy delete --wait || true
+        ./sonobuoy run --mode quick --wait --plugin-env=e2e.E2E_EXTRA_ARGS=--non-blocking-taints=CriticalAddonsOnly,true,NoExecute
+        ./sonobuoy status
+        results=$(./sonobuoy retrieve)
+        ./sonobuoy results $results
+        ./sonobuoy delete --wait
+
+    - name: Cleanup
+      if: ${{ always() }}
+      run: |
+        rm -f kubeconfig || true
+
+  kubernetes-testing:
+    name: 'kubernetes-testing'
+    needs: [ sonobuoy-run ]
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout kubernetes-testing
+      uses: actions/checkout@v3
+      with:
+        repository: swisscom/kubernetes-testing
+        ref: master
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '2.7'
+        bundler-cache: true
+
+    - name: Setup configs
+      if: github.ref == 'refs/heads/master'
+      env:
+        MASTER_KUBECONFIG: ${{ secrets.MASTER_KUBECONFIG }}
+        MASTER_TESTING_CONFIG: ${{ secrets.MASTER_TESTING_CONFIG }}
+      run: |
+        echo "${MASTER_KUBECONFIG}" > kubeconfig
+        echo "${MASTER_TESTING_CONFIG}" > config.yml
+
+    - name: Run kubernetes-testing specs
+      run: |
+        export KUBECONFIG=kubeconfig
+        make test
+
+    - name: Cleanup
+      if: ${{ always() }}
+      run: |
+        rm -f kubeconfig || true
+        rm -f config.yml || true

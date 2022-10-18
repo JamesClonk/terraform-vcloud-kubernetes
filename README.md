@@ -2,7 +2,7 @@
 
 # terraform-vcloud-kubernetes
 
-[![Build](https://img.shields.io/github/workflow/status/swisscom/terraform-dcs-kubernetes/Update?label=Build)](https://github.com/swisscom/terraform-dcs-kubernetes/actions/workflows/update.yml)
+[![Build](https://img.shields.io/github/workflow/status/swisscom/terraform-dcs-kubernetes/Update%20Master?label=Build)](https://github.com/swisscom/terraform-dcs-kubernetes/actions/workflows/master.yml)
 [![License](https://img.shields.io/badge/License-Apache--2.0-lightgrey)](https://github.com/swisscom/terraform-dcs-kubernetes/blob/master/LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Kubernetes-blue)](https://kubernetes.io/)
 [![IaC](https://img.shields.io/badge/IaC-Terraform-purple)](https://www.terraform.io/)
@@ -220,6 +220,8 @@ Here are some examples for possible cluster size customizations:
 Set the amount of control plane nodes to either be 1, 3 or 5. They have to be an odd number for the quorum to work correctly, and anything above 5 is not really that beneficial anymore. For a highly-available setup usually the perfect number of control plane nodes is `3`.
 
 The amount of worker nodes can be set to anything between 1 and 100. Do not set it to a number higher than that, this Terraform module currently supports only a maximum of 100 worker nodes!
+
+> **Note**: Be aware that if you use less than 3 workers you should also decrease the default replica count of Longhorn volumes, either in the Longhorn global settings or for each volume itself. Otherwise they will be in a degraded state (since Longhorn can't provide the requested amount of replicas with less worker nodes) and might not work at all!
 
 ### Provisioning
 

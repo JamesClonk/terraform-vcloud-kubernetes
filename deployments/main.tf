@@ -16,6 +16,7 @@ resource "time_sleep" "wait_for_kubernetes" {
   create_duration = "30s"
 
   depends_on = [
+    var.kubernetes_summary,
     var.kubernetes_ready,
     var.cilium_ready
   ]
@@ -94,7 +95,7 @@ resource "kubectl_manifest" "cluster_issuer" {
       name: lets-encrypt
     spec:
       acme:
-        server: https://acme-v02.api.letsencrypt.org/directory
+        server: ${var.lets_encrypt_server}
         privateKeySecretRef:
           name: lets-encrypt
         solvers:
@@ -119,14 +120,6 @@ resource "helm_release" "kubernetes_dashboard" {
     value = "true"
   }
   set {
-    name  = "ingress.enabled"
-    value = "true"
-  }
-  set {
-    name  = "ingress.className"
-    value = "nginx"
-  }
-  set {
     name  = "protocolHttp"
     value = "true"
   }
@@ -140,6 +133,8 @@ resource "helm_release" "kubernetes_dashboard" {
     extraArgs:
     - --enable-insecure-login
     ingress:
+      enabled: true
+      className: nginx
       hosts:
       - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       tls:
@@ -188,6 +183,14 @@ resource "helm_release" "prometheus" {
   create_namespace = "true"
   timeout          = "600"
 
+  set {
+    name  = "alertmanager.strategy.type"
+    value = "Recreate"
+  }
+  set {
+    name  = "server.strategy.type"
+    value = "Recreate"
+  }
   set {
     name  = "server.persistentVolume.size"
     value = "15Gi"
@@ -296,14 +299,12 @@ resource "helm_release" "grafana" {
     name  = "persistence.enabled"
     value = "true"
   }
-  set {
-    name  = "ingress.enabled"
-    value = "true"
-  }
 
   values = [
     <<-EOT
     ingress:
+      enabled: true
+      ingressClassName: nginx
       hosts:
       - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       tls:
@@ -311,7 +312,6 @@ resource "helm_release" "grafana" {
         hosts:
         - grafana.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       annotations:
-        kubernetes.io/ingress.class: nginx
         cert-manager.io/cluster-issuer: "lets-encrypt"
 
     datasources:

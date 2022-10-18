@@ -169,17 +169,17 @@ variable "k8s_enable_logging" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.4+k3s1"
+  default     = "v1.24.6+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_cilium_version" {
   description = "Cilium version to install"
-  default     = "v1.12.1"
+  default     = "v1.12.2"
   # See https://github.com/cilium/cilium/releases
 }
 variable "k8s_cilium_cli_version" {
   description = "Cilium CLI version to use for Cilium installation"
-  default     = "v0.12.3"
+  default     = "v0.12.4"
   # See https://github.com/cilium/cilium-cli/releases
 }
 variable "k8s_helm_longhorn_version" {
@@ -189,7 +189,7 @@ variable "k8s_helm_longhorn_version" {
 }
 variable "k8s_helm_ingress_nginx_version" {
   description = "Helm chart version of Ingress-NGINX to install"
-  default     = "4.2.3"
+  default     = "4.2.5"
   # See https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
 }
 variable "k8s_helm_cert_manager_version" {
@@ -204,21 +204,33 @@ variable "k8s_helm_kubernetes_dashboard_version" {
 }
 variable "k8s_helm_prometheus" {
   description = "Helm chart version of Prometheus to install"
-  default     = "15.12.0"
+  default     = "15.12.2"
   # See https://artifacthub.io/packages/helm/prometheus-community/prometheus
 }
 variable "k8s_helm_loki" {
   description = "Helm chart version of Loki to install"
-  default     = "2.14.1"
+  default     = "2.16.0"
   # See https://artifacthub.io/packages/helm/grafana/loki
 }
 variable "k8s_helm_promtail" {
   description = "Helm chart version of Promtail to install"
-  default     = "6.3.0"
+  default     = "6.4.0"
   # See https://artifacthub.io/packages/helm/grafana/promtail
 }
 variable "k8s_helm_grafana" {
   description = "Helm chart version of Grafana to install"
-  default     = "6.33.1"
+  default     = "6.39.0"
   # See https://artifacthub.io/packages/helm/grafana/grafana
+}
+
+# ======================================================================================================================
+# Helm chart settings
+# ======================================================================================================================
+variable "k8s_cert_manager_lets_encrypt_server" {
+  description = "ACME server for Let's Encrypt ClusterIssuer"
+  default     = "https://acme-v02.api.letsencrypt.org/directory"
+  # https://cert-manager.io/docs/concepts/issuer/
+  # The default value is set to the production server.
+  # Only set this to the staging environment if you want to do frequent development or testing.
+  # See https://letsencrypt.org/docs/staging-environment/
 }

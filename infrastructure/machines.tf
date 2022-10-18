@@ -97,7 +97,7 @@ resource "vcd_vapp_vm" "k8s_control_plane" {
     vcd_vapp_org_network.k8s_org_network,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_snat.hairpin,
-    vcd_lb_server_pool.k8s_api_pool,
+    vcd_lb_virtual_server.k8s_api_vs,
     vcd_vapp_vm.k8s_bastion
   ]
 }
@@ -149,8 +149,8 @@ resource "vcd_vapp_vm" "k8s_worker" {
     vcd_vapp_org_network.k8s_org_network,
     vcd_nsxv_snat.outbound,
     vcd_nsxv_snat.hairpin,
-    vcd_lb_server_pool.k8s_http_pool,
-    vcd_lb_server_pool.k8s_https_pool,
+    vcd_lb_virtual_server.k8s_http_vs,
+    vcd_lb_virtual_server.k8s_https_vs,
     vcd_vapp_vm.k8s_control_plane
   ]
 }

@@ -2,12 +2,14 @@ variable "cluster_api_endpoint" {}
 variable "cluster_ca_certificate" {}
 variable "client_certificate" {}
 variable "client_key" {}
+variable "kubernetes_summary" {}
 variable "kubernetes_ready" {}
 variable "cilium_ready" {}
 
 variable "domain_name" {
   default = ""
 }
+variable "lets_encrypt_server" {}
 variable "loadbalancer_ip" {}
 variable "enable_monitoring" {}
 variable "enable_logging" {}
