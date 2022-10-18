@@ -95,7 +95,7 @@ resource "kubectl_manifest" "cluster_issuer" {
       name: lets-encrypt
     spec:
       acme:
-        server: https://acme-v02.api.letsencrypt.org/directory
+        server: ${var.lets_encrypt_server}
         privateKeySecretRef:
           name: lets-encrypt
         solvers:
@@ -120,14 +120,6 @@ resource "helm_release" "kubernetes_dashboard" {
     value = "true"
   }
   set {
-    name  = "ingress.enabled"
-    value = "true"
-  }
-  set {
-    name  = "ingress.className"
-    value = "nginx"
-  }
-  set {
     name  = "protocolHttp"
     value = "true"
   }
@@ -141,6 +133,8 @@ resource "helm_release" "kubernetes_dashboard" {
     extraArgs:
     - --enable-insecure-login
     ingress:
+      enabled: true
+      className: nginx
       hosts:
       - dashboard.${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}
       tls:
