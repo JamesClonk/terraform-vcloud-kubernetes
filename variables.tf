@@ -222,3 +222,15 @@ variable "k8s_helm_grafana" {
   default     = "6.39.0"
   # See https://artifacthub.io/packages/helm/grafana/grafana
 }
+
+# ======================================================================================================================
+# Helm chart settings
+# ======================================================================================================================
+variable "k8s_cert_manager_lets_encrypt_server" {
+  description = "ACME server for Let's Encrypt ClusterIssuer"
+  default     = "https://acme-v02.api.letsencrypt.org/directory"
+  # https://cert-manager.io/docs/concepts/issuer/
+  # The default value is set to the production server.
+  # Only set this to the staging environment if you want to do frequent development or testing.
+  # See https://letsencrypt.org/docs/staging-environment/
+}

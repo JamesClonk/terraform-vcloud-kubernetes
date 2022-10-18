@@ -9,6 +9,7 @@ variable "cilium_ready" {}
 variable "domain_name" {
   default = ""
 }
+variable "lets_encrypt_server" {}
 variable "loadbalancer_ip" {}
 variable "enable_monitoring" {}
 variable "enable_logging" {}
