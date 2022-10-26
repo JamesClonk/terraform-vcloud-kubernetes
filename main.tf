@@ -63,18 +63,20 @@ module "infrastructure" {
   vcd_ova_file        = var.vcd_ova_file
   vcd_edgegateway     = var.vcd_edgegateway
 
-  k8s_node_cidr               = var.k8s_node_cidr
-  k8s_cluster_name            = var.k8s_cluster_name
-  k8s_ssh_public_key          = var.k8s_ssh_public_key
-  k8s_bastion_memory          = var.k8s_bastion_memory
-  k8s_bastion_cpus            = var.k8s_bastion_cpus
-  k8s_control_plane_instances = var.k8s_control_plane_instances
-  k8s_control_plane_memory    = var.k8s_control_plane_memory
-  k8s_control_plane_cpus      = var.k8s_control_plane_cpus
-  k8s_worker_instances        = var.k8s_worker_instances
-  k8s_worker_memory           = var.k8s_worker_memory
-  k8s_worker_cpus             = var.k8s_worker_cpus
-  k8s_worker_disk_size        = var.k8s_worker_disk_size
+  k8s_node_cidr                = var.k8s_node_cidr
+  k8s_cluster_name             = var.k8s_cluster_name
+  k8s_ssh_public_key           = var.k8s_ssh_public_key
+  k8s_ssh_private_key          = var.k8s_ssh_private_key
+  k8s_automatically_upgrade_os = var.k8s_automatically_upgrade_os
+  k8s_bastion_memory           = var.k8s_bastion_memory
+  k8s_bastion_cpus             = var.k8s_bastion_cpus
+  k8s_control_plane_instances  = var.k8s_control_plane_instances
+  k8s_control_plane_memory     = var.k8s_control_plane_memory
+  k8s_control_plane_cpus       = var.k8s_control_plane_cpus
+  k8s_worker_instances         = var.k8s_worker_instances
+  k8s_worker_memory            = var.k8s_worker_memory
+  k8s_worker_cpus              = var.k8s_worker_cpus
+  k8s_worker_disk_size         = var.k8s_worker_disk_size
 }
 
 resource "time_sleep" "wait_for_infrastructure" {
@@ -169,8 +171,10 @@ module "deployments" {
 
   enable_monitoring                 = var.k8s_enable_monitoring
   enable_logging                    = var.k8s_enable_logging
+  enable_automatic_node_reboot      = var.k8s_enable_automatic_node_reboot
   cilium_version                    = var.k8s_cilium_version
   helm_longhorn_version             = var.k8s_helm_longhorn_version
+  helm_kured_version                = var.k8s_helm_kured_version
   helm_ingress_nginx_version        = var.k8s_helm_ingress_nginx_version
   helm_cert_manager_version         = var.k8s_helm_cert_manager_version
   helm_kubernetes_dashboard_version = var.k8s_helm_kubernetes_dashboard_version

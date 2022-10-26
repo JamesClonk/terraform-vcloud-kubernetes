@@ -40,6 +40,42 @@ resource "time_sleep" "wait_for_longhorn" {
   depends_on      = [helm_release.longhorn]
 }
 
+resource "helm_release" "kured" {
+  count = var.enable_automatic_node_reboot ? 1 : 0
+
+  name             = "kured"
+  repository       = "https://kubereboot.github.io/charts"
+  chart            = "kured"
+  version          = var.helm_kured_version
+  namespace        = "kube-system"
+  create_namespace = "false"
+
+  values = [
+    <<-EOT
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "8080"
+    configuration:
+      rebootSentinel: "/var/run/reboot-required"
+      startTime: "02:00"
+      endTime: "05:00"
+      rebootDays: [mon,tue,wed,thu]
+      timeZone: Local
+    tolerations:
+    - key: node-role.kubernetes.io/master
+      operator: Exists
+      effect: NoSchedule
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+    - key: CriticalAddonsOnly
+      operator: Exists
+    EOT
+  ]
+
+  depends_on = [time_sleep.wait_for_kubernetes]
+}
+
 # ======================================================================================================================
 # Strictly speaking everything below here is entirely optional and not required for a functioning cluster, but it is highly recommended to have an ingress-controller like ingress-nginx and cert-manager for TLS management installed nonetheless.
 resource "helm_release" "ingress_nginx" {
