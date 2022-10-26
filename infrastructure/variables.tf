@@ -30,6 +30,10 @@ variable "k8s_cluster_name" {
   default = "kubernetes"
 }
 variable "k8s_ssh_public_key" {}
+variable "k8s_ssh_private_key" {}
+variable "k8s_automatically_upgrade_os" {
+  default = true
+}
 variable "k8s_bastion_memory" {
   default = 1024
 }

@@ -38,6 +38,7 @@ write_files:
 
 package_update: true
 packages:
+- unattended-upgrades
 - git
 - jq
 - vim
@@ -46,6 +47,7 @@ packages:
 runcmd:
 - netplan apply
 - ufw disable
+- systemctl enable unattended-upgrades
 - systemctl enable iscsid.service
 - systemctl start iscsid.service
 - mount bpffs -t bpf /sys/fs/bpf
