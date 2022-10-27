@@ -89,6 +89,12 @@ variable "k8s_domain_name" {
   # If you do not set a value here, the terraform module will fallback to using <edgegateway-IP>.nip.io.
 }
 
+variable "k8s_automatically_upgrade_os" {
+  description = "Enables or disables automatic upgrades of OS packages (unattended-upgrades)"
+  default     = true
+  # Set this to 'false' if you do not want automatic apt package upgrades on your VMs.
+}
+
 variable "k8s_node_cidr" {
   description = "IP range for Kubernetes node network in CIDR notation"
   default     = "10.80.0.0/24"
@@ -167,6 +173,11 @@ variable "k8s_enable_logging" {
   description = "Enable installation of Loki and Promtail on Kubernetes"
   default     = true
 }
+variable "k8s_enable_automatic_node_reboot" {
+  description = "Enable automatic reboot of K8s nodes for OS upgrades"
+  default     = true
+  # Set this to 'false' if you don't want unattended, uncontrolled VM reboots (via kured) and/or your workload cannot handle pod rescheduling
+}
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
   default     = "v1.24.6+k3s1"
@@ -186,6 +197,11 @@ variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"
   default     = "1.3.1"
   # See https://artifacthub.io/packages/helm/longhorn/longhorn
+}
+variable "k8s_helm_kured_version" {
+  description = "Helm chart version of Kured to install"
+  default     = "4.0.3"
+  # See https://artifacthub.io/packages/helm/kured/kured
 }
 variable "k8s_helm_ingress_nginx_version" {
   description = "Helm chart version of Ingress-NGINX to install"

@@ -121,6 +121,9 @@ jobs:
         echo "${DEV_KUBECONFIG}" > kubeconfig
         echo "${DEV_TESTING_CONFIG}" > config.yml
 
+    - name: Setup Chrome
+      uses: ./.github/actions/setup-chrome
+
     - name: Run kubernetes-testing specs
       run: |
         export KUBECONFIG=kubeconfig
