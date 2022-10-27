@@ -173,6 +173,8 @@ The variable `k8s_enable_monitoring` allows you to enable or disable the install
 
 The variable `k8s_enable_logging` allows you to enable or disable the installation of `Loki` and `Promtail` on your cluster. Set if to `false` if you do not want these components preinstalled.
 
+The variable `k8s_enable_automatic_node_reboot` allows you to enable or disable the installation of `Kured` on your cluster. Set if to `false` if you do not want it to be installed and doing automatic Kubernetes node reboots.
+
 Additionally the **Helm charts** section in `variables.tf` also specifies what versions are used for each of the Helm chart installations, and also for [K3s](https://k3s.io/) (Kubernetes) itself. Add these variables to your `terraform.tfvars` if you want to override any of them, but please be aware that versions other than the ones preconfigured in `variables.tf` are untested and thus not supported.
 
 #### Cluster sizing recommendations
