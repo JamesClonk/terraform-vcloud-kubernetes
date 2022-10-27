@@ -123,10 +123,12 @@ $ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64
 
 #### Local CLI tools
 
-You need to have the following CLI tools installed on your machine for deploying this Terraform module:
+For deploying this Terraform module you will need to have all the following CLI tools installed on your machine:
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/)
 - [git](https://git-scm.com/)
+
+This module has so far only been tested running under Linux and MacOSX. Your experience with Windows tooling may vary.
 
 ### Configuration
 
@@ -234,7 +236,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 ### Provisioning
 
-Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already. See section [Local CLI tools](#local-cli-tools) above for all required CLI tools.
+Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already. See the section about [local CLI tools](#local-cli-tools) above for all required tools needed.
 
 After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module and install all its dependencies:
 ```bash
