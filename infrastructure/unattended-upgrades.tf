@@ -1,4 +1,8 @@
 resource "null_resource" "k8s_bastion_automatic_upgrades" {
+  triggers = {
+    on_automatic_upgrade_change = var.k8s_automatically_upgrade_os
+  }
+
   connection {
     type        = "ssh"
     user        = "kubernetes"
@@ -37,6 +41,8 @@ resource "null_resource" "k8s_bastion_automatic_upgrades" {
       crontab << EOF
       02 02 * * * /sbin/shutdown -r
       EOF
+
+      systemctl restart unattended-upgrades
       EOT
   }
 
@@ -55,6 +61,10 @@ resource "null_resource" "k8s_bastion_automatic_upgrades" {
 
 resource "null_resource" "k8s_control_plane_automatic_upgrades" {
   count = var.k8s_control_plane_instances
+
+  triggers = {
+    on_automatic_upgrade_change = var.k8s_automatically_upgrade_os
+  }
 
   connection {
     type                = "ssh"
@@ -93,6 +103,8 @@ resource "null_resource" "k8s_control_plane_automatic_upgrades" {
       APT::Periodic::Update-Package-Lists "${var.k8s_automatically_upgrade_os ? 1 : 0}";
       APT::Periodic::Unattended-Upgrade "${var.k8s_automatically_upgrade_os ? 1 : 0}";
       EOF
+
+      systemctl restart unattended-upgrades
       EOT
   }
 
@@ -111,6 +123,10 @@ resource "null_resource" "k8s_control_plane_automatic_upgrades" {
 
 resource "null_resource" "k8s_worker_automatic_upgrades" {
   count = var.k8s_worker_instances
+
+  triggers = {
+    on_automatic_upgrade_change = var.k8s_automatically_upgrade_os
+  }
 
   connection {
     type                = "ssh"
@@ -149,6 +165,8 @@ resource "null_resource" "k8s_worker_automatic_upgrades" {
       APT::Periodic::Update-Package-Lists "${var.k8s_automatically_upgrade_os ? 1 : 0}";
       APT::Periodic::Unattended-Upgrade "${var.k8s_automatically_upgrade_os ? 1 : 0}";
       EOF
+
+      systemctl restart unattended-upgrades
       EOT
   }
 
