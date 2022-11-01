@@ -24,6 +24,10 @@ terraform {
       source  = "hashicorp/http"
       version = "~> 2.1.0"
     }
+    external = {
+      source  = "hashicorp/external"
+      version = "~> 2.2.2"
+    }
   }
   required_version = ">= 1.2.0"
 }

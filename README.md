@@ -21,6 +21,7 @@ Table of Contents
       * [Edge Gateway](#edge-gateway)
       * [API User](#api-user)
     - [Download Ubuntu OS image](#download-ubuntu-os-image)
+    - [Local CLI tools](#local-cli-tools)
   + [Configuration](#configuration)
     - [Domain name](#domain-name)
     - [Helm charts](#helm-charts)
@@ -120,6 +121,15 @@ $ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64
 
 > **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
 
+#### Local CLI tools
+
+For deploying this Terraform module you will need to have all the following CLI tools installed on your machine:
+- [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
+- [git](https://git-scm.com/)
+
+This module has so far only been tested running under Linux and MacOSX. Your experience with Windows tooling may vary.
+
 ### Configuration
 
 All possible configuration variables are specified in the [variables.tf](/variables.tf) file in this repository. Most of them already have a sensible default value and only a small handful are required to be configured manually. For any such variable that does not have a default (or you want to set to a different value) you will have to create and add a configuration entry in your `terraform.tfvars` file.
@@ -173,6 +183,8 @@ The variable `k8s_enable_monitoring` allows you to enable or disable the install
 
 The variable `k8s_enable_logging` allows you to enable or disable the installation of `Loki` and `Promtail` on your cluster. Set if to `false` if you do not want these components preinstalled.
 
+The variable `k8s_enable_automatic_node_reboot` allows you to enable or disable the installation of `Kured` on your cluster. Set if to `false` if you do not want it to be installed and doing automatic Kubernetes node reboots.
+
 Additionally the **Helm charts** section in `variables.tf` also specifies what versions are used for each of the Helm chart installations, and also for [K3s](https://k3s.io/) (Kubernetes) itself. Add these variables to your `terraform.tfvars` if you want to override any of them, but please be aware that versions other than the ones preconfigured in `variables.tf` are untested and thus not supported.
 
 #### Cluster sizing recommendations
@@ -224,7 +236,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 ### Provisioning
 
-Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already.
+Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already. See the section about [local CLI tools](#local-cli-tools) above for all required tools needed.
 
 After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module and install all its dependencies:
 ```bash
