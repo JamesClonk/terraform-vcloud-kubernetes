@@ -15,7 +15,7 @@ terraform {
 data "external" "git_data" {
   program = [
     "git", "log",
-    "--pretty=format:{ \"sha\": \"%H\", \"date\": \"%ad\", \"ref\": \"%D\", \"tag\": \"%(describe:tags)\" }",
+    "--pretty=format:{ \"sha\": \"%H\", \"date\": \"%ad\", \"tag\": \"%(describe:tags)\" }",
     "-1", "HEAD"
   ]
 }
@@ -63,8 +63,6 @@ module "k3s" {
       annotations = {
         "server.index" : i,
         "dcs.kubernetes.io/release_sha" : "'${data.external.git_data.result.sha}'",
-        "dcs.kubernetes.io/release_date" : "'${data.external.git_data.result.date}'",
-        "dcs.kubernetes.io/release_ref" : "'${data.external.git_data.result.ref}'",
         "dcs.kubernetes.io/release_tag" : "'${data.external.git_data.result.tag}'"
       }
     }
@@ -87,8 +85,6 @@ module "k3s" {
       annotations = {
         "worker.index" : i,
         "dcs.kubernetes.io/release_sha" : "'${data.external.git_data.result.sha}'",
-        "dcs.kubernetes.io/release_date" : "'${data.external.git_data.result.date}'",
-        "dcs.kubernetes.io/release_ref" : "'${data.external.git_data.result.ref}'",
         "dcs.kubernetes.io/release_tag" : "'${data.external.git_data.result.tag}'"
       }
     }
