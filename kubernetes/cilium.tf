@@ -73,7 +73,7 @@ resource "null_resource" "k8s_cilium_install" {
 
       # install/upgrade cilium
       set +e
-      (cilium install --restart-unmanaged-pods --helm-values ~/cilium.yml --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1 || cilium upgrade --version "${var.cilium_version}" --wait --wait-duration 15m 2>&1) | tee cilium_output.txt
+      (cilium install --restart-unmanaged-pods --helm-values ~/cilium.yml --version "${var.cilium_version}" --wait --wait-duration 60m 2>&1 || cilium upgrade --version "${var.cilium_version}" --wait --wait-duration 60m 2>&1) | tee cilium_output.txt
       CILIUM_EXITCODE=$?
       set -e
       if [[ "$CILIUM_EXITCODE" -ne 0 ]]; then
@@ -82,7 +82,7 @@ resource "null_resource" "k8s_cilium_install" {
       rm -f cilium_output.txt || true
 
       # operator ready?
-      kubectl wait --for condition=available deploy --all --timeout=240s -n "kube-system" | grep 'cilium-operator'
+      kubectl wait --for condition=available deploy --all --timeout=300s -n "kube-system" | grep 'cilium-operator'
 
       # enable hubble observability, with UI
       set +e
