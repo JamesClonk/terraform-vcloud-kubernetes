@@ -273,6 +273,10 @@ resource "helm_release" "loki" {
     loki:
       compactor:
         retention_enabled: true
+    write:
+      replicas: 1
+    read:
+      replicas: 1
     singleBinary:
       persistence:
         size: 20Gi
@@ -317,7 +321,7 @@ resource "helm_release" "promtail" {
     <<-EOT
     config:
       clients:
-      - url: http://loki.loki.svc.cluster.local:3100/loki/api/v1/push
+      - url: http://loki-gateway.loki/loki/api/v1/push
 
     tolerations:
     - key: node-role.kubernetes.io/master
