@@ -124,7 +124,8 @@ resource "time_sleep" "wait_for_kubernetes" {
   create_duration = "60s"
   depends_on = [
     module.kubernetes.kubernetes_ready,
-    module.kubernetes.cilium_ready
+    module.kubernetes.cilium_install_ready,
+    module.kubernetes.cilium_status_ready
   ]
 }
 
@@ -167,7 +168,8 @@ module "deployments" {
   loadbalancer_ip        = module.infrastructure.edge_gateway_external_ip
   kubernetes_summary     = module.kubernetes.kubernetes_summary
   kubernetes_ready       = module.kubernetes.kubernetes_ready
-  cilium_ready           = module.kubernetes.cilium_ready
+  cilium_install_ready   = module.kubernetes.cilium_install_ready
+  cilium_status_ready    = module.kubernetes.cilium_status_ready
   cluster_api_endpoint   = "https://${module.infrastructure.edge_gateway_external_ip}:6443"
   cluster_ca_certificate = module.kubernetes.cluster_ca_certificate
   client_certificate     = module.kubernetes.client_certificate

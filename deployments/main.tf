@@ -18,7 +18,8 @@ resource "time_sleep" "wait_for_kubernetes" {
   depends_on = [
     var.kubernetes_summary,
     var.kubernetes_ready,
-    var.cilium_ready
+    var.cilium_install_ready,
+    var.cilium_status_ready
   ]
 }
 
@@ -32,7 +33,11 @@ resource "helm_release" "longhorn" {
   create_namespace = "true"
   wait             = "true"
 
-  depends_on = [time_sleep.wait_for_kubernetes]
+  depends_on = [
+    time_sleep.wait_for_kubernetes,
+    var.cilium_install_ready,
+    var.cilium_status_ready
+  ]
 }
 
 resource "time_sleep" "wait_for_longhorn" {
@@ -73,7 +78,11 @@ resource "helm_release" "kured" {
     EOT
   ]
 
-  depends_on = [time_sleep.wait_for_kubernetes]
+  depends_on = [
+    time_sleep.wait_for_kubernetes,
+    var.cilium_install_ready,
+    var.cilium_status_ready
+  ]
 }
 
 # ======================================================================================================================
@@ -104,7 +113,11 @@ resource "helm_release" "ingress_nginx" {
     EOT
   ]
 
-  depends_on = [time_sleep.wait_for_kubernetes]
+  depends_on = [
+    time_sleep.wait_for_kubernetes,
+    var.cilium_install_ready,
+    var.cilium_status_ready
+  ]
 }
 
 resource "helm_release" "cert_manager" {
