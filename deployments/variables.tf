@@ -4,7 +4,8 @@ variable "client_certificate" {}
 variable "client_key" {}
 variable "kubernetes_summary" {}
 variable "kubernetes_ready" {}
-variable "cilium_ready" {}
+variable "cilium_install_ready" {}
+variable "cilium_status_ready" {}
 
 variable "domain_name" {
   default = ""
