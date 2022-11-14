@@ -270,12 +270,35 @@ resource "helm_release" "loki" {
 
   values = [
     <<-EOT
-    config:
+    loki:
+      auth_enabled: false
+      commonConfig:
+        replication_factor: 1
       compactor:
         retention_enabled: true
-    persistence:
-      enabled: true
-      size: 20Gi
+      storage:
+        type: filesystem
+    singleBinary:
+      persistence:
+        size: 20Gi
+    monitoring:
+      dashboards:
+        enabled: false
+      rules:
+        enabled: false
+        alerting: false
+      alerts:
+        enabled: false
+      serviceMonitor:
+        enabled: false
+      selfMonitoring:
+        enabled: false
+        grafanaAgent:
+          installOperator: false
+        lokiCanary:
+          enabled: false
+    test:
+      enabled: false
     EOT
   ]
 
