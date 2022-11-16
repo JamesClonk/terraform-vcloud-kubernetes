@@ -7,6 +7,10 @@
 
 Deploy a Kubernetes cluster on [Swisscom DCS+](https://dcsguide.scapp.swisscom.com/)
 
+### Quick start
+
+Check out the [installation guide](docs/installation.md) for requirements, configuration and how to deploy a cluster. 
+
 -----
 
 Table of Contents
@@ -55,9 +59,16 @@ The final result is a fully functioning, highly available Kubernetes cluster, co
 | [Grafana](https://grafana.com/oss/grafana/) | Dashboard | Allows you to query, visualize, alert on and understand all of your Kubernetes metrics and logs |
 | [Kured](https://kured.dev/) | System | A daemonset that performs safe automatic node reboots when needed by the package management system of the underlying OS |
 
-## Installation
+---
 
-Please refer to our [documentation](docs/installation.md) for requirements, configuration and how to deploy a cluster and install this module components. 
+# Installation
+
+Please refer to our [installation documentation](docs/installation.md) for detailed information about:
+- System [requirements](docs/installation.md#requirements)
+- Terraform [configuration](docs/installation.md#configuration)
+- Cluster [provisioning](docs/installation.md#provisioning)
+
+---
 
 ## Up and running
 
