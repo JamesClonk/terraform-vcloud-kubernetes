@@ -22,6 +22,7 @@ Table of Contents
   + [Grafana](#grafana)
   + [Longhorn](#longhorn)
   + [Cilium Hubble UI](#cilium-hubble-ui)
+* [Troubleshooting](docs/troubleshooting.md)
 
 ## Kubernetes cluster with k3s
 
