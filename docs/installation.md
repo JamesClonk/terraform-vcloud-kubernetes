@@ -204,3 +204,5 @@ $ terraform apply
 It will once more display the difference between current and target state, and ask you to confirm if you want to proceed. Type `yes` and hit Enter to continue.
 
 The first run of `terraform apply` is likely going to take quite a bit of time to finish, up to 20 minutes, as it needs to create a lot of new resources on DCS+. Just let it run until it finishes.
+
+> **Note**: Check the troubleshooting [guide](troubleshooting.md#troubleshooting) for solutions to common problems, in case you run into issues during the `apply` step.
