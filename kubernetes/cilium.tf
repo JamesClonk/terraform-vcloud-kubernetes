@@ -99,7 +99,7 @@ resource "null_resource" "k8s_cilium_install" {
 
       # # test connectivity
       # cilium connectivity test --timestamp
-      sleep 60
+      sleep 360
       EOT
     ]
   }
