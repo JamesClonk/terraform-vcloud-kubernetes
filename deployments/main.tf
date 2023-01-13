@@ -35,6 +35,8 @@ resource "helm_release" "longhorn" {
 
   depends_on = [
     time_sleep.wait_for_kubernetes,
+    var.kubernetes_summary,
+    var.kubernetes_ready,
     var.cilium_install_ready,
     var.cilium_status_ready
   ]
@@ -80,6 +82,8 @@ resource "helm_release" "kured" {
 
   depends_on = [
     time_sleep.wait_for_kubernetes,
+    var.kubernetes_summary,
+    var.kubernetes_ready,
     var.cilium_install_ready,
     var.cilium_status_ready
   ]
@@ -115,6 +119,8 @@ resource "helm_release" "ingress_nginx" {
 
   depends_on = [
     time_sleep.wait_for_kubernetes,
+    var.kubernetes_summary,
+    var.kubernetes_ready,
     var.cilium_install_ready,
     var.cilium_status_ready
   ]

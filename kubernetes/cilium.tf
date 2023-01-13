@@ -1,10 +1,17 @@
 resource "time_sleep" "wait_for_kubernetes" {
-  depends_on      = [module.k3s.kubernetes_ready]
+  depends_on = [
+    module.k3s.kubernetes_ready,
+    module.k3s.summary
+  ]
   create_duration = "60s"
 }
 
 resource "null_resource" "k8s_cilium_install" {
-  depends_on = [time_sleep.wait_for_kubernetes]
+  depends_on = [
+    time_sleep.wait_for_kubernetes,
+    module.k3s.kubernetes_ready,
+    module.k3s.summary
+  ]
   triggers = {
     on_new_k3s_version        = var.k3s_version
     on_new_cilium_version     = var.cilium_version
