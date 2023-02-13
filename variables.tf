@@ -189,7 +189,7 @@ variable "k8s_enable_automatic_node_reboot" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.8+k3s1"
+  default     = "v1.24.10+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_cilium_version" {
@@ -209,12 +209,12 @@ variable "k8s_helm_longhorn_version" {
 }
 variable "k8s_helm_kured_version" {
   description = "Helm chart version of Kured to install"
-  default     = "4.1.0"
+  default     = "4.4.1"
   # See https://artifacthub.io/packages/helm/kured/kured
 }
 variable "k8s_helm_ingress_nginx_version" {
   description = "Helm chart version of Ingress-NGINX to install"
-  default     = "4.4.0"
+  default     = "4.4.2"
   # See https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
 }
 variable "k8s_helm_cert_manager_version" {
