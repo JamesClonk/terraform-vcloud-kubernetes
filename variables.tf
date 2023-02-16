@@ -239,7 +239,7 @@ variable "k8s_helm_loki" {
 }
 variable "k8s_helm_promtail" {
   description = "Helm chart version of Promtail to install"
-  default     = "6.6.2"
+  default     = "6.8.3"
   # See https://artifacthub.io/packages/helm/grafana/promtail
 }
 variable "k8s_helm_grafana" {
