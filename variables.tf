@@ -219,7 +219,7 @@ variable "k8s_helm_ingress_nginx_version" {
 }
 variable "k8s_helm_cert_manager_version" {
   description = "Helm chart version of Cert-Manager to install"
-  default     = "1.10.1"
+  default     = "1.11.0"
   # See https://artifacthub.io/packages/helm/cert-manager/cert-manager
 }
 variable "k8s_helm_kubernetes_dashboard_version" {
@@ -229,7 +229,7 @@ variable "k8s_helm_kubernetes_dashboard_version" {
 }
 variable "k8s_helm_prometheus" {
   description = "Helm chart version of Prometheus to install"
-  default     = "15.18.0"
+  default     = "19.6.0"
   # See https://artifacthub.io/packages/helm/prometheus-community/prometheus
 }
 variable "k8s_helm_loki" {
