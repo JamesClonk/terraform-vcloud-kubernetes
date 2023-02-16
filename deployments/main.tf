@@ -284,6 +284,7 @@ resource "helm_release" "loki" {
       storage:
         type: filesystem
     singleBinary:
+      replicas: 1
       persistence:
         size: 20Gi
     monitoring:
@@ -300,8 +301,8 @@ resource "helm_release" "loki" {
         enabled: false
         grafanaAgent:
           installOperator: false
-        lokiCanary:
-          enabled: false
+      lokiCanary:
+        enabled: false
     test:
       enabled: false
     EOT

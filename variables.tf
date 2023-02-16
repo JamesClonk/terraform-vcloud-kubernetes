@@ -234,7 +234,7 @@ variable "k8s_helm_prometheus" {
 }
 variable "k8s_helm_loki" {
   description = "Helm chart version of Loki to install"
-  default     = "3.3.4"
+  default     = "4.6.1"
   # See https://artifacthub.io/packages/helm/grafana/loki
 }
 variable "k8s_helm_promtail" {
