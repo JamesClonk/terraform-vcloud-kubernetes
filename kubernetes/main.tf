@@ -16,7 +16,7 @@ module "k3s" {
   use_sudo       = true
   k3s_version    = var.k3s_version
   drain_timeout  = "600s"
-  managed_fields = ["label", "taint"]
+  managed_fields = ["label", "taint", "annotation"]
 
   cidr = {
     pods     = var.k8s_pod_cidr
@@ -48,8 +48,11 @@ module "k3s" {
         "--tls-san ${var.loadbalancer_ip}",
         "--tls-san ${var.domain_name != "" ? var.domain_name : "${var.loadbalancer_ip}.nip.io"}"
       ]
-      labels      = { "node.kubernetes.io/type" = "master" }
-      annotations = { "server.index" : i }
+      labels = { "node.kubernetes.io/type" = "master" }
+      annotations = {
+        "server.index" : i,
+        "dcs.kubernetes.io/release" : "'${var.module_version}'"
+      }
     }
   }
 
@@ -66,8 +69,11 @@ module "k3s" {
         bastion_private_key = var.k8s_ssh_private_key
         timeout             = "15m"
       }
-      labels      = { "node.kubernetes.io/pool" = "worker" }
-      annotations = { "worker.index" : i }
+      labels = { "node.kubernetes.io/pool" = "worker" }
+      annotations = {
+        "worker.index" : i,
+        "dcs.kubernetes.io/release" : "'${var.module_version}'"
+      }
     }
   }
 }

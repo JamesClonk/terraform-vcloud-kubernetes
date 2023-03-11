@@ -25,6 +25,9 @@ output "kubernetes_summary" {
 output "kubernetes_ready" {
   value = module.k3s.kubernetes_ready
 }
-output "cilium_ready" {
+output "cilium_install_ready" {
+  value = null_resource.k8s_cilium_install
+}
+output "cilium_status_ready" {
   value = null_resource.k8s_cilium_status
 }
