@@ -27,7 +27,7 @@ jobs:
             exit 1
         fi
 
-    - name: Setup Terraform override
+    - name: Setup Terraform Override
       if: github.ref == 'refs/heads/master'
       env:
         TF_OVERRIDE: ${{ secrets.TF_OVERRIDE }}
