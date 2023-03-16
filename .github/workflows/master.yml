@@ -1,4 +1,4 @@
-name: Update Master
+name: Update Master cluster
 
 on:
   push:
