@@ -239,25 +239,17 @@ resource "helm_release" "prometheus" {
   timeout          = "600"
 
   set {
-    name  = "alertmanager.strategy.type"
-    value = "Recreate"
-  }
-  set {
-    name  = "server.strategy.type"
-    value = "Recreate"
-  }
-  set {
     name  = "server.persistentVolume.size"
     value = "15Gi"
   }
   set {
-    name  = "alertmanager.persistentVolume.size"
+    name  = "alertmanager.persistence.size"
     value = "5Gi"
   }
 
   values = [
     <<-EOT
-    nodeExporter:
+    prometheus-node-exporter:
       tolerations:
       - key: node-role.kubernetes.io/master
         operator: Exists
@@ -298,6 +290,7 @@ resource "helm_release" "loki" {
       storage:
         type: filesystem
     singleBinary:
+      replicas: 1
       persistence:
         size: 20Gi
     monitoring:
@@ -314,8 +307,8 @@ resource "helm_release" "loki" {
         enabled: false
         grafanaAgent:
           installOperator: false
-        lokiCanary:
-          enabled: false
+      lokiCanary:
+        enabled: false
     test:
       enabled: false
     EOT
