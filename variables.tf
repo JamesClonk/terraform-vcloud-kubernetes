@@ -3,7 +3,7 @@
 # ======================================================================================================================
 variable "module_version" {
   description = "Version/Release of this module"
-  default     = "v2.4.2"
+  default     = "v2.5.0"
   # See https://github.com/swisscom/terraform-dcs-kubernetes/releases
 }
 
@@ -189,7 +189,7 @@ variable "k8s_enable_automatic_node_reboot" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.8+k3s1"
+  default     = "v1.24.10+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_cilium_version" {
@@ -209,17 +209,17 @@ variable "k8s_helm_longhorn_version" {
 }
 variable "k8s_helm_kured_version" {
   description = "Helm chart version of Kured to install"
-  default     = "4.1.0"
+  default     = "4.4.1"
   # See https://artifacthub.io/packages/helm/kured/kured
 }
 variable "k8s_helm_ingress_nginx_version" {
   description = "Helm chart version of Ingress-NGINX to install"
-  default     = "4.4.0"
+  default     = "4.4.2"
   # See https://artifacthub.io/packages/helm/ingress-nginx/ingress-nginx
 }
 variable "k8s_helm_cert_manager_version" {
   description = "Helm chart version of Cert-Manager to install"
-  default     = "1.10.1"
+  default     = "1.11.0"
   # See https://artifacthub.io/packages/helm/cert-manager/cert-manager
 }
 variable "k8s_helm_kubernetes_dashboard_version" {
@@ -229,17 +229,17 @@ variable "k8s_helm_kubernetes_dashboard_version" {
 }
 variable "k8s_helm_prometheus" {
   description = "Helm chart version of Prometheus to install"
-  default     = "15.18.0"
+  default     = "19.6.0"
   # See https://artifacthub.io/packages/helm/prometheus-community/prometheus
 }
 variable "k8s_helm_loki" {
   description = "Helm chart version of Loki to install"
-  default     = "3.3.4"
+  default     = "4.6.1"
   # See https://artifacthub.io/packages/helm/grafana/loki
 }
 variable "k8s_helm_promtail" {
   description = "Helm chart version of Promtail to install"
-  default     = "6.6.2"
+  default     = "6.8.3"
   # See https://artifacthub.io/packages/helm/grafana/promtail
 }
 variable "k8s_helm_grafana" {

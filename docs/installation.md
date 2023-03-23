@@ -28,13 +28,13 @@ Configure your contract number (PRO-number) in `terraform.tfvars -> vcd_org`.
 ### DCS+ resources
 
 For deploying a Kubernetes cluster on DCS+ you will need to manually create the following resources first before you can proceed:
-- a VCD / Dynamic Data Center (DDC)
-- an Edge Gateway with Internet in your VCD/DDC
+- a VDC / Dynamic Data Center (DDC)
+- an Edge Gateway with Internet in your VDC/DDC
 - an API User
 
 #### Dynamic Data Center
 
-Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **Dynamic Data Center**. The *"Service Level"* doesn't matter for Kubernetes, pick anything you want.
+Login to the DCS+ management portal and go to [Catalog](https://portal.swisscomcloud.com/catalog/). From there you can order a new **Dynamic Data Center**. The *"Service Level"* does not matter for Kubernetes, pick anything you want.
 
 See the official DCS+ documentation on [Dynamic Data Center](https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#dynamic-data-center) for more information.
 
@@ -42,7 +42,7 @@ Configure the name of your newly created DDC in `terraform.tfvars -> vcd_vdc`.
 
 #### Edge Gateway
 
-Login to the DCS+ management portal and go to [My Items](https://portal.swisscomcloud.com/my-items/) view. From here click on the right hand side on *"Actions"* and then select **Create Internet Access** for your *Dynamic Data Center*. Make sure to check the box *"Edge Gateway"* and then fill out all the other values. For *"IP Range Size"* you can select the smallest value available, this Terraform module will only need one public IP for an external LoadBalancer. On *"Edge Gateway Configuration"* it is important that you select the **Large** configuration option to create an Edge Gateway with an advanced feature set, otherwise it will will be missing loadbalancing features and not function correctly!
+Login to the DCS+ management portal and go to [My Items](https://portal.swisscomcloud.com/my-items/) view. From here click on the right hand side on *"Actions"* and then select **Create Internet Access** for your *Dynamic Data Center*. Make sure to check the box *"Edge Gateway"* and then fill out all the other values. For *"IP Range Size"* you can select the smallest value available, this Terraform module will only need one public IP for an external LoadBalancer. On *"Edge Gateway Configuration"* it is important that you select the **Large** configuration option to create an Edge Gateway with an advanced feature set, otherwise it will be missing loadbalancing features and not function correctly!
 
 See the official DCS+ documentation on [Create Internet Access](https://dcsguide.scapp.swisscom.com/ug3/dcs_portal.html#internet-access) for more information.
 

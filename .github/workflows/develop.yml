@@ -1,4 +1,4 @@
-name: Update Develop
+name: Update Develop cluster
 
 on:
   push:
