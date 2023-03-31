@@ -186,7 +186,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already. See the section about [local CLI tools](#local-cli-tools) above for all required tools needed.
 
-After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module and install all its dependencies:
+After you have configured `terraform.tfvars`, the first step you have to do is initialize this Terraform module and install all its dependencies:
 ```bash
 $ terraform init
 ```
