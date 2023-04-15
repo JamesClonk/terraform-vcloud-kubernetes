@@ -68,6 +68,13 @@ write_files:
         /usr/lib/rsyslog/rsyslog-rotate
       endscript
     }
+- path: /etc/systemd/networkd.conf
+  owner: root
+  permissions: '0644'
+  content: |
+    [Network]
+    ManageForeignRoutes=no
+    ManageForeignRoutingPolicyRules=no
 
 package_update: true
 packages:
@@ -80,6 +87,7 @@ packages:
 runcmd:
 - netplan apply
 - ufw disable
+- systemctl restart systemd-networkd
 - systemctl enable unattended-upgrades
 - systemctl enable iscsid.service
 - systemctl start iscsid.service
