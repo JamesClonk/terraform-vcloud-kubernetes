@@ -3,7 +3,7 @@
 # ======================================================================================================================
 variable "module_version" {
   description = "Version/Release of this module"
-  default     = "v2.5.0"
+  default     = "v2.6.0"
   # See https://github.com/swisscom/terraform-dcs-kubernetes/releases
 }
 
@@ -193,17 +193,17 @@ variable "k8s_k3s_version" {
 }
 variable "k8s_cilium_version" {
   description = "Cilium version to install"
-  default     = "v1.12.4"
+  default     = "v1.13.2"
   # See https://github.com/cilium/cilium/releases
 }
 variable "k8s_cilium_cli_version" {
   description = "Cilium CLI version to use for Cilium installation"
-  default     = "v0.12.6"
+  default     = "v0.14.0"
   # See https://github.com/cilium/cilium-cli/releases
 }
 variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"
-  default     = "1.3.2"
+  default     = "1.4.1"
   # See https://artifacthub.io/packages/helm/longhorn/longhorn
 }
 variable "k8s_helm_kured_version" {
