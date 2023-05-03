@@ -188,7 +188,7 @@ variable "k8s_enable_automatic_node_reboot" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.10+k3s1"
+  default     = "v1.25.9+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_cilium_version" {

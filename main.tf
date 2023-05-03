@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vcd = {
       source  = "vmware/vcd"
-      version = "~> 3.5.1"
+      version = "~> 3.7.0"
     }
     helm = {
       source  = "hashicorp/helm"
