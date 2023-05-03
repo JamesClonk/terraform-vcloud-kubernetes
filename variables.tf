@@ -80,11 +80,10 @@ variable "vcd_template" {
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
 }
-variable "vcd_ova_file" {
-  description = "vCD vApp template OVA filename"
-  default     = "ubuntu-22.04-server-cloudimg-amd64.ova"
-  # The OVA filename/path to upload as a vApp template. Defaults to "ubuntu-22.04-server-cloudimg-amd64.ova", to be downloaded from https://cloud-images.ubuntu.com/jammy/current/ and placed into the current working directory:
-  # wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
+variable "vcd_ovf_url" {
+  description = "vCD vApp template OVF URL"
+  default     = "https://dcs-kubernetes.scapp.swisscom.com/ubuntu-22.04-server-cloudimg-amd64.ovf"
+  # The OVF URL of the OS image to upload as a vApp template. Defaults to "https://dcs-kubernetes.scapp.swisscom.com/ubuntu-22.04-server-cloudimg-amd64.ovf".
 }
 
 # ======================================================================================================================
