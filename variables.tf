@@ -203,7 +203,7 @@ variable "k8s_cilium_cli_version" {
 }
 variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"
-  default     = "1.3.2"
+  default     = "1.4.1"
   # See https://artifacthub.io/packages/helm/longhorn/longhorn
 }
 variable "k8s_helm_kured_version" {
@@ -223,7 +223,7 @@ variable "k8s_helm_cert_manager_version" {
 }
 variable "k8s_helm_kubernetes_dashboard_version" {
   description = "Helm chart version of Kubernetes-Dashboard to install"
-  default     = "5.10.0"
+  default     = "5.11.0"
   # See https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
 }
 variable "k8s_helm_prometheus" {
