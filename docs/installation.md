@@ -6,7 +6,6 @@ Table of Contents
       * [Dynamic Data Center](#dynamic-data-center)
       * [Edge Gateway](#edge-gateway)
       * [API User](#api-user)
-    - [Download Ubuntu OS image](#download-ubuntu-os-image)
     - [Local CLI tools](#local-cli-tools)
   + [Configuration](#configuration)
     - [Domain name](#domain-name)
@@ -58,16 +57,6 @@ See the official DCS+ documentation on [Cloud Director API Users](https://dcsgui
 
 Configure the new API username and password in `terraform.tfvars` at `vcd_api_username` and `vcd_api_password`.
 Make sure you also set the API URL at `vcd_api_url`. Check out the official DCS+ documentation on how to determine the API URL value, see [Cloud Director API - API access methods](https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#api-access-methods).
-
-### Download Ubuntu OS image
-
-:warning: Before you can deploy a Kubernetes cluster you need to download the Ubuntu OS cloud-image that will be used for the virtual machines on DCS+.
-It is recommended that you use the latest Ubuntu 22.04 LTS (Long Term Support) image from [Ubuntu Cloud Images](https://cloud-images.ubuntu.com/jammy/current/). By default this Terraform module will be looking for a file named `ubuntu-22.04-server-cloudimg-amd64.ova` in the current working directory:
-```bash
-$ wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
-```
-
-> **Note**: Provisioning of the DCS+ infrastructure will fail if the image file is not present and cannot be uploaded!
 
 ### Local CLI tools
 
@@ -186,7 +175,7 @@ The amount of worker nodes can be set to anything between 1 and 100. Do not set 
 
 Install [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) on your machine if you do not have it already. See the section about [local CLI tools](#local-cli-tools) above for all required tools needed.
 
-After you have configured `terraform.tfstate`, the first step you have to do is initialize this Terraform module and install all its dependencies:
+After you have configured `terraform.tfvars`, the first step you have to do is initialize this Terraform module and install all its dependencies:
 ```bash
 $ terraform init
 ```

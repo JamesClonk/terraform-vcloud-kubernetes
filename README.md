@@ -152,7 +152,7 @@ $ kubectl -n grafana get secret grafana -o jsonpath='{.data.admin-password}' | b
 ```
 
 ### Longhorn
-![DCS+ Grafana](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
+![DCS+ Longhorn](https://raw.githubusercontent.com/JamesClonk/terraform-vcloud-kubernetes/data/dcs_k8s_longhorn.png)
 
 To access the Longhorn dashboard you have to initialize a localhost port-forwarding towards the service on the cluster, since it is not exposed externally:
 ```bash

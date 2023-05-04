@@ -3,7 +3,7 @@
 # ======================================================================================================================
 variable "module_version" {
   description = "Version/Release of this module"
-  default     = "v2.5.0"
+  default     = "v2.6.0"
   # See https://github.com/swisscom/terraform-dcs-kubernetes/releases
 }
 
@@ -80,11 +80,10 @@ variable "vcd_template" {
   # For Swisscom DCS+ see this documentation:
   # https://dcsguide.scapp.swisscom.com/ug3/vcloud_director.html#vapp-templates
 }
-variable "vcd_ova_file" {
-  description = "vCD vApp template OVA filename"
-  default     = "ubuntu-22.04-server-cloudimg-amd64.ova"
-  # The OVA filename/path to upload as a vApp template. Defaults to "ubuntu-22.04-server-cloudimg-amd64.ova", to be downloaded from https://cloud-images.ubuntu.com/jammy/current/ and placed into the current working directory:
-  # wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.ova -O ubuntu-22.04-server-cloudimg-amd64.ova
+variable "vcd_ovf_url" {
+  description = "vCD vApp template OVF URL"
+  default     = "https://dcs-kubernetes.scapp.swisscom.com/ubuntu-22.04-server-cloudimg-amd64.ovf"
+  # The OVF URL of the OS image to upload as a vApp template. Defaults to "https://dcs-kubernetes.scapp.swisscom.com/ubuntu-22.04-server-cloudimg-amd64.ovf".
 }
 
 # ======================================================================================================================
@@ -189,7 +188,7 @@ variable "k8s_enable_automatic_node_reboot" {
 }
 variable "k8s_k3s_version" {
   description = "Kubernetes version of K3s to install"
-  default     = "v1.24.10+k3s1"
+  default     = "v1.25.9+k3s1"
   # See https://github.com/k3s-io/k3s/releases
 }
 variable "k8s_cilium_version" {
@@ -204,7 +203,7 @@ variable "k8s_cilium_cli_version" {
 }
 variable "k8s_helm_longhorn_version" {
   description = "Helm chart version of Longhorn to install"
-  default     = "1.3.2"
+  default     = "1.4.1"
   # See https://artifacthub.io/packages/helm/longhorn/longhorn
 }
 variable "k8s_helm_kured_version" {
@@ -224,7 +223,7 @@ variable "k8s_helm_cert_manager_version" {
 }
 variable "k8s_helm_kubernetes_dashboard_version" {
   description = "Helm chart version of Kubernetes-Dashboard to install"
-  default     = "5.10.0"
+  default     = "5.11.0"
   # See https://artifacthub.io/packages/helm/k8s-dashboard/kubernetes-dashboard
 }
 variable "k8s_helm_prometheus" {
