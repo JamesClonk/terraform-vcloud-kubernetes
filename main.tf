@@ -2,7 +2,7 @@ terraform {
   required_providers {
     vcd = {
       source  = "vmware/vcd"
-      version = "~> 3.5.1"
+      version = "~> 3.7.0"
     }
     helm = {
       source  = "hashicorp/helm"
@@ -60,7 +60,7 @@ module "infrastructure" {
   vcd_logging_enabled = var.vcd_logging_enabled
   vcd_catalog         = var.vcd_catalog
   vcd_template        = var.vcd_template
-  vcd_ova_file        = var.vcd_ova_file
+  vcd_ovf_url         = var.vcd_ovf_url
   vcd_edgegateway     = var.vcd_edgegateway
 
   k8s_node_cidr                = var.k8s_node_cidr

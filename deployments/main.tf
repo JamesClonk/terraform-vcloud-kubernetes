@@ -33,6 +33,29 @@ resource "helm_release" "longhorn" {
   create_namespace = "true"
   wait             = "true"
 
+  values = [
+    <<-EOT
+    enablePSP: false
+    persistence:
+      defaultClass: true
+      defaultFsType: ext4
+      defaultClassReplicaCount: 2
+      defaultReplicaAutoBalance: least-effort
+    defaultSettings:
+      kubernetesClusterAutoscalerEnabled: false
+      defaultReplicaCount: 2
+      replicaAutoBalance: least-effort
+      # replicaReplenishmentWaitInterval: 300
+      disableSchedulingOnCordonedNode: true
+      allowNodeDrainWithLastHealthyReplica: false
+      fastReplicaRebuildEnabled: true
+      snapshotDataIntegrity: fast-check
+      snapshotDataIntegrityCronjob: 0 3 * * *
+      snapshotDataIntegrityImmediateCheckAfterSnapshotCreation: false
+      upgradeChecker: false
+    EOT
+  ]
+
   depends_on = [
     time_sleep.wait_for_kubernetes,
     var.kubernetes_summary,
